@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { useMe } from "@/lib/app-data";
+import { courseColor, useMe } from "@/lib/app-data";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Administración — Sendero" }, { name: "description", content: "Seguimiento de los jóvenes y sus cursos." }] }),
@@ -188,7 +188,7 @@ function Content() {
         <Textarea className="rounded-xl border-2" placeholder="Descripción" value={c.description} onChange={(e) => setC({ ...c, description: e.target.value })} />
         <div className="flex flex-wrap gap-2">
           {["green", "sky", "orange", "pink"].map((col) => (
-            <button key={col} onClick={() => setC({ ...c, color: col })} className={`size-10 rounded-full bg-${col} ${c.color === col ? "ring-4 ring-ring" : ""}`} aria-label={col} />
+            <button key={col} onClick={() => setC({ ...c, color: col })} className={`size-10 rounded-full ${courseColor[col]} ${c.color === col ? "ring-4 ring-ring" : ""}`} aria-label={col} />
           ))}
           <select className="rounded-xl border-2 bg-card px-3 font-bold" value={c.level} onChange={(e) => setC({ ...c, level: e.target.value })}>
             <option>Principiante</option><option>Intermedio</option><option>Avanzado</option>
