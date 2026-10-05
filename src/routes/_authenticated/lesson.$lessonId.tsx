@@ -62,7 +62,7 @@ function LessonPlayer() {
   function next() {
     const newCorrect = correct + (isRight ? 1 : 0);
     setCorrect(newCorrect);
-    if (step + 1 >= total) return finish(newCorrect);
+    if (step + 1 >= total) { void finish(newCorrect); return; }
     setStep(step + 1);
     setPicked(null);
     setChecked(false);

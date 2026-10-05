@@ -37,20 +37,20 @@ function AuthPage() {
         options: { emailRedirectTo: window.location.origin + "/home", data: { display_name: name } },
       });
       setLoading(false);
-      if (error) return toast.error(error.message);
-      if (!data.session) return toast.success("¡Listo! Revisa tu correo para confirmar tu cuenta.");
+      if (error) { toast.error(error.message); return; }
+      if (!data.session) { toast.success("¡Listo! Revisa tu correo para confirmar tu cuenta."); return; }
       navigate({ to: "/home" });
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setLoading(false);
-      if (error) return toast.error("Correo o contraseña incorrectos");
+      if (error) { toast.error("Correo o contraseña incorrectos"); return; }
       navigate({ to: "/home" });
     }
   }
 
   async function google() {
     const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (r.error) return toast.error("No se pudo entrar con Google");
+    if (r.error) { toast.error("No se pudo entrar con Google"); return; }
     if (r.redirected) return;
     navigate({ to: "/home" });
   }

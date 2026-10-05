@@ -122,7 +122,7 @@ function Announce() {
   const [body, setBody] = useState("");
   async function post() {
     const { error } = await supabase.from("announcements").insert({ title, body });
-    if (error) return toast.error("No se pudo publicar");
+    if (error) { toast.error("No se pudo publicar"); return; }
     setTitle(""); setBody("");
     toast.success("Anuncio publicado");
     qc.invalidateQueries({ queryKey: ["announcements"] });
@@ -153,7 +153,7 @@ function Content() {
 
   async function createCourse() {
     const { error } = await supabase.from("courses").insert({ ...c, order_index: courses.length + 1 });
-    if (error) return toast.error("Error al crear el curso");
+    if (error) { toast.error("Error al crear el curso"); return; }
     toast.success("Curso creado");
     setC({ ...c, title: "", description: "" });
     qc.invalidateQueries();
@@ -162,7 +162,7 @@ function Content() {
   async function createLesson() {
     const { count } = await supabase.from("lessons").select("id", { count: "exact", head: true }).eq("course_id", courseId);
     const { data: lesson, error } = await supabase.from("lessons").insert({ ...l, course_id: courseId, order_index: (count ?? 0) + 1 }).select().single();
-    if (error || !lesson) return toast.error("Error al crear la lección");
+    if (error || !lesson) { toast.error("Error al crear la lección"); return; }
     const rows = qs.filter((q) => q.prompt).map((q, i) => ({
       lesson_id: lesson.id, kind: q.kind, prompt: q.prompt,
       options: q.kind === "truefalse" ? ["Verdadero", "Falso"] : q.options.filter(Boolean),

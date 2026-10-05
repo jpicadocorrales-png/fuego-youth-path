@@ -45,14 +45,14 @@ function SettingsPage() {
     const { error } = await supabase.from("profiles").update({
       display_name: name, avatar_emoji: avatar, daily_goal: goal, sound_enabled: sound, email_notifications: emailN,
     }).eq("id", me!.id);
-    if (error) return toast.error("No se pudo guardar");
+    if (error) { toast.error("No se pudo guardar"); return; }
     toast.success("¡Guardado!");
     qc.invalidateQueries({ queryKey: ["me"] });
   }
 
   async function changePw() {
     const { error } = await supabase.auth.updateUser({ password: pw, current_password: curPw } as never);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setPw(""); setCurPw("");
     toast.success("Contraseña actualizada");
   }
