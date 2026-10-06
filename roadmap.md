@@ -1,4 +1,5 @@
 # Roadmap
 - [x] App base: inicio, cursos, insignias, ajustes, admin
-- [ ] Renombrar app a Fuego+
-- [ ] Curso "¿Por qué el cristianismo?" — Lección 01 (fase aprendizaje + fase prueba)
+- [x] Renombrar app a Fuego+
+- [x] Curso "¿Por qué el cristianismo?" — Lección 01 (fase aprendizaje + fase prueba)
+- [ ] Contenido completo de la Lección 02 (pendiente: texto del usuario)
