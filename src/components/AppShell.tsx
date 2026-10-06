@@ -17,7 +17,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-0 md:pl-60">
       <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col gap-2 border-r-2 bg-sidebar p-4 md:flex">
-        <span className="mb-6 px-3 font-display text-3xl font-bold text-primary">sendero</span>
+        <span className="mb-6 px-3 font-display text-3xl font-bold text-primary">fuego+</span>
         {items.map((n) => (
           <Link
             key={n.to}
@@ -30,7 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         ))}
       </aside>
       <header className="sticky top-0 z-10 flex items-center justify-end gap-5 border-b-2 bg-background/90 px-5 py-3 backdrop-blur">
-        <span className="mr-auto font-display text-2xl font-bold text-primary md:hidden">sendero</span>
+        <span className="mr-auto font-display text-2xl font-bold text-primary md:hidden">fuego+</span>
         <span className="flex items-center gap-1 font-extrabold text-flame">
           <Flame className="size-5 fill-current" /> {me?.profile?.streak ?? 0}
         </span>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import mascot from "@/assets/mascot.png";
+import { ReligionsLesson } from "@/components/lessons/ReligionsLesson";
 
 export const Route = createFileRoute("/_authenticated/lesson/$lessonId")({
   head: () => ({ meta: [{ title: "Lección — Sendero" }, { name: "description", content: "Responde y gana XP." }] }),
@@ -47,7 +48,7 @@ function LessonPlayer() {
   const opts = (q?.options as string[]) ?? [];
   const isRight = q && picked === q.correct_index;
 
-  async function finish(finalCorrect: number) {
+  async function finish(finalCorrect: number, showSummary = true) {
     const score = total ? Math.round((finalCorrect / total) * 100) : 100;
     const { data: u } = await supabase.auth.getUser();
     const { data: existing } = await supabase
@@ -56,7 +57,26 @@ function LessonPlayer() {
       await supabase.from("lesson_completions").insert({ lesson_id: lesson!.id, course_id: lesson!.course_id, score, user_id: u.user!.id });
     }
     qc.invalidateQueries();
-    setFinished(true);
+    if (showSummary) setFinished(true);
+  }
+
+  if (lesson.experience === "religions-01") {
+    const goNext = async () => {
+      const { data: next } = await supabase
+        .from("lessons").select("id").eq("course_id", lesson.course_id)
+        .gt("order_index", lesson.order_index).order("order_index").limit(1).maybeSingle();
+      if (next) {
+        setStep(-1); setPicked(null); setChecked(false); setCorrect(0); setFinished(false);
+        navigate({ to: "/lesson/$lessonId", params: { lessonId: next.id } });
+      } else navigate({ to: "/courses/$courseId", params: { courseId: lesson.course_id } });
+    };
+    return (
+      <ReligionsLesson
+        onComplete={() => void finish(0, false)}
+        onNext={() => void goNext()}
+        onExit={() => navigate({ to: "/courses/$courseId", params: { courseId: lesson.course_id } })}
+      />
+    );
   }
 
   function next() {

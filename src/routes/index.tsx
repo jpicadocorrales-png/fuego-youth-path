@@ -7,9 +7,9 @@ import mascot from "@/assets/mascot.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Sendero — Aprende la Biblia jugando" },
+      { title: "Fuego+ — Aprende la Biblia jugando" },
       { name: "description", content: "Cursos bíblicos cortos y divertidos para jóvenes, con rachas, XP e insignias." },
-      { property: "og:title", content: "Sendero — Aprende la Biblia jugando" },
+      { property: "og:title", content: "Fuego+ — Aprende la Biblia jugando" },
       { property: "og:description", content: "Cursos bíblicos cortos y divertidos para jóvenes, con rachas, XP e insignias." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -29,7 +29,7 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-        <span className="font-display text-3xl font-bold text-primary">sendero</span>
+        <span className="font-display text-3xl font-bold text-primary">fuego+</span>
         <Button asChild variant="outline" size="sm">
           <Link to="/auth">Iniciar sesión</Link>
         </Button>

@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { courseColor, useMe } from "@/lib/app-data";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Administración — Sendero" }, { name: "description", content: "Seguimiento de los jóvenes y sus cursos." }] }),
+  head: () => ({ meta: [{ title: "Administración — Fuego+" }, { name: "description", content: "Seguimiento de los jóvenes y sus cursos." }] }),
   component: AdminPage,
 });
 

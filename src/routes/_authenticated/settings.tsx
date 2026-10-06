@@ -11,7 +11,7 @@ import { applyTheme, useMe } from "@/lib/app-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Ajustes — Sendero" }, { name: "description", content: "Perfil, contraseña y preferencias." }] }),
+  head: () => ({ meta: [{ title: "Ajustes — Fuego+" }, { name: "description", content: "Perfil, contraseña y preferencias." }] }),
   component: SettingsPage,
 });
 

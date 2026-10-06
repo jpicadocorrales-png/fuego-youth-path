@@ -4,7 +4,7 @@ import { useBadges } from "@/lib/app-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/badges")({
-  head: () => ({ meta: [{ title: "Insignias — Sendero" }, { name: "description", content: "Premios por tus metas cumplidas." }] }),
+  head: () => ({ meta: [{ title: "Insignias — Fuego+" }, { name: "description", content: "Premios por tus metas cumplidas." }] }),
   component: BadgesPage,
 });
 

@@ -15,7 +15,7 @@ import {
 } from "@/lib/app-data";
 
 export const Route = createFileRoute("/_authenticated/home")({
-  head: () => ({ meta: [{ title: "Inicio — Sendero" }, { name: "description", content: "Tus estadísticas, anuncios y notificaciones." }] }),
+  head: () => ({ meta: [{ title: "Inicio — Fuego+" }, { name: "description", content: "Tus estadísticas, anuncios y notificaciones." }] }),
   component: HomePage,
 });
 

@@ -1,0 +1,1 @@
+alter table public.lessons add column experience text;

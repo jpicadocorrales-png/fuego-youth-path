@@ -59,9 +59,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sendero — Cursos bíblicos para jóvenes" },
+      { title: "Fuego+ — Cursos bíblicos para jóvenes" },
       { name: "description", content: "Aprende la Biblia jugando: cursos, rachas e insignias para jóvenes." },
-      { property: "og:title", content: "Sendero — Cursos bíblicos para jóvenes" },
+      { property: "og:title", content: "Fuego+ — Cursos bíblicos para jóvenes" },
       { property: "og:description", content: "Aprende la Biblia jugando: cursos, rachas e insignias para jóvenes." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
