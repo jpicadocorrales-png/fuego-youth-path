@@ -279,8 +279,8 @@ function DragDrop({ onNext }: { onNext: () => void }) {
   }
   function end(e: RPointerEvent) {
     if (!drag) return;
-    const el = document.elementsFromPoint(e.clientX, e.clientY).find((n) => (n as HTMLElement).dataset?.zone);
-    const zone = (el as HTMLElement | undefined)?.dataset.zone as RK | undefined;
+    const el = document.elementsFromPoint(e.clientX, e.clientY).find((n) => (n as HTMLElement).dataset?.['zone']);
+    const zone = (el as HTMLElement | undefined)?.dataset['zone'] as RK | undefined;
     const item = dragItems.find((d) => d.label === drag.label)!;
     if (zone) {
       const ok = zone === item.to;
@@ -447,7 +447,7 @@ function Memory({ onNext }: { onNext: () => void }) {
     const o = [...open, id];
     setOpen(o);
     if (o.length === 2) {
-      const [a, b] = o.map((x) => cards.find((c) => c.id === x)!);
+      const [a, b] = o.map((x) => cards.find((c) => c.id === x)!) as [typeof cards[number], typeof cards[number]];
       if (a.pair === b.pair) {
         setMsg(true);
         setTimeout(() => { setMatched((m) => new Set(m).add(a.pair)); setOpen([]); }, 400);
