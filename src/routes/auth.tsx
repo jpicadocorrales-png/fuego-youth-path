@@ -10,10 +10,10 @@ import mascot from "@/assets/mascot.png";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Entrar — Sendero" },
-      { name: "description", content: "Inicia sesión o crea tu cuenta en Sendero." },
-      { property: "og:title", content: "Entrar — Sendero" },
-      { property: "og:description", content: "Inicia sesión o crea tu cuenta en Sendero." },
+      { title: "Entrar — Fuego+" },
+      { name: "description", content: "Inicia sesión o crea tu cuenta en Fuego+." },
+      { property: "og:title", content: "Entrar — Fuego+" },
+      { property: "og:description", content: "Inicia sesión o crea tu cuenta en Fuego+." },
     ],
   }),
   component: AuthPage,

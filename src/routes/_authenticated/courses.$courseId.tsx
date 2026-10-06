@@ -5,7 +5,7 @@ import { courseColor, useCourses } from "@/lib/app-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/courses/$courseId")({
-  head: () => ({ meta: [{ title: "Curso — Sendero" }, { name: "description", content: "Camino de lecciones del curso." }] }),
+  head: () => ({ meta: [{ title: "Curso — Fuego+" }, { name: "description", content: "Camino de lecciones del curso." }] }),
   component: CoursePath,
 });
 

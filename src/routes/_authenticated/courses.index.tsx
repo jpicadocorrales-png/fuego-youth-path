@@ -3,7 +3,7 @@ import { AppShell, ProgressBar } from "@/components/AppShell";
 import { courseColor, useCourses } from "@/lib/app-data";
 
 export const Route = createFileRoute("/_authenticated/courses/")({
-  head: () => ({ meta: [{ title: "Cursos — Sendero" }, { name: "description", content: "Tus cursos bíblicos y sugerencias." }] }),
+  head: () => ({ meta: [{ title: "Cursos — Fuego+" }, { name: "description", content: "Tus cursos bíblicos y sugerencias." }] }),
   component: CoursesPage,
 });
 
