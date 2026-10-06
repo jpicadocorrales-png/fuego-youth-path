@@ -143,6 +143,7 @@ export type Database = {
       lessons: {
         Row: {
           course_id: string
+          experience: string | null
           id: string
           order_index: number
           passage: string
@@ -152,6 +153,7 @@ export type Database = {
         }
         Insert: {
           course_id: string
+          experience?: string | null
           id?: string
           order_index?: number
           passage?: string
@@ -161,6 +163,7 @@ export type Database = {
         }
         Update: {
           course_id?: string
+          experience?: string | null
           id?: string
           order_index?: number
           passage?: string
