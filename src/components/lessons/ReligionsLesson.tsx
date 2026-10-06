@@ -62,7 +62,7 @@ export function ReligionsLesson({ onComplete, onNext, onExit }: Props) {
   );
 }
 
-function Feedback({ ok, text }: { ok: boolean; text?: string }) {
+function Feedback({ ok, text }: { ok: boolean; text?: string | undefined }) {
   return (
     <div className={cn("mt-4 animate-pop rounded-2xl p-4 font-display text-lg font-bold", ok ? "bg-accent text-accent-foreground" : "bg-destructive/10 text-destructive")}>
       {ok ? "¡Correcto! 🎉" : "Casi…"} {text}
@@ -133,7 +133,7 @@ function ChoiceRounds({ title, rounds, onNext, doneText }: {
   const [picked, setPicked] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
-  const round = rounds[r];
+  const round = rounds[r]!;
   function pick(i: number) {
     if (picked !== null) return;
     setPicked(i);
@@ -368,7 +368,7 @@ function Swipe({ onNext }: { onNext: () => void }) {
   const [fly, setFly] = useState<0 | 1 | -1>(0);
   const startX = useRef(0);
   const done = r >= swipeRounds.length;
-  const round = swipeRounds[Math.min(r, swipeRounds.length - 1)];
+  const round = swipeRounds[Math.min(r, swipeRounds.length - 1)]!;
 
   function down(e: RPointerEvent) {
     if (result) return;
