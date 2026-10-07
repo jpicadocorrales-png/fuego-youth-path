@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import mascot from "@/assets/mascot.png";
+import mascot from "@/assets/fuego-mascot.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({

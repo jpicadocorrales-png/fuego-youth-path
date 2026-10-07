@@ -6,7 +6,7 @@ import { ProgressBar } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
-import mascot from "@/assets/mascot.png";
+import mascot from "@/assets/fuego-mascot.png";
 import { ReligionsLesson } from "@/components/lessons/ReligionsLesson";
 
 export const Route = createFileRoute("/_authenticated/lesson/$lessonId")({
