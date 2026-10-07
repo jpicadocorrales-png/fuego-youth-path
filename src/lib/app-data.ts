@@ -6,12 +6,14 @@ export const courseColor: Record<string, string> = {
   sky: "bg-sky",
   orange: "bg-orange",
   pink: "bg-pink",
+  yellow: "bg-yellow",
 };
 export const courseText: Record<string, string> = {
   green: "text-green",
   sky: "text-sky",
   orange: "text-orange",
   pink: "text-pink",
+  yellow: "text-yellow",
 };
 
 async function uid() {
