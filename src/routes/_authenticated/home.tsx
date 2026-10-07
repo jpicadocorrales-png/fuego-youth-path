@@ -46,22 +46,22 @@ function HomePage() {
   }
 
   const stats = [
-    { label: "Racha", value: `${me?.profile?.streak ?? 0} días`, emoji: "🔥" },
-    { label: "XP total", value: me?.profile?.xp ?? 0, emoji: "⚡" },
-    { label: "Lecciones", value: completions.length, emoji: "📖" },
-    { label: "Insignias", value: badges.filter((b) => b.earnedAt).length, emoji: "🏅" },
+    { label: "Racha", value: `${me?.profile?.streak ?? 0} días`, emoji: "🔥", tone: "bg-primary text-primary-foreground" },
+    { label: "XP total", value: me?.profile?.xp ?? 0, emoji: "⚡", tone: "bg-yellow text-foreground" },
+    { label: "Lecciones", value: completions.length, emoji: "📖", tone: "bg-cream text-foreground" },
+    { label: "Insignias", value: badges.filter((b) => b.earnedAt).length, emoji: "🏅", tone: "bg-cream text-foreground" },
   ];
 
   return (
     <AppShell>
-      <h1 className="text-3xl font-bold">¡Hola, {me?.profile?.display_name ?? "joven"}! 👋</h1>
+      <h1 className="text-4xl font-black">¡Hola, {me?.profile?.display_name ?? "joven"}! 👋</h1>
 
       <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         {stats.map((s, i) => (
-          <div key={s.label} className="card-chunky animate-pop p-4" style={{ animationDelay: `${i * 70}ms` }}>
+          <div key={s.label} className={`animate-pop rounded-3xl p-5 ${s.tone}`} style={{ animationDelay: `${i * 70}ms` }}>
             <div className="text-3xl">{s.emoji}</div>
-            <div className="mt-1 font-display text-2xl font-bold">{s.value}</div>
-            <div className="text-xs font-extrabold uppercase text-muted-foreground">{s.label}</div>
+            <div className="mt-2 font-display text-3xl font-black">{s.value}</div>
+            <div className="text-sm font-bold opacity-75">{s.label}</div>
           </div>
         ))}
       </div>
@@ -89,7 +89,7 @@ function HomePage() {
           <div className="mt-4 flex h-32 items-end justify-between gap-2">
             {week.map((w, i) => (
               <div key={i} className="flex flex-1 flex-col items-center gap-1">
-                <div className="w-full rounded-lg bg-secondary transition-all" style={{ height: `${(w.count / max) * 100}%`, minHeight: 6 }} />
+                <div className="w-full rounded-lg bg-primary transition-all" style={{ height: `${(w.count / max) * 100}%`, minHeight: 6 }} />
                 <span className="text-xs font-bold text-muted-foreground">{w.label}</span>
               </div>
             ))}

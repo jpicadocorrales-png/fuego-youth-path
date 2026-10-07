@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import mascot from "@/assets/mascot.png";
+import mascot from "@/assets/fuego-mascot.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,15 +29,15 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-        <span className="font-display text-3xl font-bold text-primary">fuego+</span>
+        <span className="font-display text-3xl font-black tracking-tight">fuego<span className="text-secondary">+</span></span>
         <Button asChild variant="outline" size="sm">
           <Link to="/auth">Iniciar sesión</Link>
         </Button>
       </header>
       <main className="mx-auto grid max-w-5xl items-center gap-10 px-6 py-12 md:grid-cols-2">
-        <img src={mascot} alt="Mascota oveja leyendo la Biblia" width={1024} height={1024} className="mx-auto w-72 animate-floaty md:w-96" />
+        <img src={mascot} alt="Mascota oveja leyendo la Biblia" width={1024} height={1024} className="mx-auto w-72 animate-floaty rounded-[3rem] bg-cream p-8 md:w-96" />
         <div className="text-center md:text-left">
-          <h1 className="text-4xl font-bold leading-tight md:text-5xl">
+          <h1 className="text-5xl font-black leading-[1.05] md:text-6xl">
             ¡La forma divertida de conocer la <span className="text-primary">Biblia</span>!
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">

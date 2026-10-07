@@ -16,21 +16,21 @@ export function AppShell({ children }: { children: ReactNode }) {
   const items = me?.isAdmin ? [...nav, { to: "/admin", label: "Admin", icon: ShieldCheck } as const] : nav;
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-0 md:pl-60">
-      <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col gap-2 border-r-2 bg-sidebar p-4 md:flex">
-        <span className="mb-6 px-3 font-display text-3xl font-bold text-primary">fuego+</span>
+      <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col gap-2 bg-sidebar p-4 md:flex">
+        <span className="mb-6 px-3 font-display text-3xl font-black tracking-tight">fuego<span className="text-secondary">+</span></span>
         {items.map((n) => (
           <Link
             key={n.to}
             to={n.to}
-            className="flex items-center gap-3 rounded-xl border-2 border-transparent px-3 py-3 font-extrabold uppercase tracking-wide text-muted-foreground hover:bg-muted"
-            activeProps={{ className: "!border-secondary bg-secondary/10 !text-secondary" }}
+            className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-muted-foreground hover:bg-muted"
+            activeProps={{ className: "bg-primary !text-primary-foreground" }}
           >
             <n.icon className="size-6" /> {n.label}
           </Link>
         ))}
       </aside>
-      <header className="sticky top-0 z-10 flex items-center justify-end gap-5 border-b-2 bg-background/90 px-5 py-3 backdrop-blur">
-        <span className="mr-auto font-display text-2xl font-bold text-primary md:hidden">fuego+</span>
+      <header className="sticky top-0 z-10 flex items-center justify-end gap-5 bg-background/90 px-5 py-3 backdrop-blur">
+        <span className="mr-auto font-display text-2xl font-black tracking-tight md:hidden">fuego<span className="text-secondary">+</span></span>
         <span className="flex items-center gap-1 font-extrabold text-flame">
           <Flame className="size-5 fill-current" /> {me?.profile?.streak ?? 0}
         </span>
@@ -40,13 +40,13 @@ export function AppShell({ children }: { children: ReactNode }) {
         <span className="text-2xl">{me?.profile?.avatar_emoji ?? "🦁"}</span>
       </header>
       <main className="mx-auto max-w-4xl px-4 py-6">{children}</main>
-      <nav className="fixed inset-x-0 bottom-0 z-10 flex justify-around border-t-2 bg-background py-2 md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-10 flex justify-around border-t bg-background py-2 md:hidden">
         {items.map((n) => (
           <Link
             key={n.to}
             to={n.to}
-            className={cn("flex flex-col items-center rounded-xl px-3 py-1 text-[10px] font-extrabold uppercase text-muted-foreground")}
-            activeProps={{ className: "!text-secondary bg-secondary/10" }}
+            className={cn("flex flex-col items-center rounded-xl px-3 py-1 text-[11px] font-semibold text-muted-foreground")}
+            activeProps={{ className: "!text-primary bg-primary/10" }}
           >
             <n.icon className="size-6" />
             {n.label}
