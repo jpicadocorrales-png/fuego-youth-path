@@ -35,14 +35,16 @@ function Landing() {
         </Button>
       </header>
       <main className="mx-auto grid max-w-5xl items-center gap-10 px-6 py-12 md:grid-cols-2">
-        <img src={mascot} alt="Mascota oveja leyendo la Biblia" width={1024} height={1024} className="mx-auto w-72 animate-floaty rounded-[3rem] bg-cream p-8 md:w-96" />
+        <img src={mascot} alt="Fuego+, la llama con el signo más" width={1024} height={1024} className="mx-auto w-72 animate-floaty rounded-[3rem] bg-cream p-8 md:w-96" />
         <div className="text-center md:text-left">
-          <h1 className="text-5xl font-black leading-[1.05] md:text-6xl">
-            ¡La forma divertida de conocer la <span className="text-primary">Biblia</span>!
+          <h1 className="text-5xl font-black leading-[1.02] tracking-tight md:text-7xl">
+            Conoce su Palabra. <span className="text-primary">Arde por Él.</span>
           </h1>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Lecciones de 5 minutos, rachas diarias e insignias para jóvenes.
-          </p>
+          <blockquote className="mt-6 border-l-4 border-secondary pl-4 text-left text-lg leading-relaxed text-muted-foreground">
+            “¿No ardía nuestro corazón… mientras nos hablaba en el camino y nos abría las{" "}
+            <strong className="font-extrabold text-foreground">Escrituras</strong>?”
+            <span className="mt-2 block text-sm font-bold text-secondary">— Lucas 24:32</span>
+          </blockquote>
           <div className="mt-8 flex flex-col gap-3 sm:max-w-xs">
             <Button asChild size="lg"><Link to="/auth">Empezar ahora</Link></Button>
             <Button asChild size="lg" variant="outline"><Link to="/auth">Ya tengo cuenta</Link></Button>

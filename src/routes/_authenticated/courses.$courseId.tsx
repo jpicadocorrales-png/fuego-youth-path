@@ -1,15 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, Lock, Star } from "lucide-react";
-import { AppShell, ProgressBar } from "@/components/AppShell";
+import { Check, Lock } from "lucide-react";
+import { AppShell } from "@/components/AppShell";
 import { courseColor, useCourses } from "@/lib/app-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/courses/$courseId")({
-  head: () => ({ meta: [{ title: "Curso — Fuego+" }, { name: "description", content: "Camino de lecciones del curso." }] }),
+  head: () => ({ meta: [{ title: "Curso — Fuego+" }, { name: "description", content: "Recorrido de lecciones del curso." }] }),
   component: CoursePath,
 });
 
-const offsets = [0, 60, 90, 60, 0, -60, -90, -60];
+const STEP_Y = 150;
+const W = 340;
+// Horizontal positions (0-1) that make the path wind left and right
+const xs = [0.5, 0.78, 0.62, 0.25, 0.4, 0.75, 0.55, 0.22];
 
 function CoursePath() {
   const { courseId } = Route.useParams();
@@ -17,54 +20,113 @@ function CoursePath() {
   const course = courses.find((c) => c.id === courseId);
   if (!course) return <AppShell><p>Cargando…</p></AppShell>;
   const nextIdx = course.lessons.findIndex((l) => !l.done);
-  const others = courses.filter((c) => c.id !== course.id && c.pct < 100).slice(0, 2);
+  const n = course.lessons.length;
+  const height = n * STEP_Y + 60;
+  const pts = course.lessons.map((_, i) => ({ x: (xs[i % xs.length] ?? 0.5) * W, y: 70 + i * STEP_Y }));
+  const doneCount = course.completed;
+  const pathD = pts.reduce((d, p, i) => {
+    if (i === 0) return `M ${p.x} ${p.y}`;
+    const prev = pts[i - 1]!;
+    const my = (prev.y + p.y) / 2;
+    return `${d} C ${prev.x} ${my}, ${p.x} ${my}, ${p.x} ${p.y}`;
+  }, "");
+  // Portion of path walked so far
+  const walked = pts.slice(0, Math.min(doneCount + 1, n)).reduce((d, p, i, arr) => {
+    if (i === 0) return `M ${p.x} ${p.y}`;
+    const prev = arr[i - 1]!;
+    const my = (prev.y + p.y) / 2;
+    return `${d} C ${prev.x} ${my}, ${p.x} ${my}, ${p.x} ${p.y}`;
+  }, "");
+  const nextLesson = nextIdx >= 0 ? course.lessons[nextIdx] : undefined;
 
   return (
     <AppShell>
-      <div className={`rounded-3xl p-5 text-primary-foreground ${courseColor[course.color] ?? "bg-primary"}`}>
-        <Link to="/courses" className="text-sm font-bold opacity-90">← Cursos</Link>
-        <h1 className="mt-1 text-2xl font-bold">{course.emoji} {course.title}</h1>
-        <p className="text-sm opacity-90">{course.description}</p>
-        <div className="mt-3 text-sm font-extrabold">{course.completed}/{course.total} lecciones · {course.pct}%</div>
-      </div>
-
-      <div className="my-10 flex flex-col items-center gap-6">
-        {course.lessons.map((l, i) => {
-          const isNext = i === nextIdx;
-          const locked = !l.done && !isNext;
-          const node = (
-            <div
-              className={cn(
-                "flex size-20 items-center justify-center rounded-full text-primary-foreground transition-transform",
-                l.done && "bg-gold shadow-[0_6px_0_var(--color-gold-shade)]",
-                isNext && "bg-primary shadow-[0_6px_0_var(--color-primary-shade)] hover:scale-105",
-                locked && "bg-muted text-muted-foreground shadow-[0_6px_0_var(--color-border)]",
-              )}
-            >
-              {l.done ? <Check className="!size-9" strokeWidth={4} /> : locked ? <Lock className="!size-8" /> : <Star className="!size-9 fill-current" />}
-            </div>
-          );
-          return (
-            <div key={l.id} className="flex flex-col items-center" style={{ transform: `translateX(${offsets[i % offsets.length]}px)` }}>
-              {isNext && <div className="mb-2 animate-bounce rounded-xl border-2 bg-card px-3 py-1 text-sm font-extrabold text-primary">¡EMPIEZA!</div>}
-              {locked ? node : <Link to="/lesson/$lessonId" params={{ lessonId: l.id }}>{node}</Link>}
-              <span className="mt-2 text-sm font-bold">{l.title}</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {course.pct === 100 && others.length > 0 && (
-        <div className="card-chunky p-5">
-          <h2 className="text-xl font-bold">🎉 ¡Terminaste! Próximo curso sugerido</h2>
-          {others.map((o) => (
-            <Link key={o.id} to="/courses/$courseId" params={{ courseId: o.id }} className="mt-3 block rounded-xl bg-muted p-3 font-bold">
-              {o.emoji} {o.title}
-              <ProgressBar value={o.pct} className="mt-2 h-2" />
-            </Link>
-          ))}
+      <div className={`rounded-3xl p-6 text-primary-foreground ${courseColor[course.color] ?? "bg-primary"}`}>
+        <Link to="/courses" className="text-sm font-semibold opacity-90">← Cursos</Link>
+        <h1 className="mt-2 text-3xl font-black">{course.title}</h1>
+        <p className="mt-1 opacity-90">{course.description}</p>
+        <div className="mt-4 h-3 overflow-hidden rounded-full bg-primary-foreground/30">
+          <div className="h-full rounded-full bg-primary-foreground transition-all duration-700" style={{ width: `${course.pct}%` }} />
         </div>
-      )}
+        <div className="mt-2 flex items-center justify-between text-sm font-bold">
+          <span>{course.completed}/{course.total} lecciones · {course.pct}%</span>
+          {nextLesson && (
+            <Link to="/lesson/$lessonId" params={{ lessonId: nextLesson.id }} className="rounded-full bg-primary-foreground px-4 py-2 text-foreground">
+              {course.completed ? "Continuar" : "Comenzar"}
+            </Link>
+          )}
+        </div>
+      </div>
+
+      <div className="relative mx-auto mt-6 overflow-hidden rounded-[2rem] bg-cream" style={{ maxWidth: W + 40 }}>
+        {/* map texture */}
+        <svg className="pointer-events-none absolute inset-0 h-full w-full text-foreground/10" aria-hidden>
+          <defs>
+            <pattern id="map-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1.6" fill="currentColor" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#map-dots)" />
+        </svg>
+        <div className="relative mx-auto" style={{ width: W, height }}>
+          <svg className="absolute inset-0" width={W} height={height} aria-hidden>
+            <path d={pathD} fill="none" className="stroke-card" strokeWidth={26} strokeLinecap="round" />
+            <path d={pathD} fill="none" className="stroke-muted-foreground/40" strokeWidth={4} strokeDasharray="2 14" strokeLinecap="round" />
+            {doneCount > 0 && <path d={walked} fill="none" className="stroke-primary" strokeWidth={8} strokeLinecap="round" />}
+          </svg>
+          {course.lessons.map((l, i) => {
+            const p = pts[i]!;
+            const isNext = i === nextIdx;
+            const locked = !l.done && !isNext;
+            const node = (
+              <div
+                className={cn(
+                  "relative flex items-center justify-center rounded-full font-black transition-transform",
+                  l.done && "size-16 bg-green text-primary-foreground shadow-[0_5px_0_oklch(0.42_0.12_155)]",
+                  isNext && "size-20 bg-primary text-3xl text-primary-foreground shadow-[0_6px_0_var(--color-primary-shade)] ring-8 ring-primary/20 hover:scale-105",
+                  locked && "size-16 bg-muted text-2xl text-muted-foreground/70 shadow-[0_4px_0_var(--color-border)]",
+                )}
+              >
+                {l.done ? <Check className="!size-8" strokeWidth={3.5} /> : locked ? "?" : i + 1}
+                {!isNext && (
+                  <span className={cn("absolute -right-1 -top-1 flex size-7 items-center justify-center rounded-full text-xs font-black", l.done ? "bg-yellow text-foreground" : "bg-card text-muted-foreground")}>
+                    {locked ? <Lock className="!size-3.5" /> : i + 1}
+                  </span>
+                )}
+              </div>
+            );
+            const labelLeft = p.x > W / 2;
+            return (
+              <div key={l.id} className="absolute" style={{ left: p.x, top: p.y, transform: "translate(-50%, -50%)" }}>
+                {isNext && (
+                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 animate-bounce whitespace-nowrap rounded-full bg-foreground px-3 py-1 text-xs font-bold text-background">
+                    Lección {i + 1}
+                  </div>
+                )}
+                {locked ? node : <Link to="/lesson/$lessonId" params={{ lessonId: l.id }} aria-label={`Lección ${i + 1}: ${l.title}`}>{node}</Link>}
+                <div
+                  className={cn(
+                    "absolute top-1/2 w-32 -translate-y-1/2 text-sm font-bold leading-tight",
+                    labelLeft ? "right-full mr-4 text-right" : "left-full ml-4",
+                    locked ? "text-muted-foreground/60" : "text-foreground",
+                  )}
+                >
+                  {locked ? (
+                    <span className="inline-block rounded-full bg-muted px-3 py-1 text-base">? ? ?</span>
+                  ) : (
+                    <>
+                      <span className="block text-xs font-semibold text-muted-foreground">
+                        {l.done ? "Completada · 100%" : "Disponible"}
+                      </span>
+                      {l.title}
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </AppShell>
   );
 }
