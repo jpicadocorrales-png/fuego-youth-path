@@ -45,7 +45,7 @@ export function ReligionsLesson({ onComplete, onNext, onExit }: Props) {
         <ProgressBar value={(i / (STEPS.length - 1)) * 100} />
       </div>
       <div className="mx-auto w-full max-w-2xl px-5 text-xs font-extrabold uppercase tracking-widest text-flame">
-        {step === "final" ? "Lección completada" : testing ? "🔥 Fase de prueba" : "📖 Fase de aprendizaje"}
+        {step === "final" ? "Lección completada" : testing ? "Fase de prueba" : "Fase de aprendizaje"}
       </div>
       <div key={step} className="mx-auto w-full max-w-2xl flex-1 animate-pop px-5 pb-10 pt-3">
         {step === "intro" && <Intro onNext={next} />}
@@ -447,7 +447,7 @@ function Swipe({ onNext }: { onNext: () => void }) {
         {behind.map((b, j) => (
           <div
             key={b.card}
-            className="card-chunky absolute inset-0 flex items-center justify-center p-6 text-center font-display text-2xl font-black text-muted-foreground transition-transform duration-300"
+            className="card-chunky absolute inset-0 flex items-center justify-center p-6 text-center font-display text-2xl font-black text-transparent transition-transform duration-300"
             style={{ transform: `translateY(${(j + 1) * 14}px) scale(${1 - (j + 1) * 0.06})`, zIndex: 5 - j }}
           >
             {b.card}
