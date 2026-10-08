@@ -1,9 +1,9 @@
 # Roadmap
 - [x] App base, Fuego+, curso de religiones, rediseño visual
-- [ ] Portada: nuevo título y versículo (Lucas 24:32)
-- [ ] Curso: recorrido tipo mapa, números, bloqueadas con "?", sin sugerencias
-- [ ] Lección religiones: color de preguntas intro, tarjetas más legibles con bold, iconos vectoriales
-- [ ] Arreglar arrastrar y soltar
-- [ ] Deslizar como pila de tarjetas
-- [ ] Quitar "Encuentra las parejas"
+- [x] Portada: nuevo título y versículo (Lucas 24:32)
+- [x] Curso: mapa de recorrido, números, bloqueadas con "?" y candado, mensaje al tocar, sin sugerencias
+- [x] Lección religiones: color de preguntas intro, tarjetas legibles con bold, iconos vectoriales
+- [x] Arreglar arrastrar y soltar
+- [x] Deslizar como pila de tarjetas
+- [x] Quitar "Encuentra las parejas"
 - [ ] Contenido completo de la Lección 02 (pendiente: texto del usuario)
