@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Check, Lock } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { courseColor, useCourses } from "@/lib/app-data";
@@ -17,6 +19,8 @@ const xs = [0.5, 0.78, 0.62, 0.25, 0.4, 0.75, 0.55, 0.22];
 function CoursePath() {
   const { courseId } = Route.useParams();
   const { data: courses = [] } = useCourses();
+  const navigate = useNavigate();
+  const [opening, setOpening] = useState<string | null>(null);
   const course = courses.find((c) => c.id === courseId);
   if (!course) return <AppShell><p>Cargando…</p></AppShell>;
   const nextIdx = course.lessons.findIndex((l) => !l.done);
@@ -49,7 +53,7 @@ function CoursePath() {
           <div className="h-full rounded-full bg-primary-foreground transition-all duration-700" style={{ width: `${course.pct}%` }} />
         </div>
         <div className="mt-2 flex items-center justify-between text-sm font-bold">
-          <span>{course.completed}/{course.total} lecciones · {course.pct}%</span>
+          <span>{course.completed} de {course.total} lecciones completadas</span>
           {nextLesson && (
             <Link to="/lesson/$lessonId" params={{ lessonId: nextLesson.id }} className="rounded-full bg-primary-foreground px-4 py-2 text-foreground">
               {course.completed ? "Continuar" : "Comenzar"}
@@ -68,6 +72,14 @@ function CoursePath() {
           </defs>
           <rect width="100%" height="100%" fill="url(#map-dots)" />
         </svg>
+        {pts.map((p, i) => (
+          <span
+            key={`d${i}`}
+            aria-hidden
+            className={cn("pointer-events-none absolute rounded-full opacity-40 animate-floaty", i % 3 === 0 ? "bg-yellow" : i % 3 === 1 ? "bg-pink" : "bg-secondary")}
+            style={{ width: 10 + (i % 3) * 6, height: 10 + (i % 3) * 6, top: p.y + 40, left: p.x > W / 2 ? 24 : W - 10, animationDelay: `${i * 0.4}s` }}
+          />
+        ))}
         <div className="relative mx-auto" style={{ width: W, height }}>
           <svg className="absolute inset-0" width={W} height={height} aria-hidden>
             <path d={pathD} fill="none" className="stroke-card" strokeWidth={26} strokeLinecap="round" />
@@ -84,7 +96,7 @@ function CoursePath() {
                   "relative flex items-center justify-center rounded-full font-black transition-transform",
                   l.done && "size-16 bg-green text-primary-foreground shadow-[0_5px_0_oklch(0.42_0.12_155)]",
                   isNext && "size-20 bg-primary text-3xl text-primary-foreground shadow-[0_6px_0_var(--color-primary-shade)] ring-8 ring-primary/20 hover:scale-105",
-                  locked && "size-16 bg-muted text-2xl text-muted-foreground/70 shadow-[0_4px_0_var(--color-border)]",
+                  locked && "size-16 cursor-not-allowed bg-muted text-2xl text-muted-foreground/70 shadow-[0_4px_0_var(--color-border)]",
                 )}
               >
                 {l.done ? <Check className="!size-8" strokeWidth={3.5} /> : locked ? "?" : i + 1}
@@ -100,10 +112,24 @@ function CoursePath() {
               <div key={l.id} className="absolute" style={{ left: p.x, top: p.y, transform: "translate(-50%, -50%)" }}>
                 {isNext && (
                   <div className="absolute -top-12 left-1/2 -translate-x-1/2 animate-bounce whitespace-nowrap rounded-full bg-foreground px-3 py-1 text-xs font-bold text-background">
-                    Lección {i + 1}
+                    Continuar · Lección {i + 1}
                   </div>
                 )}
-                {locked ? node : <Link to="/lesson/$lessonId" params={{ lessonId: l.id }} aria-label={`Lección ${i + 1}: ${l.title}`}>{node}</Link>}
+                <button
+                  type="button"
+                  aria-label={locked ? `Lección ${i + 1} bloqueada` : `Lección ${i + 1}: ${l.title}`}
+                  className={cn("block transition-transform duration-300", opening === l.id && "scale-125 opacity-0")}
+                  onClick={() => {
+                    if (locked) {
+                      toast(`Completa la lección ${i} para desbloquear esta etapa`, { icon: "🔒" });
+                      return;
+                    }
+                    setOpening(l.id);
+                    setTimeout(() => navigate({ to: "/lesson/$lessonId", params: { lessonId: l.id } }), 280);
+                  }}
+                >
+                  {node}
+                </button>
                 <div
                   className={cn(
                     "absolute top-1/2 w-32 -translate-y-1/2 text-sm font-bold leading-tight",
