@@ -1,28 +1,30 @@
-import { useEffect, useRef, useState, type PointerEvent as RPointerEvent } from "react";
+import { useEffect, useRef, useState, type PointerEvent as RPointerEvent, type ReactNode } from "react";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/AppShell";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
+import { ReligionBadge } from "./ReligionIcons";
 
 const R = {
-  cri: { name: "Cristianismo", emoji: "✝️" },
-  isl: { name: "Islam", emoji: "☪️" },
-  jud: { name: "Judaísmo", emoji: "✡️" },
-  hin: { name: "Hinduismo", emoji: "🕉️" },
-  bud: { name: "Budismo", emoji: "☸️" },
+  cri: { name: "Cristianismo" },
+  isl: { name: "Islam" },
+  jud: { name: "Judaísmo" },
+  hin: { name: "Hinduismo" },
+  bud: { name: "Budismo" },
 } as const;
 type RK = keyof typeof R;
 const RKEYS = Object.keys(R) as RK[];
 
-const flipText: Record<RK, string> = {
-  cri: "Cree en un solo Dios y afirma que Jesús es el Hijo de Dios, el Mesías y Salvador. Su muerte y resurrección son centrales para la fe cristiana. La salvación se recibe por gracia mediante la fe en Cristo.",
-  isl: "Cree en un solo Dios y considera a Mahoma como su último profeta. Jesús es considerado un profeta, pero no Dios ni Hijo de Dios. El Corán es su texto sagrado central.",
-  jud: "Cree en un solo Dios y reconoce las Escrituras hebreas. Espera al Mesías y no reconoce a Jesús como el Mesías ni como Hijo de Dios.",
-  hin: "Es una tradición diversa con distintas concepciones de lo divino. En muchas de sus corrientes son importantes conceptos como el karma, la reencarnación y la liberación del ciclo de renacimientos.",
-  bud: "Se centra en comprender y superar el sufrimiento mediante enseñanzas como las Cuatro Nobles Verdades y el Noble Camino Óctuple. No se basa en la adoración de un Dios creador como elemento central.",
+const flipText: Record<RK, ReactNode> = {
+  cri: <>Cree en <b>un solo Dios</b> y afirma que <b>Jesús es el Hijo de Dios</b>, el Mesías y Salvador. Su <b>muerte y resurrección</b> son centrales para la fe cristiana. La salvación se recibe <b>por gracia</b> mediante la fe en Cristo.</>,
+  isl: <>Cree en <b>un solo Dios</b> y considera a <b>Mahoma</b> como su último profeta. Jesús es considerado <b>un profeta</b>, pero no Dios ni Hijo de Dios. El <b>Corán</b> es su texto sagrado central.</>,
+  jud: <>Cree en <b>un solo Dios</b> y reconoce las <b>Escrituras hebreas</b>. <b>Espera al Mesías</b> y no reconoce a Jesús como el Mesías ni como Hijo de Dios.</>,
+  hin: <>Es una <b>tradición diversa</b> con distintas concepciones de lo divino. En muchas de sus corrientes son importantes conceptos como el <b>karma</b>, la <b>reencarnación</b> y la liberación del ciclo de renacimientos.</>,
+  bud: <>Se centra en comprender y <b>superar el sufrimiento</b> mediante enseñanzas como las <b>Cuatro Nobles Verdades</b> y el <b>Noble Camino Óctuple</b>. No se basa en la adoración de un Dios creador como elemento central.</>,
 };
 
-const STEPS = ["intro", "explore", "who", "noticed", "compare", "drag", "odd", "swipe", "memory", "quick", "final"] as const;
+const STEPS = ["intro", "explore", "who", "noticed", "compare", "drag", "odd", "swipe", "quick", "final"] as const;
 
 type Props = { onComplete: () => void; onNext: () => void; onExit: () => void };
 
@@ -34,7 +36,7 @@ export function ReligionsLesson({ onComplete, onNext, onExit }: Props) {
     if (step === "final") onComplete();
     window.scrollTo({ top: 0 });
   }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
-  const testing = i >= 5 && i < 10;
+  const testing = i >= 5 && i < 9;
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -54,7 +56,6 @@ export function ReligionsLesson({ onComplete, onNext, onExit }: Props) {
         {step === "drag" && <DragDrop onNext={next} />}
         {step === "odd" && <OddOne onNext={next} />}
         {step === "swipe" && <Swipe onNext={next} />}
-        {step === "memory" && <Memory onNext={next} />}
         {step === "quick" && <Quick onNext={next} />}
         {step === "final" && <Final onNext={onNext} />}
       </div>
@@ -78,7 +79,7 @@ function Intro({ onNext }: { onNext: () => void }) {
         <p>Muchas religiones hablan de Dios, espiritualidad, moralidad o de cómo vivir una buena vida. Pero no todas responden de la misma manera a preguntas fundamentales:</p>
         <ul className="space-y-2 font-bold">
           {["¿Quién es Dios?", "¿Qué está mal con la humanidad?", "¿Cómo podemos reconciliarnos con Dios?", "¿Qué ocurre después de la muerte?"].map((q) => (
-            <li key={q} className="rounded-xl bg-muted px-3 py-2">❓ {q}</li>
+            <li key={q} className="rounded-xl bg-primary/10 px-4 py-3 text-primary">{q}</li>
           ))}
         </ul>
         <p>Conocer estas diferencias nos ayuda a entender qué afirma realmente el cristianismo.</p>
@@ -102,14 +103,14 @@ function Explore({ onNext }: { onNext: () => void }) {
       <div className="mt-4 space-y-3">
         {RKEYS.map((k) => (
           <button key={k} onClick={() => toggle(k)} className="block w-full [perspective:1000px]">
-            <div className={cn("relative min-h-36 transition-transform duration-500 [transform-style:preserve-3d]", open.has(k) && "[transform:rotateY(180deg)]")}>
+            <div className={cn("relative min-h-64 transition-transform duration-500 [transform-style:preserve-3d]", open.has(k) && "[transform:rotateY(180deg)]")}>
               <div className="card-chunky absolute inset-0 flex items-center gap-4 p-5 [backface-visibility:hidden]">
-                <span className="text-5xl">{R[k].emoji}</span>
+                <ReligionBadge k={k} size="lg" />
                 <span className="font-display text-2xl font-bold">{R[k].name}</span>
                 {seen.has(k) && <Check className="ml-auto !size-6 text-primary" />}
               </div>
-              <div className="card-chunky absolute inset-0 overflow-auto border-secondary bg-secondary/10 p-4 text-left text-sm font-semibold [backface-visibility:hidden] [transform:rotateY(180deg)]">
-                <div className="mb-1 font-display font-bold text-secondary">{R[k].emoji} {R[k].name}</div>
+              <div className="card-chunky absolute inset-0 overflow-auto border-primary/30 bg-card p-5 text-left text-lg leading-relaxed [&_b]:font-extrabold [&_b]:text-primary [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                <div className="mb-2 flex items-center gap-2 font-display text-xl font-black"><ReligionBadge k={k} size="sm" /> {R[k].name}</div>
                 {flipText[k]}
               </div>
             </div>
@@ -241,7 +242,7 @@ function Compare({ onNext }: { onNext: () => void }) {
             className={cn("card-chunky flex animate-pop items-start gap-3 p-4", row.highlight && k === "cri" && "border-flame bg-flame/10")}
             style={{ animationDelay: `${idx * 60}ms` }}
           >
-            <span className="text-3xl">{R[k].emoji}</span>
+            <ReligionBadge k={k} />
             <div>
               <div className="text-xs font-extrabold uppercase text-muted-foreground">{R[k].name}</div>
               <div className="font-bold">{row.vals[k]}</div>
@@ -266,71 +267,98 @@ const dragItems: { label: string; to: RK }[] = [
 function DragDrop({ onNext }: { onNext: () => void }) {
   const [placed, setPlaced] = useState<Record<string, RK>>({});
   const [drag, setDrag] = useState<{ label: string; x: number; y: number } | null>(null);
+  const [hover, setHover] = useState<RK | null>(null);
   const [flash, setFlash] = useState<{ zone: RK; ok: boolean } | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const zoneRefs = useRef<Partial<Record<RK, HTMLDivElement | null>>>({});
   const remaining = dragItems.filter((d) => !placed[d.label]);
 
-  function start(e: RPointerEvent, label: string) {
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    setDrag({ label, x: e.clientX, y: e.clientY });
-  }
-  function move(e: RPointerEvent) {
-    if (drag) setDrag({ ...drag, x: e.clientX, y: e.clientY });
-  }
-  function end(e: RPointerEvent) {
-    if (!drag) return;
-    const el = document.elementsFromPoint(e.clientX, e.clientY).find((n) => (n as HTMLElement).dataset?.['zone']);
-    const zone = (el as HTMLElement | undefined)?.dataset['zone'] as RK | undefined;
-    const item = dragItems.find((d) => d.label === drag.label)!;
-    if (zone) {
-      const ok = zone === item.to;
-      setFlash({ zone, ok });
-      setTimeout(() => setFlash(null), 600);
-      if (ok) { setPlaced((p) => ({ ...p, [item.label]: zone })); setMsg({ ok: true, text: `${item.label} → ${R[zone].name}` }); }
-      else setMsg({ ok: false, text: `${item.label} no va en ${R[zone].name}. ¡Intenta otra vez!` });
+  // Hit-test against the real on-screen box of each zone, slightly enlarged for touch.
+  function zoneAt(x: number, y: number): RK | null {
+    const PAD = 14;
+    for (const k of RKEYS) {
+      const el = zoneRefs.current[k];
+      if (!el) continue;
+      const r = el.getBoundingClientRect();
+      if (x >= r.left - PAD && x <= r.right + PAD && y >= r.top - PAD && y <= r.bottom + PAD) return k;
     }
-    setDrag(null);
+    return null;
   }
 
+  useEffect(() => {
+    if (!drag) return;
+    const label = drag.label;
+    const move = (e: PointerEvent) => {
+      e.preventDefault();
+      setDrag({ label, x: e.clientX, y: e.clientY });
+      setHover(zoneAt(e.clientX, e.clientY));
+    };
+    const up = (e: PointerEvent) => {
+      const zone = zoneAt(e.clientX, e.clientY);
+      const item = dragItems.find((d) => d.label === label)!;
+      if (zone) {
+        const ok = zone === item.to;
+        setFlash({ zone, ok });
+        setTimeout(() => setFlash(null), 600);
+        if (ok) { setPlaced((p) => ({ ...p, [item.label]: zone })); setMsg({ ok: true, text: `${item.label} → ${R[zone].name}` }); }
+        else setMsg({ ok: false, text: `${item.label} no va en ${R[zone].name}. ¡Intenta otra vez!` });
+      }
+      setDrag(null);
+      setHover(null);
+    };
+    window.addEventListener("pointermove", move, { passive: false });
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+    };
+  }, [drag?.label]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <div onPointerMove={move} onPointerUp={end} className="touch-none select-none">
+    <div className="select-none">
       <h2 className="text-2xl font-bold">Ponlo en su lugar</h2>
       <p className="text-muted-foreground">Arrastra cada concepto a la religión correspondiente.</p>
       <div className="mt-4 flex min-h-16 flex-wrap gap-2">
         {remaining.map((d) => (
           <div
             key={d.label}
-            onPointerDown={(e) => start(e, d.label)}
-            className={cn("cursor-grab rounded-xl border-2 border-b-4 border-secondary bg-card px-3 py-2 font-bold text-secondary", drag?.label === d.label && "opacity-30")}
+            data-testid="drag-item"
+            onPointerDown={(e) => { e.preventDefault(); setDrag({ label: d.label, x: e.clientX, y: e.clientY }); }}
+            className={cn("cursor-grab touch-none rounded-full border-2 border-primary bg-card px-4 py-2 font-bold text-primary", drag?.label === d.label && "opacity-30")}
           >
             {d.label}
           </div>
         ))}
-        {remaining.length === 0 && <div className="font-display text-xl font-bold text-primary">🔥 ¡Todo en su lugar!</div>}
+        {remaining.length === 0 && <div className="font-display text-xl font-bold text-primary">¡Todo en su lugar!</div>}
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {RKEYS.map((k) => (
           <div
             key={k}
+            ref={(el) => { zoneRefs.current[k] = el; }}
             data-zone={k}
             className={cn(
-              "card-chunky min-h-28 p-3 transition-colors",
-              flash?.zone === k && (flash.ok ? "border-primary bg-accent" : "border-destructive bg-destructive/10 animate-pulse"),
+              "card-chunky min-h-28 p-3 transition-all",
+              hover === k && "scale-[1.03] border-primary bg-primary/5",
+              flash?.zone === k && (flash.ok ? "border-green bg-accent" : "border-destructive bg-destructive/10"),
             )}
           >
-            <div data-zone={k} className="font-display font-bold">{R[k].emoji} {R[k].name}</div>
-            <div data-zone={k} className="mt-2 flex flex-wrap gap-1">
+            <div className="flex items-center gap-2 font-display font-bold"><ReligionBadge k={k} size="sm" /> {R[k].name}</div>
+            <div className="mt-2 flex flex-wrap gap-1">
               {Object.entries(placed).filter(([, z]) => z === k).map(([l]) => (
-                <span key={l} data-zone={k} className="rounded-lg bg-primary px-2 py-1 text-xs font-bold text-primary-foreground">{l}</span>
+                <span key={l} className="rounded-full bg-primary px-2 py-1 text-xs font-bold text-primary-foreground">{l}</span>
               ))}
             </div>
           </div>
         ))}
       </div>
-      {drag && (
-        <div className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2 rotate-3 rounded-xl border-2 border-b-4 border-secondary bg-card px-3 py-2 font-bold text-secondary shadow-xl" style={{ left: drag.x, top: drag.y }}>
+      {drag && typeof document !== "undefined" && createPortal(
+        <div className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2 rotate-3 rounded-full border-2 border-primary bg-card px-4 py-2 font-bold text-primary shadow-xl" style={{ left: drag.x, top: drag.y }}>
           {drag.label}
-        </div>
+        </div>,
+        document.body,
       )}
       {msg && <Feedback ok={msg.ok} text={msg.text} />}
       <Button size="lg" className="mt-6 w-full" disabled={remaining.length > 0} onClick={onNext}>Continuar</Button>
@@ -371,8 +399,8 @@ function Swipe({ onNext }: { onNext: () => void }) {
   const round = swipeRounds[Math.min(r, swipeRounds.length - 1)]!;
 
   function down(e: RPointerEvent) {
-    if (result) return;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    if (result || fly) return;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     startX.current = e.clientX;
     setDragging(true);
   }
@@ -386,7 +414,7 @@ function Swipe({ onNext }: { onNext: () => void }) {
     setResult({ ok });
     if (ok) {
       setFly(dx > 0 ? 1 : -1);
-      setTimeout(() => { setR(r + 1); setDx(0); setFly(0); setResult(null); }, 900);
+      setTimeout(() => { setR((x) => x + 1); setDx(0); setFly(0); setResult(null); }, 450);
     } else {
       setDx(0);
       setTimeout(() => setResult(null), 1100);
@@ -396,93 +424,55 @@ function Swipe({ onNext }: { onNext: () => void }) {
   if (done) {
     return (
       <div className="py-10 text-center">
-        <div className="animate-pop text-6xl">👏</div>
-        <h2 className="mt-3 text-3xl font-bold">¡Deslizaste todo bien!</h2>
+        <h2 className="mt-3 animate-pop text-3xl font-black">¡Deslizaste todo bien!</h2>
         <Button size="lg" className="mt-6 w-full" onClick={onNext}>Continuar</Button>
       </div>
     );
   }
-  const x = fly ? fly * 600 : dx;
+  const x = fly ? fly * 700 : dx;
+  const behind = swipeRounds.slice(r + 1, r + 3);
   return (
     <div className="select-none">
       <h2 className="text-2xl font-bold">Desliza hacia la religión correcta</h2>
       <p className="text-muted-foreground">Desliza la tarjeta hacia la opción correcta. ({r + 1}/{swipeRounds.length})</p>
-      <div className="mt-6 flex justify-between font-display text-lg font-bold">
-        <span className={cn("rounded-xl border-2 px-3 py-2 transition-all", dx < -40 && "border-secondary bg-secondary/10 text-secondary")}>← {R[round.left].emoji} {R[round.left].name}</span>
-        <span className={cn("rounded-xl border-2 px-3 py-2 transition-all", dx > 40 && "border-secondary bg-secondary/10 text-secondary")}>{R[round.right].emoji} {R[round.right].name} →</span>
+      <div className="mt-6 flex justify-between gap-2 font-display font-bold">
+        <span className={cn("flex items-center gap-2 rounded-full border-2 px-3 py-2 transition-all", dx < -40 && "scale-105 border-primary bg-primary/10 text-primary")}>
+          ← <ReligionBadge k={round.left} size="sm" /> {R[round.left].name}
+        </span>
+        <span className={cn("flex items-center gap-2 rounded-full border-2 px-3 py-2 transition-all", dx > 40 && "scale-105 border-primary bg-primary/10 text-primary")}>
+          {R[round.right].name} <ReligionBadge k={round.right} size="sm" /> →
+        </span>
       </div>
-      <div className="relative mt-8 flex h-64 items-center justify-center overflow-hidden">
+      <div className="relative mx-auto mt-8 h-72 w-64">
+        {behind.map((b, j) => (
+          <div
+            key={b.card}
+            className="card-chunky absolute inset-0 flex items-center justify-center p-6 text-center font-display text-2xl font-black text-muted-foreground transition-transform duration-300"
+            style={{ transform: `translateY(${(j + 1) * 14}px) scale(${1 - (j + 1) * 0.06})`, zIndex: 5 - j }}
+          >
+            {b.card}
+          </div>
+        )).reverse()}
         <div
           key={r}
+          data-testid="swipe-card"
           onPointerDown={down}
           onPointerMove={move}
           onPointerUp={up}
           onPointerCancel={up}
-          className={cn("card-chunky flex h-56 w-64 cursor-grab touch-none items-center justify-center p-6 text-center font-display text-3xl font-bold animate-pop", result && (result.ok ? "border-primary bg-accent" : "border-destructive bg-destructive/10"))}
-          style={{ transform: `translateX(${x}px) rotate(${x / 15}deg)`, transition: dragging ? "none" : "transform 0.4s cubic-bezier(.2,.9,.3,1.2)" }}
+          className={cn(
+            "card-chunky absolute inset-0 z-10 flex cursor-grab touch-none items-center justify-center p-6 text-center font-display text-3xl font-black active:cursor-grabbing",
+            result && (result.ok ? "border-green bg-accent" : "border-destructive bg-destructive/10"),
+          )}
+          style={{
+            transform: `translateX(${x}px) rotate(${x / 14}deg)`,
+            transition: dragging ? "none" : "transform 0.45s cubic-bezier(.2,.9,.3,1.1)",
+          }}
         >
           {round.card}
         </div>
       </div>
       {result && <Feedback ok={result.ok} text={result.ok ? undefined : "Intenta hacia el otro lado."} />}
-    </div>
-  );
-}
-
-const memPairs: [string, string][] = [["Corán", "Islam"], ["Torá", "Judaísmo"], ["Gracia", "Cristianismo"], ["Noble Camino Óctuple", "Budismo"]];
-
-function Memory({ onNext }: { onNext: () => void }) {
-  const [cards] = useState(() =>
-    memPairs.flatMap(([a, b], p) => [{ id: `${p}a`, text: a, pair: p }, { id: `${p}b`, text: b, pair: p }]).sort(() => Math.random() - 0.5),
-  );
-  const [open, setOpen] = useState<string[]>([]);
-  const [matched, setMatched] = useState<Set<number>>(new Set());
-  const [msg, setMsg] = useState<boolean | null>(null);
-  const done = matched.size === memPairs.length;
-
-  function flip(id: string) {
-    if (open.length === 2 || open.includes(id)) return;
-    const card = cards.find((c) => c.id === id)!;
-    if (matched.has(card.pair)) return;
-    const o = [...open, id];
-    setOpen(o);
-    if (o.length === 2) {
-      const [a, b] = o.map((x) => cards.find((c) => c.id === x)!) as [typeof cards[number], typeof cards[number]];
-      if (a.pair === b.pair) {
-        setMsg(true);
-        setTimeout(() => { setMatched((m) => new Set(m).add(a.pair)); setOpen([]); }, 400);
-      } else {
-        setMsg(false);
-        setTimeout(() => setOpen([]), 900);
-      }
-    }
-  }
-
-  return (
-    <div>
-      <h2 className="text-2xl font-bold">Encuentra las parejas</h2>
-      <p className="text-muted-foreground">Voltea dos tarjetas a la vez.</p>
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {cards.map((c) => {
-          const shown = open.includes(c.id) || matched.has(c.pair);
-          return (
-            <button key={c.id} onClick={() => flip(c.id)} className="h-28 [perspective:800px]">
-              <div className={cn("relative h-full transition-transform duration-500 [transform-style:preserve-3d]", shown && "[transform:rotateY(180deg)]")}>
-                <div className="absolute inset-0 flex items-center justify-center rounded-2xl border-b-4 border-secondary-shade bg-secondary text-4xl [backface-visibility:hidden]">🔥</div>
-                <div className={cn("card-chunky absolute inset-0 flex items-center justify-center p-2 text-center font-bold [backface-visibility:hidden] [transform:rotateY(180deg)]", matched.has(c.pair) && "border-primary bg-accent text-accent-foreground")}>
-                  {c.text}
-                </div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-      {done ? (
-        <>
-          <div className="mt-6 animate-pop text-center font-display text-3xl font-bold text-flame">🔥 ¡Encontraste todas!</div>
-          <Button size="lg" className="mt-6 w-full" onClick={onNext}>Continuar</Button>
-        </>
-      ) : msg !== null && open.length === 2 && <Feedback ok={msg} text={msg ? "¡Es pareja!" : "No son pareja."} />}
     </div>
   );
 }
