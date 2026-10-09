@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type PointerEvent as RPointerEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Test as OddOne, Discard as Swipe } from "./ReligionsGames";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/AppShell";
@@ -367,7 +368,6 @@ function DragDrop({ onNext }: { onNext: () => void }) {
   );
 }
 
-export { Test as OddOne, Discard as Swipe } from "./ReligionsGames";
 
 function Quick({ onNext }: { onNext: () => void }) {
   return (
