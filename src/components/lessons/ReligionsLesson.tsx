@@ -74,7 +74,8 @@ function Feedback({ ok, text }: { ok: boolean; text?: string | undefined }) {
 function Intro({ onNext }: { onNext: () => void }) {
   return (
     <div>
-      <h1 className="text-3xl font-bold">¿Todas las religiones creen lo mismo?</h1>
+      <div className="text-xs font-extrabold uppercase tracking-widest text-muted-foreground">Fundamentos · Religiones</div>
+      <h1 className="text-3xl font-black">¿Por qué el cristianismo?</h1>
       <div className="card-chunky mt-6 space-y-3 p-5 text-lg">
         <p>Muchas religiones hablan de Dios, espiritualidad, moralidad o de cómo vivir una buena vida. Pero no todas responden de la misma manera a preguntas fundamentales:</p>
         <ul className="space-y-2 font-bold">
@@ -366,116 +367,7 @@ function DragDrop({ onNext }: { onNext: () => void }) {
   );
 }
 
-function OddOne({ onNext }: { onNext: () => void }) {
-  return (
-    <ChoiceRounds
-      title="¿Cuál no pertenece?"
-      onNext={onNext}
-      doneText="¡Excelente ojo! 👀"
-      rounds={[
-        { prompt: "¿Cuál NO pertenece al cristianismo?", options: ["Jesús", "Gracia", "Resurrección", "Karma"], correct: 3 },
-        { prompt: "¿Cuál NO pertenece al budismo?", options: ["Buda", "Noble Camino Óctuple", "Cuatro Nobles Verdades", "Cruz"], correct: 3 },
-        { prompt: "¿Cuál NO pertenece al Islam?", options: ["Corán", "Mahoma", "Cinco pilares", "Torá"], correct: 3 },
-      ]}
-    />
-  );
-}
-
-const swipeRounds: { card: string; left: RK; right: RK; correct: "left" | "right" }[] = [
-  { card: "Corán", left: "cri", right: "isl", correct: "right" },
-  { card: "Noble Camino Óctuple", left: "hin", right: "bud", correct: "right" },
-  { card: "Torá", left: "isl", right: "jud", correct: "right" },
-  { card: "Resurrección de Jesús", left: "isl", right: "cri", correct: "right" },
-];
-
-function Swipe({ onNext }: { onNext: () => void }) {
-  const [r, setR] = useState(0);
-  const [dx, setDx] = useState(0);
-  const [dragging, setDragging] = useState(false);
-  const [result, setResult] = useState<{ ok: boolean } | null>(null);
-  const [fly, setFly] = useState<0 | 1 | -1>(0);
-  const startX = useRef(0);
-  const done = r >= swipeRounds.length;
-  const round = swipeRounds[Math.min(r, swipeRounds.length - 1)]!;
-
-  function down(e: RPointerEvent) {
-    if (result || fly) return;
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    startX.current = e.clientX;
-    setDragging(true);
-  }
-  function move(e: RPointerEvent) { if (dragging) setDx(e.clientX - startX.current); }
-  function up() {
-    if (!dragging) return;
-    setDragging(false);
-    if (Math.abs(dx) < 90) { setDx(0); return; }
-    const side = dx > 0 ? "right" : "left";
-    const ok = side === round.correct;
-    setResult({ ok });
-    if (ok) {
-      setFly(dx > 0 ? 1 : -1);
-      setTimeout(() => { setR((x) => x + 1); setDx(0); setFly(0); setResult(null); }, 450);
-    } else {
-      setDx(0);
-      setTimeout(() => setResult(null), 1100);
-    }
-  }
-
-  if (done) {
-    return (
-      <div className="py-10 text-center">
-        <h2 className="mt-3 animate-pop text-3xl font-black">¡Deslizaste todo bien!</h2>
-        <Button size="lg" className="mt-6 w-full" onClick={onNext}>Continuar</Button>
-      </div>
-    );
-  }
-  const x = fly ? fly * 700 : dx;
-  const behind = swipeRounds.slice(r + 1, r + 3);
-  return (
-    <div className="select-none">
-      <h2 className="text-2xl font-bold">Desliza hacia la religión correcta</h2>
-      <p className="text-muted-foreground">Desliza la tarjeta hacia la opción correcta. ({r + 1}/{swipeRounds.length})</p>
-      <div className="mt-6 flex justify-between gap-2 font-display font-bold">
-        <span className={cn("flex items-center gap-2 rounded-full border-2 px-3 py-2 transition-all", dx < -40 && "scale-105 border-primary bg-primary/10 text-primary")}>
-          ← <ReligionBadge k={round.left} size="sm" /> {R[round.left].name}
-        </span>
-        <span className={cn("flex items-center gap-2 rounded-full border-2 px-3 py-2 transition-all", dx > 40 && "scale-105 border-primary bg-primary/10 text-primary")}>
-          {R[round.right].name} <ReligionBadge k={round.right} size="sm" /> →
-        </span>
-      </div>
-      <div className="relative mx-auto mt-8 h-72 w-64">
-        {behind.map((b, j) => (
-          <div
-            key={b.card}
-            className="card-chunky absolute inset-0 flex items-center justify-center p-6 text-center font-display text-2xl font-black text-transparent transition-transform duration-300"
-            style={{ transform: `translateY(${(j + 1) * 14}px) scale(${1 - (j + 1) * 0.06})`, zIndex: 5 - j }}
-          >
-            {b.card}
-          </div>
-        )).reverse()}
-        <div
-          key={r}
-          data-testid="swipe-card"
-          onPointerDown={down}
-          onPointerMove={move}
-          onPointerUp={up}
-          onPointerCancel={up}
-          className={cn(
-            "card-chunky absolute inset-0 z-10 flex cursor-grab touch-none items-center justify-center p-6 text-center font-display text-3xl font-black active:cursor-grabbing",
-            result && (result.ok ? "border-green bg-accent" : "border-destructive bg-destructive/10"),
-          )}
-          style={{
-            transform: `translateX(${x}px) rotate(${x / 14}deg)`,
-            transition: dragging ? "none" : "transform 0.45s cubic-bezier(.2,.9,.3,1.1)",
-          }}
-        >
-          {round.card}
-        </div>
-      </div>
-      {result && <Feedback ok={result.ok} text={result.ok ? undefined : "Intenta hacia el otro lado."} />}
-    </div>
-  );
-}
+export { Test as OddOne, Discard as Swipe } from "./ReligionsGames";
 
 function Quick({ onNext }: { onNext: () => void }) {
   return (
@@ -495,16 +387,19 @@ function Quick({ onNext }: { onNext: () => void }) {
 function Final({ onNext }: { onNext: () => void }) {
   return (
     <div className="text-center">
-      <div className="animate-pop text-7xl">🔥</div>
-      <h2 className="mt-3 text-3xl font-bold">¿Qué descubriste?</h2>
-      <div className="card-chunky mt-6 space-y-3 p-5 text-left text-lg">
-        <p>Las religiones pueden compartir algunas ideas, pero no todas creen lo mismo.</p>
-        <p>Sus respuestas sobre Dios, Jesús, la salvación y la vida después de la muerte pueden ser muy diferentes.</p>
-        <p>Por eso, entender el cristianismo también significa preguntarnos:</p>
-        <p className="font-display text-2xl font-bold text-flame">¿Quién es Jesús realmente?</p>
+      <h2 className="text-3xl font-black">¿Qué descubriste?</h2>
+      <div className="mt-6 space-y-4 rounded-3xl bg-card p-6 text-left text-lg leading-relaxed shadow-[var(--shadow-soft)]">
+        <p>El cristianismo no se sostiene simplemente en una serie de enseñanzas o reglas. Se sostiene en una persona: <b className="font-black text-primary">Jesucristo</b>.</p>
+        <p>Mientras otras religiones pueden reconocer a Jesús como profeta, maestro o figura espiritual, el cristianismo afirma algo mucho más radical:</p>
       </div>
-      <div className="mt-4 font-extrabold text-gold">+20 XP</div>
-      <Button size="lg" className="mt-6 w-full" onClick={onNext}>Siguiente lección →</Button>
+      <div className="mt-4 animate-pop rounded-3xl bg-primary p-6 text-primary-foreground">
+        <ReligionBadge k="cri" size="lg" />
+        <p className="mt-3 text-2xl font-black leading-snug">Jesús es el Hijo de Dios, el Salvador y el único camino hacia el Padre.</p>
+      </div>
+      <p className="mt-6 text-lg">Por eso, entender el cristianismo comienza con una pregunta fundamental:</p>
+      <p className="mt-3 text-4xl font-black text-secondary">¿Quién es Jesús para ti?</p>
+      <div className="mt-6 font-extrabold text-gold">+20 XP</div>
+      <Button size="lg" className="mt-4 w-full" onClick={onNext}>Siguiente lección →</Button>
     </div>
   );
 }
