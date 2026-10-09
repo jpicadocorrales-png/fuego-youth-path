@@ -6,4 +6,5 @@
 - [x] Arreglar arrastrar y soltar
 - [x] Deslizar como pila de tarjetas
 - [x] Quitar "Encuentra las parejas"
-- [ ] Contenido completo de la Lección 02 (pendiente: texto del usuario)
+- [x] Curso Fundamentos (8 lecciones), test de 5 preguntas, actividad Descartar, pantalla final
+- [ ] Contenido de las lecciones 2–8 (pendiente: texto del usuario)
