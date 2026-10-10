@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Test as OddOne, Discard as Swipe } from "./ReligionsGames";
-import { Check, X } from "lucide-react";
+import { ArrowLeft, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/AppShell";
 import { createPortal } from "react-dom";
@@ -25,7 +25,7 @@ const flipText: Record<RK, ReactNode> = {
   bud: <>Se centra en comprender y <b>superar el sufrimiento</b> mediante enseñanzas como las <b>Cuatro Nobles Verdades</b> y el <b>Noble Camino Óctuple</b>. No se basa en la adoración de un Dios creador como elemento central.</>,
 };
 
-const STEPS = ["intro", "explore", "who", "noticed", "compare", "drag", "odd", "swipe", "quick", "final"] as const;
+const STEPS = ["intro", "explore", "who", "noticed", "compare", "drag", "odd", "swipe", "final"] as const;
 
 type Props = { onComplete: () => void; onNext: () => void; onExit: () => void };
 
@@ -37,13 +37,14 @@ export function ReligionsLesson({ onComplete, onNext, onExit }: Props) {
     if (step === "final") onComplete();
     window.scrollTo({ top: 0 });
   }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
-  const testing = i >= 5 && i < 9;
+  const testing = i >= 5 && i < 8;
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <div className="mx-auto flex w-full max-w-2xl items-center gap-4 p-5">
-        <button onClick={onExit} aria-label="Salir"><X className="size-7 text-muted-foreground" /></button>
+        <button onClick={() => (i > 0 ? setI(i - 1) : onExit())} aria-label="Atrás"><ArrowLeft className="size-7 text-muted-foreground" /></button>
         <ProgressBar value={(i / (STEPS.length - 1)) * 100} />
+        <button onClick={onExit} aria-label="Salir"><X className="size-7 text-muted-foreground" /></button>
       </div>
       <div className="mx-auto w-full max-w-2xl px-5 text-xs font-extrabold uppercase tracking-widest text-flame">
         {step === "final" ? "Lección completada" : testing ? "Fase de prueba" : "Fase de aprendizaje"}
@@ -57,7 +58,6 @@ export function ReligionsLesson({ onComplete, onNext, onExit }: Props) {
         {step === "drag" && <DragDrop onNext={next} />}
         {step === "odd" && <OddOne onNext={next} />}
         {step === "swipe" && <Swipe onNext={next} />}
-        {step === "quick" && <Quick onNext={next} />}
         {step === "final" && <Final onNext={onNext} />}
       </div>
     </div>
@@ -221,7 +221,9 @@ const compareRows: { label: string; key: string; highlight?: boolean; vals: Reco
 ];
 
 function Compare({ onNext }: { onNext: () => void }) {
-  const [tab, setTab] = useState("jesus");
+  const [tab, setTab] = useState(compareRows[0]!.key);
+  const [seen, setSeen] = useState<Set<string>>(() => new Set([compareRows[0]!.key]));
+  const hint = compareRows.find((r) => !seen.has(r.key))?.key;
   const row = compareRows.find((r) => r.key === tab)!;
   return (
     <div>
@@ -230,8 +232,8 @@ function Compare({ onNext }: { onNext: () => void }) {
         {compareRows.map((r) => (
           <button
             key={r.key}
-            onClick={() => setTab(r.key)}
-            className={cn("rounded-xl border-2 px-3 py-2 text-sm font-extrabold", tab === r.key && (r.highlight ? "border-flame bg-flame text-primary-foreground" : "border-secondary bg-secondary/10 text-secondary"))}
+            onClick={() => { setTab(r.key); setSeen((x) => new Set(x).add(r.key)); }}
+            className={cn("rounded-xl border-2 px-3 py-2 text-sm font-extrabold", hint === r.key && "animate-floaty border-primary text-primary", tab === r.key && (r.highlight ? "border-flame bg-flame text-primary-foreground" : "border-secondary bg-secondary/10 text-secondary"))}
           >
             {r.highlight && "⭐ "}{r.label}
           </button>
@@ -368,21 +370,6 @@ function DragDrop({ onNext }: { onNext: () => void }) {
   );
 }
 
-
-function Quick({ onNext }: { onNext: () => void }) {
-  return (
-    <ChoiceRounds
-      title="🔥 Ronda rápida"
-      onNext={onNext}
-      rounds={[
-        { prompt: "CORÁN", options: ["Cristianismo", "Islam", "Judaísmo"], correct: 1 },
-        { prompt: "GRACIA", options: ["Cristianismo", "Hinduismo", "Budismo"], correct: 0 },
-        { prompt: "NOBLE CAMINO ÓCTUPLE", options: ["Islam", "Budismo", "Judaísmo"], correct: 1 },
-        { prompt: "TORÁ", options: ["Judaísmo", "Cristianismo", "Islam"], correct: 0 },
-      ]}
-    />
-  );
-}
 
 function Final({ onNext }: { onNext: () => void }) {
   return (

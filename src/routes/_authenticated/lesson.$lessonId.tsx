@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { X } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import { ProgressBar } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -106,8 +106,15 @@ function LessonPlayer() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <div className="mx-auto flex w-full max-w-2xl items-center gap-4 p-5">
-        <Link to="/courses/$courseId" params={{ courseId: lesson.course_id }} aria-label="Salir"><X className="size-7 text-muted-foreground" /></Link>
+        <button
+          aria-label="Atrás"
+          onClick={() => {
+            if (step < 0) { navigate({ to: "/courses/$courseId", params: { courseId: lesson.course_id } }); return; }
+            setStep(step - 1); setPicked(null); setChecked(false);
+          }}
+        ><ArrowLeft className="size-7 text-muted-foreground" /></button>
         <ProgressBar value={total ? ((step + (checked ? 1 : 0)) / total) * 100 : 0} />
+        <Link to="/courses/$courseId" params={{ courseId: lesson.course_id }} aria-label="Salir"><X className="size-7 text-muted-foreground" /></Link>
       </div>
 
       <div className="mx-auto w-full max-w-2xl flex-1 px-5">
