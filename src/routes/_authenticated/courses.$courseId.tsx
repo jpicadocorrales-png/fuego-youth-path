@@ -1,16 +1,22 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Check, Lock, Globe, Cross, Sun, Bird, HeartCrack, Gift, HandHeart, Church, BookOpen, type LucideIcon } from "lucide-react";
+import { Check, Lock, BookOpen } from "lucide-react";
+import imgReligiones from "@/assets/lessons/religiones.jpg";
+import imgJesus from "@/assets/lessons/jesus.jpg";
+import imgDios from "@/assets/lessons/dios.jpg";
+import imgEspiritu from "@/assets/lessons/espiritu.jpg";
+import imgPecado from "@/assets/lessons/pecado.jpg";
+import imgSalvacion from "@/assets/lessons/salvacion.jpg";
+import imgOracion from "@/assets/lessons/oracion.jpg";
+import imgIglesia from "@/assets/lessons/iglesia.jpg";
 
-const TONES = ["bg-primary/15 text-primary", "bg-pink/25 text-secondary", "bg-yellow/35 text-secondary-shade", "bg-green/15 text-green"];
-const ILL: [RegExp, LucideIcon][] = [
-  [/religi/i, Globe], [/jes[uú]s/i, Cross], [/esp[ií]ritu/i, Bird], [/^dios/i, Sun],
-  [/pecado/i, HeartCrack], [/salvaci/i, Gift], [/oraci/i, HandHeart], [/iglesia/i, Church],
+const ILL: [RegExp, string][] = [
+  [/religi/i, imgReligiones], [/jes[uú]s/i, imgJesus], [/esp[ií]ritu/i, imgEspiritu], [/^dios/i, imgDios],
+  [/pecado/i, imgPecado], [/salvaci/i, imgSalvacion], [/oraci/i, imgOracion], [/iglesia/i, imgIglesia],
 ];
-function illustrationFor(title: string, i: number) {
-  const icon = ILL.find(([re]) => re.test(title))?.[1] ?? BookOpen;
-  return { icon, tone: TONES[i % TONES.length]! };
+function illustrationFor(title: string) {
+  return ILL.find(([re]) => re.test(title))?.[1];
 }
 import { AppShell } from "@/components/AppShell";
 import { courseColor, useCourses } from "@/lib/app-data";
@@ -83,27 +89,29 @@ function CoursePath() {
             const p = pts[i]!;
             const isNext = i === nextIdx;
             const locked = !l.done && !isNext;
-            const ill = illustrationFor(l.title, i);
-            const Icon = ill.icon;
+            const img = illustrationFor(l.title);
             const node = (
               <div
                 className={cn(
-                  "relative flex items-center justify-center rounded-full shadow-[var(--shadow-soft)] transition-transform",
-                  ill.tone,
-                  isNext ? "size-20 ring-4 ring-primary ring-offset-4 ring-offset-card hover:scale-105" : "size-[4.5rem]",
+                  "relative flex items-center justify-center rounded-full bg-cream shadow-[var(--shadow-soft)] transition-transform",
+                  isNext ? "size-24 ring-4 ring-primary ring-offset-4 ring-offset-card hover:scale-105" : "size-20",
                   l.done && "ring-4 ring-green ring-offset-2 ring-offset-card",
-                  locked && "cursor-not-allowed opacity-45 grayscale",
+                  locked && "cursor-not-allowed opacity-60 grayscale",
                 )}
               >
-                <Icon className={isNext ? "!size-10" : "!size-9"} strokeWidth={1.8} />
+                {img ? (
+                  <img src={img} alt="" width={816} height={816} loading="lazy" className="size-full rounded-full object-cover" />
+                ) : (
+                  <BookOpen className="!size-9 text-primary" />
+                )}
                 {l.done && (
                   <span className="absolute -right-1.5 -top-1.5 flex size-7 items-center justify-center rounded-full bg-green text-primary-foreground ring-2 ring-card">
                     <Check className="!size-4" strokeWidth={3.5} />
                   </span>
                 )}
                 {locked && (
-                  <span className="absolute -right-1 -top-1 flex size-6 items-center justify-center rounded-full bg-muted text-muted-foreground ring-2 ring-card">
-                    <Lock className="!size-3" />
+                  <span className="absolute -right-1 -top-1 flex size-7 items-center justify-center rounded-full bg-foreground text-background ring-2 ring-card">
+                    <Lock className="!size-3.5" />
                   </span>
                 )}
               </div>
@@ -132,7 +140,7 @@ function CoursePath() {
                     labelLeft ? "right-full mr-4 text-right" : "left-full ml-4",
                   )}
                 >
-                  <span className={cn("block text-base font-extrabold", locked ? "text-muted-foreground" : "text-foreground")}>{l.title}</span>
+                  {!locked && <span className="block text-base font-extrabold text-foreground">{l.title}</span>}
                   {isNext && <span className="mt-1 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-bold text-primary">Continuar →</span>}
                 </div>
               </div>
