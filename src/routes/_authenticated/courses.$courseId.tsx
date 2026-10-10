@@ -1,7 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Check, Lock } from "lucide-react";
+import { Check, Lock, Globe, Cross, Sun, Bird, HeartCrack, Gift, HandHeart, Church, BookOpen, type LucideIcon } from "lucide-react";
+
+const TONES = ["bg-primary/15 text-primary", "bg-pink/25 text-secondary", "bg-yellow/35 text-secondary-shade", "bg-green/15 text-green"];
+const ILL: [RegExp, LucideIcon][] = [
+  [/religi/i, Globe], [/jes[uú]s/i, Cross], [/esp[ií]ritu/i, Bird], [/^dios/i, Sun],
+  [/pecado/i, HeartCrack], [/salvaci/i, Gift], [/oraci/i, HandHeart], [/iglesia/i, Church],
+];
+function illustrationFor(title: string, i: number) {
+  const icon = ILL.find(([re]) => re.test(title))?.[1] ?? BookOpen;
+  return { icon, tone: TONES[i % TONES.length]! };
+}
 import { AppShell } from "@/components/AppShell";
 import { courseColor, useCourses } from "@/lib/app-data";
 import { cn } from "@/lib/utils";
@@ -62,47 +72,38 @@ function CoursePath() {
         </div>
       </div>
 
-      <div className="relative mx-auto mt-6 overflow-hidden rounded-[2rem] bg-cream" style={{ maxWidth: W + 40 }}>
-        {/* map texture */}
-        <svg className="pointer-events-none absolute inset-0 h-full w-full text-foreground/10" aria-hidden>
-          <defs>
-            <pattern id="map-dots" width="22" height="22" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1.6" fill="currentColor" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#map-dots)" />
-        </svg>
-        {pts.map((p, i) => (
-          <span
-            key={`d${i}`}
-            aria-hidden
-            className={cn("pointer-events-none absolute rounded-full opacity-40 animate-floaty", i % 3 === 0 ? "bg-yellow" : i % 3 === 1 ? "bg-pink" : "bg-secondary")}
-            style={{ width: 10 + (i % 3) * 6, height: 10 + (i % 3) * 6, top: p.y + 40, left: p.x > W / 2 ? 24 : W - 10, animationDelay: `${i * 0.4}s` }}
-          />
-        ))}
+      <div className="relative mx-auto mt-6 rounded-[2rem] bg-card" style={{ maxWidth: W + 40 }}>
         <div className="relative mx-auto" style={{ width: W, height }}>
           <svg className="absolute inset-0" width={W} height={height} aria-hidden>
-            <path d={pathD} fill="none" className="stroke-card" strokeWidth={26} strokeLinecap="round" />
-            <path d={pathD} fill="none" className="stroke-muted-foreground/40" strokeWidth={4} strokeDasharray="2 14" strokeLinecap="round" />
-            {doneCount > 0 && <path d={walked} fill="none" className="stroke-primary" strokeWidth={8} strokeLinecap="round" />}
+            <path d={pathD} fill="none" className="stroke-border" strokeWidth={22} strokeLinecap="round" />
+            <path d={pathD} fill="none" className="stroke-background" strokeWidth={18} strokeLinecap="round" />
+            {doneCount > 0 && <path d={walked} fill="none" className="stroke-green/40" strokeWidth={8} strokeLinecap="round" />}
           </svg>
           {course.lessons.map((l, i) => {
             const p = pts[i]!;
             const isNext = i === nextIdx;
             const locked = !l.done && !isNext;
+            const ill = illustrationFor(l.title, i);
+            const Icon = ill.icon;
             const node = (
               <div
                 className={cn(
-                  "relative flex items-center justify-center rounded-full font-black transition-transform",
-                  l.done && "size-16 bg-green text-primary-foreground shadow-[0_5px_0_oklch(0.42_0.12_155)]",
-                  isNext && "size-20 bg-primary text-3xl text-primary-foreground shadow-[0_6px_0_var(--color-primary-shade)] ring-8 ring-primary/20 hover:scale-105",
-                  locked && "size-16 cursor-not-allowed bg-muted text-2xl text-muted-foreground/70 shadow-[0_4px_0_var(--color-border)]",
+                  "relative flex items-center justify-center rounded-full shadow-[var(--shadow-soft)] transition-transform",
+                  ill.tone,
+                  isNext ? "size-20 ring-4 ring-primary ring-offset-4 ring-offset-card hover:scale-105" : "size-[4.5rem]",
+                  l.done && "ring-4 ring-green ring-offset-2 ring-offset-card",
+                  locked && "cursor-not-allowed opacity-45 grayscale",
                 )}
               >
-                {l.done ? <Check className="!size-8" strokeWidth={3.5} /> : locked ? "?" : i + 1}
-                {!isNext && (
-                  <span className={cn("absolute -right-1 -top-1 flex size-7 items-center justify-center rounded-full text-xs font-black", l.done ? "bg-yellow text-foreground" : "bg-card text-muted-foreground")}>
-                    {locked ? <Lock className="!size-3.5" /> : i + 1}
+                <Icon className={isNext ? "!size-10" : "!size-9"} strokeWidth={1.8} />
+                {l.done && (
+                  <span className="absolute -right-1.5 -top-1.5 flex size-7 items-center justify-center rounded-full bg-green text-primary-foreground ring-2 ring-card">
+                    <Check className="!size-4" strokeWidth={3.5} />
+                  </span>
+                )}
+                {locked && (
+                  <span className="absolute -right-1 -top-1 flex size-6 items-center justify-center rounded-full bg-muted text-muted-foreground ring-2 ring-card">
+                    <Lock className="!size-3" />
                   </span>
                 )}
               </div>
@@ -110,11 +111,6 @@ function CoursePath() {
             const labelLeft = p.x > W / 2;
             return (
               <div key={l.id} className="absolute" style={{ left: p.x, top: p.y, transform: "translate(-50%, -50%)" }}>
-                {isNext && (
-                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 animate-bounce whitespace-nowrap rounded-full bg-foreground px-3 py-1 text-xs font-bold text-background">
-                    Continuar · Lección {i + 1}
-                  </div>
-                )}
                 <button
                   type="button"
                   aria-label={locked ? `Lección ${i + 1} bloqueada` : `Lección ${i + 1}: ${l.title}`}
@@ -132,21 +128,12 @@ function CoursePath() {
                 </button>
                 <div
                   className={cn(
-                    "absolute top-1/2 w-32 -translate-y-1/2 text-sm font-bold leading-tight",
+                    "absolute top-1/2 w-28 -translate-y-1/2 leading-tight",
                     labelLeft ? "right-full mr-4 text-right" : "left-full ml-4",
-                    locked ? "text-muted-foreground/60" : "text-foreground",
                   )}
                 >
-                  {locked ? (
-                    <span className="inline-block rounded-full bg-muted px-3 py-1 text-base">? ? ?</span>
-                  ) : (
-                    <>
-                      <span className="block text-xs font-semibold text-muted-foreground">
-                        {l.done ? "Completada · 100%" : "Disponible"}
-                      </span>
-                      {l.title}
-                    </>
-                  )}
+                  <span className={cn("block text-base font-extrabold", locked ? "text-muted-foreground" : "text-foreground")}>{l.title}</span>
+                  {isNext && <span className="mt-1 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-bold text-primary">Continuar →</span>}
                 </div>
               </div>
             );
