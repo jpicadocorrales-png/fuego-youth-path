@@ -56,7 +56,7 @@ export function Test({ onNext }: { onNext: () => void }) {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-black">Selección múltiple</h2>
+        <h2 className="text-2xl font-black">Selección única</h2>
         <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-extrabold text-primary">{n + 1} de {testQuestions.length}</span>
       </div>
       <div key={n} className="animate-pop">

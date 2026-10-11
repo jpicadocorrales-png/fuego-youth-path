@@ -122,7 +122,7 @@ function CoursePath() {
                 <button
                   type="button"
                   aria-label={locked ? `Lección ${i + 1} bloqueada` : `Lección ${i + 1}: ${l.title}`}
-                  className={cn("block transition-transform duration-300", opening === l.id && "scale-125 opacity-0")}
+                  className={cn("block transition-transform duration-300", opening === l.id && "scale-110 animate-pulse")}
                   onClick={() => {
                     if (locked) {
                       toast(`Completa la lección ${i} para desbloquear esta etapa`, { icon: "🔒" });
