@@ -1,14 +1,16 @@
-# Welcome to your Lovable project
+# Fuego Youth Path
+
+Quiero una aplicacion para jóvenes en la que puedan tener cursos de la biblia y yo pueda darle seguimiento como administrador de sus cursos. Similar a duolingo, dinamico y con color y dinamica. Que tenga Home con estadisticas de los cursos, notificaciones y anuncios. Cursos: Porcentaje de avance del curso, sugerencias de proximos cursos. Insignias: Premios por metas cumplidas del usuario. Configuraciones: Usuario, contrasenha, dark mode, preferencias.
 
 This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/60ed0432-2e22-47b7-9510-a167f256003d).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +22,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
