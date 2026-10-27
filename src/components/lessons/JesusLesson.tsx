@@ -63,9 +63,8 @@ function FlipCard({
 }) {
   const [open, setOpen] = useState(false);
   const flip = () => {
-    if (open) return;
-    setOpen(true);
-    onReveal();
+    setOpen(!open);
+    if (!open) onReveal();
   };
   return (
     <div
