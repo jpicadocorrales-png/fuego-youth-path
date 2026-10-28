@@ -3,7 +3,8 @@ import { ArrowLeft, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/AppShell";
 import { cn } from "@/lib/utils";
-import { PROPHECIES, I_AM_STATEMENTS, I_AM_REVELATION } from "./jesusContent";
+import { I_AM_STATEMENTS, I_AM_REVELATION } from "./jesusContent";
+import { ProphecyScroll } from "./ProphecyScroll";
 
 const STEPS = ["intro", "prophecies", "declarations", "final"] as const;
 
@@ -44,7 +45,7 @@ export function JesusLesson({ onComplete, onNext, onExit }: Props) {
       </div>
       <div key={step} className="mx-auto w-full max-w-2xl flex-1 animate-pop px-5 pb-10 pt-3">
         {step === "intro" && <Intro onNext={next} />}
-        {step === "prophecies" && <Prophecies onNext={next} />}
+        {step === "prophecies" && <ProphecyScroll onNext={next} />}
         {step === "declarations" && <Declarations onNext={next} />}
         {step === "final" && <Final onNext={onNext} />}
       </div>
@@ -107,47 +108,6 @@ function Intro({ onNext }: { onNext: () => void }) {
       </div>
       <Button size="lg" className="mt-6 w-full" onClick={onNext}>
         Descubrir las profecías
-      </Button>
-    </div>
-  );
-}
-
-function Prophecies({ onNext }: { onNext: () => void }) {
-  const [seen, setSeen] = useState<Set<string>>(new Set());
-  const mark = (id: string) => setSeen((s) => new Set(s).add(id));
-  const total = PROPHECIES.length;
-  return (
-    <div>
-      <h2 className="text-2xl font-bold">Profecías cumplidas</h2>
-      <p className="text-muted-foreground">
-        Toca cada tarjeta para descubrir su cumplimiento ({seen.size}/{total})
-      </p>
-      <div className="mt-4 space-y-3">
-        {PROPHECIES.map((p) => (
-          <FlipCard
-            key={p.id}
-            onReveal={() => mark(p.id)}
-            front={
-              <>
-                <div className="text-xs font-extrabold uppercase text-secondary">
-                  Antiguo Testamento · {p.ot.ref}
-                </div>
-                <p className="mt-2 text-lg font-semibold">{p.ot.text}</p>
-              </>
-            }
-            back={
-              <>
-                <div className="text-xs font-extrabold uppercase text-primary">
-                  Cumplida en · {p.nt.ref}
-                </div>
-                <p className="mt-2 text-lg font-semibold">{p.nt.text}</p>
-              </>
-            }
-          />
-        ))}
-      </div>
-      <Button size="lg" className="mt-6 w-full" disabled={seen.size < total} onClick={onNext}>
-        {seen.size < total ? `Descubre ${total - seen.size} más` : "Continuar"}
       </Button>
     </div>
   );
