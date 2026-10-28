@@ -18,27 +18,53 @@ const WOOD = "#b8652f";
 const SKIN = "#e9b48c";
 const SILVER = "#d5d3e2";
 
-// La Virgen con el niño en brazos (64×64): se usa en el símbolo y, ampliada, en la escena de cumplimiento.
+// La Virgen arrodillada con el niño envuelto en brazos (dibujada en un área de 200×200).
+// Se usa reducida en el símbolo y a tamaño completo en la escena de cumplimiento.
+const MANTLE = "#a896ff";
+const MANTLE_SHADE = "#9580ff";
+const VEIL_SHADE = "#e6dccd";
+const FACE = "#f2b896";
+const HAIR = "#8a4a22";
+const KNEES = "#f08a6a";
+
 function VirginWithChild() {
   return (
     <>
-      <path d="M32 5c-11 0-17 9-17 19v5c-6 7-9 18-9 35h52c0-17-3-28-9-35v-5c0-10-6-19-17-19z" fill={V} />
-      <path d="M32 10c-8 0-12 6-12 13 0 6 2 10 5 12h14c3-2 5-6 5-12 0-7-4-13-12-13z" fill={CR} />
-      <ellipse cx="32" cy="22" rx="7" ry="8" fill={SKIN} />
-      <path d="M28.5 23q1.5 1.2 3 0M33 23q1.5 1.2 3 0" fill="none" stroke={INK} strokeWidth="1" strokeLinecap="round" />
-      <path d="M22 38c-3 8-5 16-5 26h30c0-10-2-18-5-26z" fill={V2} />
-      <g transform="rotate(-14 32 44)">
-        <ellipse cx="31" cy="44" rx="14" ry="7.5" fill="#fff6ea" stroke="#c9bfd6" strokeWidth="1.2" />
-        <path d="M21 42.5c5 2.5 11 2.5 16 0" fill="none" stroke="#c9bfd6" strokeWidth="1.2" />
-      </g>
-      <circle cx="45" cy="39" r="5.5" fill={SKIN} />
-      <path d="M41.5 36c1.5-2 5-2.5 7-.5" fill="none" stroke={WOOD} strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M44 40q1 .8 2 0" fill="none" stroke={INK} strokeWidth="0.9" strokeLinecap="round" />
-      <path d="M16 38c-2 7 1 13 9 14l16-1" fill="none" stroke="#4a26d6" strokeWidth="7" strokeLinecap="round" />
-      <circle cx="42" cy="50.5" r="3.4" fill={SKIN} />
-      <ellipse cx="27" cy="40.5" rx="3.6" ry="3" fill={SKIN} />
+      <path d="M84 40a24 24 0 0 1 44-8" fill="none" stroke={Y} strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M88 22l-4-5M98 16l-1-6M110 15l1-6M121 19l4-5M130 27l5-3" stroke={Y} strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M58 160c12-7 34-9 54-7 18 1 34 3 40 9 4 5 1 12-7 14-30 5-64 5-84 1-9-2-10-11-3-17z" fill={KNEES} />
+      <path d="M92 72c16-5 32-1 42 10 10 12 13 32 15 52 1 10 2 20 1 28-30-4-62-4-92 0-2-22 2-44 11-60 6-12 13-24 23-30z" fill={MANTLE} />
+      <path d="M74 118c-2 14-3 28-2 42M140 100c4 16 6 34 6 54" fill="none" stroke={V2} strokeWidth="1.6" strokeLinecap="round" />
+      {/* Velo */}
+      <path d="M102 22c-14 0-24 10-26 26-2 16-6 32-14 50 12 8 28 10 40 6 0-12 2-24 6-32 12 0 22-8 24-22 3-18-8-28-30-28z" fill="#fff6ea" />
+      <path d="M76 52c-2 14-6 30-12 44 6 4 14 6 22 6" fill="none" stroke={VEIL_SHADE} strokeWidth="2" strokeLinecap="round" />
+      {/* Rostro inclinado hacia el niño */}
+      <ellipse cx="111" cy="55" rx="12.5" ry="15.5" fill={FACE} transform="rotate(-14 111 55)" />
+      <path d="M97 52c-1-11 7-18 16-17 8 1 13 8 12 15-4-5-9-7-14-6-5 1-9 4-14 8z" fill={HAIR} />
+      <path d="M103 57q2.5 2 5 0M113.5 55q2.5 2 5 0" fill="none" stroke={INK} strokeWidth="1.3" strokeLinecap="round" />
+      <circle cx="103" cy="62" r="2.6" fill={P} opacity="0.45" />
+      <circle cx="119" cy="60" r="2.6" fill={P} opacity="0.45" />
+      <path d="M109 65q3 2 6-.5" fill="none" stroke={INK} strokeWidth="1.2" strokeLinecap="round" />
+      {/* El niño envuelto */}
+      <path d="M104 98a16 16 0 0 1 28-2" fill="none" stroke={Y} strokeWidth="2" strokeLinecap="round" />
+      <ellipse cx="106" cy="120" rx="17" ry="27" fill="#fff" stroke={VEIL_SHADE} strokeWidth="1.6" transform="rotate(-38 106 120)" />
+      <path d="M92 118c8 4 18 2 24-6M94 130c8 3 16 1 22-6M100 140c6 1 12-1 16-6" fill="none" stroke={VEIL_SHADE} strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="118" cy="103" r="9.5" fill={FACE} />
+      <path d="M112 98c2-6 10-8 15-3 1 3 0 6-2 8-1-4-5-6-13-5z" fill={HAIR} />
+      <path d="M113.5 104q2 1.5 4 0" fill="none" stroke={INK} strokeWidth="1.1" strokeLinecap="round" />
+      <circle cx="113" cy="107" r="2" fill={P} opacity="0.45" />
+      {/* Brazos y manos que lo sostienen */}
+      <path d="M68 112c8 8 14 12 22 14" fill="none" stroke={MANTLE_SHADE} strokeWidth="11" strokeLinecap="round" />
+      <path d="M146 118c-10 6-18 9-27 10" fill="none" stroke={MANTLE_SHADE} strokeWidth="11" strokeLinecap="round" />
+      <ellipse cx="94" cy="127" rx="8" ry="4.2" fill={FACE} transform="rotate(-12 94 127)" />
+      <ellipse cx="117" cy="129" rx="8" ry="4.2" fill={FACE} transform="rotate(12 117 129)" />
     </>
   );
+}
+
+function Sparkle({ x, y, r }: { x: number; y: number; r: number }) {
+  const s = r / 5;
+  return <path d={`M${x} ${y - r}L${x + s} ${y - s}L${x + r} ${y}L${x + s} ${y + s}L${x} ${y + r}L${x - s} ${y + s}L${x - r} ${y}L${x - s} ${y - s}Z`} fill={Y} />;
 }
 
 const symbols: Record<SymbolId, ReactNode> = {
@@ -75,7 +101,11 @@ const symbols: Record<SymbolId, ReactNode> = {
       <path d="M4 56c5-4 9-4 14 0s9 4 14 0 9-4 14 0 9 4 14 0" fill="none" stroke={V} strokeWidth="3.5" strokeLinecap="round" />
     </>
   ),
-  "mother-baby": <VirginWithChild />,
+  "mother-baby": (
+    <g transform="translate(-7 -2) scale(0.37)">
+      <VirginWithChild />
+    </g>
+  ),
   "man-sword": (
     <>
       <circle cx="24" cy="15" r="7" fill={SKIN} />
@@ -314,8 +344,12 @@ const scenes: Record<string, ReactNode> = {
       </defs>
       <rect width="320" height="200" fill={CR} />
       <circle className="pr-pulse" cx="160" cy="100" r="96" fill="url(#pr-glow2)" />
-      <g transform="translate(67 14) scale(2.9)">
-        <circle cx="32" cy="20" r="21" fill="none" stroke={Y} strokeWidth="1.4" opacity="0.9" />
+      <g className="pr-twinkle"><Sparkle x={66} y={70} r={22} /></g>
+      <g className="pr-twinkle"><Sparkle x={254} y={76} r={22} /></g>
+      <Sparkle x={92} y={40} r={6} />
+      <Sparkle x={280} y={116} r={6} />
+      <Sparkle x={228} y={40} r={5} />
+      <g transform="translate(56 12)">
         <VirginWithChild />
       </g>
     </>
