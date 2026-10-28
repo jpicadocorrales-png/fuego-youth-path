@@ -52,7 +52,7 @@ export const PROPHECIES: Prophecy[] = [
     },
     prompt: "¿Qué señal anunció el profeta?",
     options: [
-      { id: "mother-baby", label: "Madre con su bebé" },
+      { id: "mother-baby", label: "Virgen con un bebé" },
       { id: "man-sword", label: "Hombre con espada" },
       { id: "temple", label: "Templo" },
     ],

@@ -18,6 +18,29 @@ const WOOD = "#b8652f";
 const SKIN = "#e9b48c";
 const SILVER = "#d5d3e2";
 
+// La Virgen con el niño en brazos (64×64): se usa en el símbolo y, ampliada, en la escena de cumplimiento.
+function VirginWithChild() {
+  return (
+    <>
+      <path d="M32 5c-11 0-17 9-17 19v5c-6 7-9 18-9 35h52c0-17-3-28-9-35v-5c0-10-6-19-17-19z" fill={V} />
+      <path d="M32 10c-8 0-12 6-12 13 0 6 2 10 5 12h14c3-2 5-6 5-12 0-7-4-13-12-13z" fill={CR} />
+      <ellipse cx="32" cy="22" rx="7" ry="8" fill={SKIN} />
+      <path d="M28.5 23q1.5 1.2 3 0M33 23q1.5 1.2 3 0" fill="none" stroke={INK} strokeWidth="1" strokeLinecap="round" />
+      <path d="M22 38c-3 8-5 16-5 26h30c0-10-2-18-5-26z" fill={V2} />
+      <g transform="rotate(-14 32 44)">
+        <ellipse cx="31" cy="44" rx="14" ry="7.5" fill="#fff6ea" stroke="#c9bfd6" strokeWidth="1.2" />
+        <path d="M21 42.5c5 2.5 11 2.5 16 0" fill="none" stroke="#c9bfd6" strokeWidth="1.2" />
+      </g>
+      <circle cx="45" cy="39" r="5.5" fill={SKIN} />
+      <path d="M41.5 36c1.5-2 5-2.5 7-.5" fill="none" stroke={WOOD} strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M44 40q1 .8 2 0" fill="none" stroke={INK} strokeWidth="0.9" strokeLinecap="round" />
+      <path d="M16 38c-2 7 1 13 9 14l16-1" fill="none" stroke="#4a26d6" strokeWidth="7" strokeLinecap="round" />
+      <circle cx="42" cy="50.5" r="3.4" fill={SKIN} />
+      <ellipse cx="27" cy="40.5" rx="3.6" ry="3" fill={SKIN} />
+    </>
+  );
+}
+
 const symbols: Record<SymbolId, ReactNode> = {
   "city-star": (
     <>
@@ -52,17 +75,7 @@ const symbols: Record<SymbolId, ReactNode> = {
       <path d="M4 56c5-4 9-4 14 0s9 4 14 0 9-4 14 0 9 4 14 0" fill="none" stroke={V} strokeWidth="3.5" strokeLinecap="round" />
     </>
   ),
-  "mother-baby": (
-    <>
-      <circle cx="30" cy="15" r="8" fill={SKIN} />
-      <path d="M19 17c0-9 22-9 22 0v6c-3-6-19-6-22 0z" fill={V} />
-      <path d="M16 58c0-22 6-34 14-34s14 12 14 34z" fill={V} />
-      <path d="M20 58c0-16 4-26 10-26s10 10 10 26z" fill={V2} />
-      <ellipse cx="33" cy="40" rx="11" ry="7" fill={CR} transform="rotate(-18 33 40)" />
-      <circle cx="40" cy="36" r="4.5" fill={SKIN} />
-      <path d="M22 42c4 4 12 4 18-2" fill="none" stroke={SKIN} strokeWidth="4" strokeLinecap="round" />
-    </>
-  ),
+  "mother-baby": <VirginWithChild />,
   "man-sword": (
     <>
       <circle cx="24" cy="15" r="7" fill={SKIN} />
@@ -301,14 +314,10 @@ const scenes: Record<string, ReactNode> = {
       </defs>
       <rect width="320" height="200" fill={CR} />
       <circle className="pr-pulse" cx="160" cy="100" r="96" fill="url(#pr-glow2)" />
-      <circle cx="152" cy="62" r="18" fill={SKIN} />
-      <path d="M128 66c0-30 48-30 48 0v14c-8-16-40-16-48 0z" fill={V} />
-      <path d="M116 196c0-60 16-104 36-104s36 44 36 104z" fill={V} />
-      <path d="M128 196c0-46 10-80 24-80s24 34 24 80z" fill={V2} />
-      <ellipse cx="164" cy="128" rx="26" ry="15" fill="#fff6ea" transform="rotate(-16 164 128)" />
-      <circle cx="182" cy="119" r="9" fill={SKIN} />
-      <path d="M132 136c12 10 32 10 50-4" fill="none" stroke={SKIN} strokeWidth="8" strokeLinecap="round" />
-      <circle cx="182" cy="119" r="15" fill="none" stroke={Y} strokeWidth="2.5" opacity="0.8" />
+      <g transform="translate(67 14) scale(2.9)">
+        <circle cx="32" cy="20" r="21" fill="none" stroke={Y} strokeWidth="1.4" opacity="0.9" />
+        <VirginWithChild />
+      </g>
     </>
   ),
   rey: (
