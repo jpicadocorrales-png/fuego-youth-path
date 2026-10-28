@@ -29,12 +29,12 @@ function sector(a0: number, r: number) {
 // Centro aproximado de cada tercio del pan, para que la pieza gire sobre sí misma.
 const centroid = (a0: number): Pt => ({ x: 22 * Math.cos(rad(a0 + 60)), y: 22 * Math.sin(rad(a0 + 60)) });
 
-export function BreadScene({ onDone }: SceneProps) {
+export function BreadScene({ onDone, solved = false }: SceneProps) {
   const svg = useRef<SVGSVGElement>(null);
-  const [placed, setPlaced] = useState([false, false, false]);
+  const [placed, setPlaced] = useState(() => [solved, solved, solved]);
   const [drag, setDrag] = useState<{ i: number; p: Pt } | null>(null);
   const [sel, setSel] = useState<number | null>(null);
-  const [complete, finish] = useFinish(onDone, 2000);
+  const [complete, finish] = useFinish(onDone, 2000, solved);
 
   const onPlate = (p: Pt) => ((p.x - PLATE.x) / PLATE.rx) ** 2 + ((p.y - PLATE.y) / PLATE.ry) ** 2 <= 1.25;
   function place(i: number) {
@@ -157,13 +157,13 @@ const LIGHT_WAY: Pt[] = [
 const LIGHT_PATH = densify(LIGHT_WAY, 8);
 const LIGHT_LAST = LIGHT_PATH.length - 1;
 
-export function LightScene({ onDone }: SceneProps) {
+export function LightScene({ onDone, solved = false }: SceneProps) {
   const svg = useRef<SVGSVGElement>(null);
-  const [lamp, setLamp] = useState<Pt>(LIGHT_PATH[0]!);
+  const [lamp, setLamp] = useState<Pt>(solved ? LIGHT_PATH[LIGHT_LAST]! : LIGHT_PATH[0]!);
   const [dragging, setDragging] = useState(false);
-  const [lit, setLit] = useState<Pt[]>([LIGHT_PATH[0]!]);
-  const [reach, setReach] = useState(0);
-  const [complete, finish] = useFinish(onDone, 2000);
+  const [lit, setLit] = useState<Pt[]>(solved ? LIGHT_PATH : [LIGHT_PATH[0]!]);
+  const [reach, setReach] = useState(solved ? LIGHT_LAST : 0);
+  const [complete, finish] = useFinish(onDone, 2000, solved);
 
   function advance(to: number) {
     const target = Math.min(to, LIGHT_LAST);
@@ -288,14 +288,14 @@ export function LightScene({ onDone }: SceneProps) {
 const ARCH = "M120 270V110A60 60 0 0 1 240 110V270Z";
 const DOOR = "M0 200V40A60 60 0 0 1 120 40V200Z";
 
-export function DoorScene({ onDone }: SceneProps) {
+export function DoorScene({ onDone, solved = false }: SceneProps) {
   const svg = useRef<SVGSVGElement>(null);
-  const [bolt, setBolt] = useState(1); // 1 = cerrado, 0 = abierto
-  const [unlocked, setUnlocked] = useState(false);
-  const [open, setOpen] = useState(0); // 0 = cerrada, 1 = abierta
+  const [bolt, setBolt] = useState(solved ? 0 : 1); // 1 = cerrado, 0 = abierto
+  const [unlocked, setUnlocked] = useState(solved);
+  const [open, setOpen] = useState(solved ? 1 : 0); // 0 = cerrada, 1 = abierta
   const [drag, setDrag] = useState<"bolt" | "door" | null>(null);
   const base = useRef(0);
-  const [complete, finish] = useFinish(onDone, 1700);
+  const [complete, finish] = useFinish(onDone, 1700, solved);
 
   function unlock() {
     setBolt(0);
@@ -475,11 +475,11 @@ function Sheep({ flip = false, walking = false, s = 1 }: { flip?: boolean; walki
   );
 }
 
-export function ShepherdScene({ onDone }: SceneProps) {
+export function ShepherdScene({ onDone, solved = false }: SceneProps) {
   const svg = useRef<SVGSVGElement>(null);
-  const [idx, setIdx] = useState(0);
+  const [idx, setIdx] = useState(solved ? SHEEP_LAST : 0);
   const [dragging, setDragging] = useState(false);
-  const [complete, finish] = useFinish(onDone, 2200);
+  const [complete, finish] = useFinish(onDone, 2200, solved);
 
   function moveTo(k: number) {
     const next = clamp(k, 0, SHEEP_LAST);

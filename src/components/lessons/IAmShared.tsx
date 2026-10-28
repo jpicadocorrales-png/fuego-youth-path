@@ -20,18 +20,20 @@ export const STONE2 = "#9a8db0";
 export const WOOD = "#b8652f";
 export const WOOD2 = "#8f4a22";
 
-export type SceneProps = { onDone: () => void };
+// `solved`: la escena ya se completó en esta sesión y se abre directamente en su estado final.
+export type SceneProps = { onDone: () => void; solved?: boolean };
 
 // Marca la escena como resuelta y avisa al terminar la animación de transformación.
-export function useFinish(onDone: () => void, delay: number) {
-  const [complete, setComplete] = useState(false);
+// Si la escena ya venía resuelta, empieza completa y no vuelve a avisar.
+export function useFinish(onDone: () => void, delay: number, solved = false) {
+  const [complete, setComplete] = useState(solved);
   const cb = useRef(onDone);
   cb.current = onDone;
   useEffect(() => {
-    if (!complete) return;
+    if (!complete || solved) return;
     const t = setTimeout(() => cb.current(), prefersReducedMotion() ? 0 : delay);
     return () => clearTimeout(t);
-  }, [complete, delay]);
+  }, [complete, delay, solved]);
   return [complete, () => setComplete(true)] as const;
 }
 
