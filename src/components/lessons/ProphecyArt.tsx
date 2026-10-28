@@ -27,37 +27,59 @@ const FACE = "#f2b896";
 const HAIR = "#8a4a22";
 const KNEES = "#f08a6a";
 
+// El pelo se recorta con la forma de cada cabeza para que siempre calce con ella.
 function VirginWithChild() {
   return (
     <>
-      <path d="M84 40a24 24 0 0 1 44-8" fill="none" stroke={Y} strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M88 22l-4-5M98 16l-1-6M110 15l1-6M121 19l4-5M130 27l5-3" stroke={Y} strokeWidth="2.5" strokeLinecap="round" />
+      <defs>
+        <clipPath id="pr-mary-head">
+          <ellipse cx="104" cy="58" rx="13" ry="15.5" />
+        </clipPath>
+        <clipPath id="pr-baby-head">
+          <circle cx="109" cy="108" r="9" />
+        </clipPath>
+      </defs>
       <path d="M58 160c12-7 34-9 54-7 18 1 34 3 40 9 4 5 1 12-7 14-30 5-64 5-84 1-9-2-10-11-3-17z" fill={KNEES} />
-      <path d="M92 72c16-5 32-1 42 10 10 12 13 32 15 52 1 10 2 20 1 28-30-4-62-4-92 0-2-22 2-44 11-60 6-12 13-24 23-30z" fill={MANTLE} />
-      <path d="M74 118c-2 14-3 28-2 42M140 100c4 16 6 34 6 54" fill="none" stroke={V2} strokeWidth="1.6" strokeLinecap="round" />
-      {/* Velo */}
-      <path d="M102 22c-14 0-24 10-26 26-2 16-6 32-14 50 12 8 28 10 40 6 0-12 2-24 6-32 12 0 22-8 24-22 3-18-8-28-30-28z" fill="#fff6ea" />
-      <path d="M76 52c-2 14-6 30-12 44 6 4 14 6 22 6" fill="none" stroke={VEIL_SHADE} strokeWidth="2" strokeLinecap="round" />
-      {/* Rostro inclinado hacia el niño */}
-      <ellipse cx="111" cy="55" rx="12.5" ry="15.5" fill={FACE} transform="rotate(-14 111 55)" />
-      <path d="M97 52c-1-11 7-18 16-17 8 1 13 8 12 15-4-5-9-7-14-6-5 1-9 4-14 8z" fill={HAIR} />
-      <path d="M103 57q2.5 2 5 0M113.5 55q2.5 2 5 0" fill="none" stroke={INK} strokeWidth="1.3" strokeLinecap="round" />
-      <circle cx="103" cy="62" r="2.6" fill={P} opacity="0.45" />
-      <circle cx="119" cy="60" r="2.6" fill={P} opacity="0.45" />
-      <path d="M109 65q3 2 6-.5" fill="none" stroke={INK} strokeWidth="1.2" strokeLinecap="round" />
-      {/* El niño envuelto */}
-      <path d="M104 98a16 16 0 0 1 28-2" fill="none" stroke={Y} strokeWidth="2" strokeLinecap="round" />
-      <ellipse cx="106" cy="120" rx="17" ry="27" fill="#fff" stroke={VEIL_SHADE} strokeWidth="1.6" transform="rotate(-38 106 120)" />
-      <path d="M92 118c8 4 18 2 24-6M94 130c8 3 16 1 22-6M100 140c6 1 12-1 16-6" fill="none" stroke={VEIL_SHADE} strokeWidth="1.4" strokeLinecap="round" />
-      <circle cx="118" cy="103" r="9.5" fill={FACE} />
-      <path d="M112 98c2-6 10-8 15-3 1 3 0 6-2 8-1-4-5-6-13-5z" fill={HAIR} />
-      <path d="M113.5 104q2 1.5 4 0" fill="none" stroke={INK} strokeWidth="1.1" strokeLinecap="round" />
-      <circle cx="113" cy="107" r="2" fill={P} opacity="0.45" />
+      <path d="M76 96c18-6 40-6 58 0 10 14 14 34 16 54 1 8 1 14 0 16-30-4-64-4-94 0-1-24 4-48 20-70z" fill={MANTLE} />
+      <path d="M74 122c-3 14-4 28-3 40M140 112c4 14 6 30 6 48" fill="none" stroke={V2} strokeWidth="1.6" strokeLinecap="round" />
+
+      {/* Cabeza de María, inclinada hacia el niño */}
+      <g transform="rotate(9 104 84)">
+        <path d="M76 54a28 28 0 0 1 56 0" fill="none" stroke={Y} strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M82 31l-4-4M93 24l-2-5M104 21v-5M115 24l2-5M126 31l4-4" stroke={Y} strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M90 70h28v32H90z" fill={MANTLE} />
+        <path d="M82 56a22 22 0 0 1 44 0v16c2 10 6 18 12 26-10 4-20 4-28 0 4-8 6-18 6-30h-24c0 12 2 22 6 30-8 4-18 4-28 0 6-8 10-16 12-26z" fill="#fff6ea" />
+        <rect x="99" y="68" width="10" height="12" rx="4" fill={FACE} />
+        <path d="M94 80q10 6 20 0" fill="none" stroke={MANTLE_SHADE} strokeWidth="3" strokeLinecap="round" />
+        <ellipse cx="104" cy="58" rx="15.5" ry="18" fill="none" stroke={VEIL_SHADE} strokeWidth="1.4" />
+        <ellipse cx="104" cy="58" rx="13" ry="15.5" fill={FACE} />
+        <g clipPath="url(#pr-mary-head)">
+          <path d="M86 64q8-14 18-12 10-2 18 12V36H86z" fill={HAIR} />
+        </g>
+        <path d="M97 62q2.5 2 5 0M106 62q2.5 2 5 0" fill="none" stroke={INK} strokeWidth="1.3" strokeLinecap="round" />
+        <circle cx="96" cy="67" r="2.4" fill={P} opacity="0.45" />
+        <circle cx="112" cy="67" r="2.4" fill={P} opacity="0.45" />
+        <path d="M101.5 69q2.5 1.8 5 0" fill="none" stroke={INK} strokeWidth="1.2" strokeLinecap="round" />
+      </g>
+
+      {/* El niño envuelto: su cabeza asoma por el extremo de la manta */}
+      <path d="M95 100a15 15 0 0 1 26-6" fill="none" stroke={Y} strokeWidth="2" strokeLinecap="round" transform="rotate(20 109 108)" />
+      <ellipse cx="102" cy="126" rx="16" ry="27" fill="#fff" stroke={VEIL_SHADE} strokeWidth="1.4" transform="rotate(-30 102 126)" />
+      <circle cx="109" cy="108" r="12.5" fill="#fff" stroke={VEIL_SHADE} strokeWidth="1.4" />
+      <path d="M90 128c8 3 16 0 22-7M94 140c7 2 14-1 19-7" fill="none" stroke={VEIL_SHADE} strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="109" cy="108" r="9" fill={FACE} />
+      <g clipPath="url(#pr-baby-head)">
+        <path d="M98 104q10-6 22 2V94H98z" fill={HAIR} />
+      </g>
+      <path d="M104.5 110q1.8 1.4 3.6 0M110.5 110q1.8 1.4 3.6 0" fill="none" stroke={INK} strokeWidth="1" strokeLinecap="round" />
+      <circle cx="104" cy="113" r="1.8" fill={P} opacity="0.45" />
+      <circle cx="115" cy="113" r="1.8" fill={P} opacity="0.45" />
+
       {/* Brazos y manos que lo sostienen */}
-      <path d="M68 112c8 8 14 12 22 14" fill="none" stroke={MANTLE_SHADE} strokeWidth="11" strokeLinecap="round" />
-      <path d="M146 118c-10 6-18 9-27 10" fill="none" stroke={MANTLE_SHADE} strokeWidth="11" strokeLinecap="round" />
-      <ellipse cx="94" cy="127" rx="8" ry="4.2" fill={FACE} transform="rotate(-12 94 127)" />
-      <ellipse cx="117" cy="129" rx="8" ry="4.2" fill={FACE} transform="rotate(12 117 129)" />
+      <path d="M66 116c6 10 14 16 24 18" fill="none" stroke={MANTLE_SHADE} strokeWidth="11" strokeLinecap="round" />
+      <path d="M146 116c-6 10-16 18-28 20" fill="none" stroke={MANTLE_SHADE} strokeWidth="11" strokeLinecap="round" />
+      <ellipse cx="92" cy="134" rx="8" ry="4.2" fill={FACE} transform="rotate(-20 92 134)" />
+      <ellipse cx="114" cy="136" rx="8" ry="4.2" fill={FACE} transform="rotate(14 114 136)" />
     </>
   );
 }
