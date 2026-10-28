@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/AppShell";
 import { IAmExperience } from "./IAmExperience";
 import { ProphecyScroll } from "./ProphecyScroll";
+import type { BackRef } from "./lessonProgress";
 
 const STEPS = ["intro", "prophecies", "declarations", "final"] as const;
 
@@ -13,6 +14,13 @@ export function JesusLesson({ onComplete, onNext, onExit }: Props) {
   const [i, setI] = useState(0);
   const step = STEPS[i]!;
   const next = () => setI((x) => Math.min(x + 1, STEPS.length - 1));
+  // Cada actividad registra aquí cómo retroceder un paso dentro de ella (profecía o declaración anterior).
+  const backRef: BackRef = useRef<(() => boolean) | null>(null);
+  const back = () => {
+    if (backRef.current?.()) return;
+    if (i > 0) setI(i - 1);
+    else onExit();
+  };
 
   useEffect(() => {
     if (step === "final") onComplete();
@@ -31,7 +39,7 @@ export function JesusLesson({ onComplete, onNext, onExit }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <div className="mx-auto flex w-full max-w-2xl items-center gap-4 p-5">
-        <button onClick={() => (i > 0 ? setI(i - 1) : onExit())} aria-label="Atrás">
+        <button onClick={back} aria-label="Atrás">
           <ArrowLeft className="size-7 text-muted-foreground" />
         </button>
         <ProgressBar value={(i / (STEPS.length - 1)) * 100} />
@@ -44,8 +52,8 @@ export function JesusLesson({ onComplete, onNext, onExit }: Props) {
       </div>
       <div key={step} className="mx-auto w-full max-w-2xl flex-1 animate-pop px-5 pb-10 pt-3">
         {step === "intro" && <Intro onNext={next} />}
-        {step === "prophecies" && <ProphecyScroll onNext={next} />}
-        {step === "declarations" && <IAmExperience onNext={next} />}
+        {step === "prophecies" && <ProphecyScroll onNext={next} backRef={backRef} />}
+        {step === "declarations" && <IAmExperience onNext={next} backRef={backRef} />}
         {step === "final" && <Final onNext={onNext} />}
       </div>
     </div>

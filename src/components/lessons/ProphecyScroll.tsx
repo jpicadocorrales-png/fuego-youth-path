@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PROPHECIES, type Prophecy, type SymbolId } from "./jesusContent";
 import { ProphecyScene, ProphecySymbol } from "./ProphecyArt";
-import { loadCount, prefersReducedMotion as reducedMotion, saveCount } from "./lessonProgress";
+import { loadCount, prefersReducedMotion as reducedMotion, saveCount, useBackStep, type BackRef } from "./lessonProgress";
 
 const TOTAL = PROPHECIES.length;
 const STORAGE_KEY = "fuego.jesus.profecias";
@@ -14,12 +14,19 @@ const STORAGE_KEY = "fuego.jesus.profecias";
 const loadDone = () => loadCount(STORAGE_KEY, TOTAL);
 const saveDone = (n: number) => saveCount(STORAGE_KEY, n);
 
-export function ProphecyScroll({ onNext }: { onNext: () => void }) {
+export function ProphecyScroll({ onNext, backRef }: { onNext: () => void; backRef?: BackRef }) {
   const [index, setIndex] = useState<number | null>(null);
 
   useEffect(() => {
     setIndex(loadDone());
   }, []);
+
+  useBackStep(backRef, () => {
+    if (index === null || index <= 0) return false;
+    setIndex(index - 1);
+    window.scrollTo({ top: 0 });
+    return true;
+  });
 
   if (index === null) return null;
   if (index >= TOTAL) return <Finale onNext={onNext} onReplay={() => setIndex(0)} />;
@@ -28,6 +35,7 @@ export function ProphecyScroll({ onNext }: { onNext: () => void }) {
       key={index}
       p={PROPHECIES[index]!}
       n={index}
+      solved={index < loadDone()}
       onSolved={() => saveDone(Math.max(loadDone(), index + 1))}
       onNext={() => {
         setIndex(index + 1);
@@ -63,11 +71,14 @@ function ScrollText({ text, highlight }: { text: string; highlight?: string | un
 function ProphecyStep({
   p,
   n,
+  solved,
   onSolved,
   onNext,
 }: {
   p: Prophecy;
   n: number;
+  // Ya completada antes (el usuario volvió atrás): se muestra directamente su cumplimiento.
+  solved: boolean;
   onSolved: () => void;
   onNext: () => void;
 }) {
@@ -76,8 +87,9 @@ function ProphecyStep({
   const [sel, setSel] = useState<SymbolId | null>(null);
   const [miss, setMiss] = useState<SymbolId | null>(null);
   const [hint, setHint] = useState(false);
-  const [placed, setPlaced] = useState(false);
-  const [revealed, setRevealed] = useState(false);
+  const [wasSolved] = useState(solved);
+  const [placed, setPlaced] = useState(solved);
+  const [revealed, setRevealed] = useState(solved);
   const start = useRef({ x: 0, y: 0 });
   const slot = useRef<HTMLButtonElement>(null);
 
@@ -229,7 +241,7 @@ function ProphecyStep({
               )}
             </button>
           </div>
-          {placed && (
+          {placed && !wasSolved && (
             <span
               aria-hidden="true"
               className={cn(

@@ -5,7 +5,7 @@ import { Check, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { I_AM_DECLARATIONS, I_AM_EXODUS, I_AM_REVELATION, type IAmDeclaration, type IAmId } from "./jesusContent";
-import { loadCount, prefersReducedMotion, saveCount } from "./lessonProgress";
+import { loadCount, prefersReducedMotion, saveCount, useBackStep, type BackRef } from "./lessonProgress";
 import { CR, G, G2, INK, SAND, SAND2, V, V2, WOOD, Y, type SceneProps } from "./IAmShared";
 import { BreadScene, DoorScene, LightScene, ShepherdScene } from "./IAmScenesA";
 import { PathScene, StoneScene, VineScene } from "./IAmScenesB";
@@ -24,7 +24,7 @@ const SCENES: Record<IAmId, ComponentType<SceneProps>> = {
   vid: VineScene,
 };
 
-export function IAmExperience({ onNext }: { onNext: () => void }) {
+export function IAmExperience({ onNext, backRef }: { onNext: () => void; backRef?: BackRef }) {
   // -1 = introducción; 0..6 = escena actual; 7 = pantalla final.
   const [index, setIndex] = useState<number | null>(null);
 
@@ -32,6 +32,13 @@ export function IAmExperience({ onNext }: { onNext: () => void }) {
     const done = loadCount(STORAGE_KEY, TOTAL);
     setIndex(done === 0 ? -1 : done);
   }, []);
+
+  useBackStep(backRef, () => {
+    if (index === null || index < 0) return false;
+    setIndex(index - 1);
+    window.scrollTo({ top: 0 });
+    return true;
+  });
 
   if (index === null) return null;
   if (index < 0) return <Intro onStart={() => setIndex(0)} />;
@@ -41,6 +48,7 @@ export function IAmExperience({ onNext }: { onNext: () => void }) {
       key={index}
       d={I_AM_DECLARATIONS[index]!}
       n={index}
+      solved={index < loadCount(STORAGE_KEY, TOTAL)}
       onSolved={() => saveCount(STORAGE_KEY, Math.max(loadCount(STORAGE_KEY, TOTAL), index + 1))}
       onNext={() => {
         setIndex(index + 1);
@@ -79,21 +87,25 @@ function Intro({ onStart }: { onStart: () => void }) {
 function DeclarationStep({
   d,
   n,
+  solved,
   onSolved,
   onNext,
 }: {
   d: IAmDeclaration;
   n: number;
+  // Ya completada antes: la declaración se muestra de una vez y la escena se puede repetir.
+  solved: boolean;
   onSolved: () => void;
   onNext: () => void;
 }) {
-  const [revealed, setRevealed] = useState(false);
+  const [wasSolved] = useState(solved);
+  const [revealed, setRevealed] = useState(solved);
   const panel = useRef<HTMLDivElement>(null);
   const Scene = SCENES[d.id];
 
   useEffect(() => {
-    if (revealed) panel.current?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
-  }, [revealed]);
+    if (revealed && !wasSolved) panel.current?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+  }, [revealed, wasSolved]);
 
   return (
     <div>

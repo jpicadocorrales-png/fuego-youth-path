@@ -1,4 +1,5 @@
 // Utilidades compartidas por las experiencias interactivas de las lecciones.
+import { useEffect, type RefObject } from "react";
 
 // Cantidad de pasos completados de una experiencia, guardada para no perder el avance al navegar.
 export function loadCount(key: string, max: number) {
@@ -20,3 +21,17 @@ export function saveCount(key: string, n: number) {
 
 export const prefersReducedMotion = () =>
   typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+// Botón «Atrás» de la lección: cada actividad registra cómo retroceder un paso dentro de ella.
+// El manejador devuelve true si retrocedió; si devuelve false, la lección vuelve a la actividad anterior.
+export type BackRef = RefObject<(() => boolean) | null>;
+
+export function useBackStep(backRef: BackRef | undefined, onBack: () => boolean) {
+  useEffect(() => {
+    if (!backRef) return;
+    backRef.current = onBack;
+    return () => {
+      backRef.current = null;
+    };
+  });
+}
