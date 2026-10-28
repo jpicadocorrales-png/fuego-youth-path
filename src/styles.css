@@ -158,3 +158,71 @@
 }
 @utility animate-pop { animation: pop 0.45s cubic-bezier(.2,.9,.3,1.3) both; }
 @utility animate-floaty { animation: floaty 3s ease-in-out infinite; }
+
+/* «El rollo de las profecías» (lección de Jesús). Las animaciones solo corren si el usuario no
+   pidió movimiento reducido; sin ellas, cada elemento queda directamente en su estado final. */
+.pr-name { text-shadow: 0 0 22px rgb(246 188 63 / 0.75); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .pr-unroll .pr-paper { animation: pr-unroll 0.9s cubic-bezier(.2,.8,.2,1) both; }
+  .pr-unroll .pr-rod-l { animation: pr-rod-l 0.9s cubic-bezier(.2,.8,.2,1) both; }
+  .pr-unroll .pr-rod-r { animation: pr-rod-r 0.9s cubic-bezier(.2,.8,.2,1) both; }
+  .pr-unroll .pr-ink { animation: pr-fade 0.6s 0.6s ease-out backwards; }
+  .pr-shine { animation: pr-shine 1.2s ease-out both; }
+  .pr-shine-strong { animation-duration: 2.2s; }
+  .pr-reveal { animation: pr-reveal 0.9s ease-out both; }
+  .pr-rise { animation: pr-rise 0.6s 0.2s ease-out both; }
+  .pr-nudge { animation: pr-nudge 0.5s ease-in-out; }
+  .pr-breathe { animation: pr-breathe 1.4s ease-in-out infinite; }
+  .pr-twinkle { animation: pr-twinkle 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  .pr-pulse { animation: pr-pulse 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  .pr-sway { animation: pr-sway 4s ease-in-out infinite; transform-box: fill-box; transform-origin: bottom center; }
+  .pr-ride { animation: pr-ride 1.4s 0.3s ease-out both; }
+  .pr-coin { animation: pr-coin 0.7s cubic-bezier(.3,.7,.4,1.3) both; }
+  .pr-toss { animation: pr-toss 0.8s 0.4s ease-out both; transform-box: fill-box; transform-origin: center; }
+  .pr-stone { animation: pr-stone 1.6s 0.4s cubic-bezier(.3,.6,.3,1) both; transform-box: fill-box; transform-origin: center; }
+  .pr-rays { animation: pr-rays 1.8s 1.1s ease-out both; transform-box: fill-box; transform-origin: center; }
+  .pr-dawn { animation: pr-dawn 1.4s 0.9s ease-out both; }
+  .pr-seal { animation: pr-seal 0.5s ease-out both; }
+  .pr-name { animation: pr-name 2.4s ease-in-out infinite; }
+}
+
+@keyframes pr-unroll {
+  from { clip-path: inset(0 50% 0 50% round 18px); }
+  to { clip-path: inset(0 0 0 0 round 18px); }
+}
+@keyframes pr-rod-l { from { left: calc(50% - 20px); } to { left: 0; } }
+@keyframes pr-rod-r { from { right: calc(50% - 20px); } to { right: 0; } }
+@keyframes pr-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pr-shine { 0% { opacity: 0; } 35% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes pr-reveal {
+  from { opacity: 0; transform: scale(1.06); filter: blur(6px) brightness(1.4); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes pr-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes pr-nudge {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(4px); }
+}
+@keyframes pr-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@keyframes pr-twinkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.55; transform: scale(0.85); } }
+@keyframes pr-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+@keyframes pr-sway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+@keyframes pr-ride { from { opacity: 0; transform: translateY(40px) scale(0.85); } to { opacity: 1; transform: none; } }
+@keyframes pr-coin { from { opacity: 0; transform: translateY(-110px); } 60% { opacity: 1; } to { opacity: 1; transform: none; } }
+@keyframes pr-toss { from { opacity: 0; transform: translateY(-40px) rotate(-90deg); } to { opacity: 1; transform: none; } }
+@keyframes pr-stone { from { transform: translateX(-90px) rotate(-200deg); } to { transform: none; } }
+@keyframes pr-rays { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: none; } }
+@keyframes pr-dawn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pr-seal {
+  from { opacity: 0.25; filter: grayscale(1); transform: scale(0.8); }
+  60% { opacity: 1; filter: none; transform: scale(1.15); }
+  to { opacity: 1; filter: none; transform: none; }
+}
+@keyframes pr-name {
+  0%, 100% { text-shadow: 0 0 22px rgb(246 188 63 / 0.75); }
+  50% { text-shadow: 0 0 34px rgb(246 188 63 / 1); }
+}
