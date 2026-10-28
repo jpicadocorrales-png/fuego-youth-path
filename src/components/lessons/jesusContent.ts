@@ -165,67 +165,99 @@ export const PROPHECIES: Prophecy[] = [
   },
 ];
 
-export type IAmStatement = {
-  id: string;
+export type IAmId = "pan" | "luz" | "puerta" | "pastor" | "resurreccion" | "camino" | "vid";
+
+export type IAmDeclaration = {
+  id: IAmId;
+  instruction: string;
   statement: string;
+  quote: string;
   ref: string;
-  meaning: string;
-  reflection: string;
+  explanation: string;
+  button: string;
 };
 
-export const I_AM_STATEMENTS: IAmStatement[] = [
+// Experiencia 2: «¿Qué dijo Jesús de sí mismo?». Textos y referencias tal como fueron definidos.
+export const I_AM_DECLARATIONS: IAmDeclaration[] = [
   {
     id: "pan",
-    statement: "Yo soy el pan de vida",
+    instruction: "Hay un lugar vacío en la mesa. ¿Puedes llenarlo?",
+    statement: "YO SOY EL PAN DE VIDA",
+    quote: "El que a mí viene, nunca tendrá hambre; y el que en mí cree, no tendrá sed jamás.",
     ref: "Juan 6:35",
-    meaning: "Como el pan sostiene el cuerpo, Jesús sostiene la vida espiritual.",
-    reflection: "¿De qué dependes hoy para sentirte con vida por dentro?",
+    explanation:
+      "Así como el pan alimenta nuestro cuerpo, Jesús es quien satisface nuestra necesidad espiritual. Él no ofrece una satisfacción temporal, sino vida verdadera.",
+    button: "Continuar",
   },
   {
     id: "luz",
-    statement: "Yo soy la luz del mundo",
+    instruction: "Hay un camino frente a ti, pero no puedes verlo. Ilumina el camino.",
+    statement: "YO SOY LA LUZ DEL MUNDO",
+    quote: "El que me sigue, no andará en tinieblas, sino que tendrá la luz de la vida.",
     ref: "Juan 8:12",
-    meaning: "La luz revela el camino y disipa la oscuridad.",
-    reflection: "¿En qué área de tu vida necesitas claridad?",
+    explanation:
+      "Jesús no solamente nos muestra por dónde caminar. Él mismo es la luz que vence las tinieblas y nos guía hacia la vida.",
+    button: "Continuar",
   },
   {
     id: "puerta",
-    statement: "Yo soy la puerta",
-    ref: "Juan 10:7, 9",
-    meaning: "Jesús es el acceso a la salvación y a una vida protegida.",
-    reflection: "¿Qué te impide entrar por esa puerta?",
+    instruction: "Hay una puerta frente a ti. Descubre qué hay al otro lado.",
+    statement: "YO SOY LA PUERTA",
+    quote: "El que por mí entrare, será salvo; y entrará, y saldrá, y hallará pastos.",
+    ref: "Juan 10:9",
+    explanation:
+      "Jesús se presenta como la puerta de salvación. Por medio de Él encontramos acceso a la vida y a la seguridad de pertenecer a su rebaño.",
+    button: "Continuar",
   },
   {
     id: "pastor",
-    statement: "Yo soy el buen pastor",
-    ref: "Juan 10:11, 14",
-    meaning: "El pastor cuida y da su vida por las ovejas, y conoce a cada una.",
-    reflection: "¿Cómo se ve, en tu día a día, que Jesús te conoce?",
+    instruction: "Una oveja se ha separado del rebaño. Ayúdala a regresar.",
+    statement: "YO SOY EL BUEN PASTOR",
+    quote: "El buen pastor su vida da por las ovejas.",
+    ref: "Juan 10:11",
+    explanation:
+      "Jesús no es un pastor distante. Conoce a sus ovejas, las cuida y las ama hasta el punto de entregar su propia vida por ellas.",
+    button: "Continuar",
   },
   {
     id: "resurreccion",
-    statement: "Yo soy la resurrección y la vida",
+    instruction: "Una piedra cubre la entrada. Muévela para descubrir lo que hay detrás.",
+    statement: "YO SOY LA RESURRECCIÓN Y LA VIDA",
+    quote: "El que cree en mí, aunque esté muerto, vivirá.",
     ref: "Juan 11:25",
-    meaning: "Jesús vence la muerte y ofrece una vida que no termina.",
-    reflection: "¿Qué esperanza te da saber que la muerte no tiene la última palabra?",
+    explanation:
+      "Jesús tiene autoridad sobre la muerte. Estas palabras fueron pronunciadas antes de resucitar a Lázaro y anticipan la victoria definitiva que se manifiesta en su propia resurrección.",
+    button: "Continuar",
   },
   {
     id: "camino",
-    statement: "Yo soy el camino, la verdad y la vida",
+    instruction: "El camino está incompleto. Reconstrúyelo para poder avanzar.",
+    statement: "YO SOY EL CAMINO, Y LA VERDAD, Y LA VIDA",
+    quote: "Nadie viene al Padre, sino por mí.",
     ref: "Juan 14:6",
-    meaning: "Jesús es el único camino para llegar al Padre.",
-    reflection: "¿Qué decisión necesitas tomar siguiendo su camino?",
+    explanation:
+      "Jesús no dijo que conocía uno de los caminos hacia Dios. Declaró que Él mismo es el camino, la verdad y la vida. Por medio de Él tenemos acceso al Padre.",
+    button: "Continuar",
   },
   {
     id: "vid",
-    statement: "Yo soy la vid verdadera",
-    ref: "Juan 15:1, 5",
-    meaning: "Las ramas dan fruto solo si permanecen unidas a la vid.",
-    reflection: "¿Qué tan unido estás a Jesús en tu rutina diaria?",
+    instruction: "Estas ramas están separadas de la vid. Conéctalas para que puedan dar fruto.",
+    statement: "YO SOY LA VID VERDADERA",
+    quote:
+      "El que permanece en mí, y yo en él, éste lleva mucho fruto; porque separados de mí nada podéis hacer.",
+    ref: "Juan 15:5",
+    explanation:
+      "Así como una rama no puede producir fruto separada de la vid, nuestra vida espiritual depende de permanecer unidos a Jesús. Él es la fuente de nuestra vida y crecimiento.",
+    button: "Descubrir el significado",
   },
 ];
 
 export const I_AM_REVELATION = {
   ref: "Juan 8:58",
   text: "Antes que Abraham fuese, yo soy.",
+};
+
+export const I_AM_EXODUS = {
+  ref: "Éxodo 3:14",
+  text: "YO SOY EL QUE SOY.",
 };
