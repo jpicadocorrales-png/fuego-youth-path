@@ -14,12 +14,12 @@ const STONE_R = 56;
 const STONE_HOME: Pt = { x: 180, y: 210 };
 const ROLL = 122;
 
-export function StoneScene({ onDone }: SceneProps) {
+export function StoneScene({ onDone, solved = false }: SceneProps) {
   const svg = useRef<SVGSVGElement>(null);
-  const [dx, setDx] = useState(0);
+  const [dx, setDx] = useState(solved ? ROLL : 0);
   const [dragging, setDragging] = useState(false);
   const base = useRef(0);
-  const [complete, finish] = useFinish(onDone, 2100);
+  const [complete, finish] = useFinish(onDone, 2100, solved);
 
   function rollAway() {
     setDx(ROLL);
@@ -171,13 +171,13 @@ function RoadPiece({ rel }: { rel: Pt[] }) {
   );
 }
 
-export function PathScene({ onDone }: SceneProps) {
+export function PathScene({ onDone, solved = false }: SceneProps) {
   const svg = useRef<SVGSVGElement>(null);
-  const [placed, setPlaced] = useState<number[]>([]);
+  const [placed, setPlaced] = useState<number[]>(solved ? GAPS.map((g) => g.k) : []);
   const [drag, setDrag] = useState<{ k: number; p: Pt } | null>(null);
   const [sel, setSel] = useState<number | null>(null);
   const [miss, setMiss] = useState(false);
-  const [complete, finish] = useFinish(onDone, 2600);
+  const [complete, finish] = useFinish(onDone, 2600, solved);
 
   function place(k: number) {
     const next = [...placed, k];
@@ -393,13 +393,13 @@ function Branch({ side, len, attached, stage }: { side: number; len: number; att
   );
 }
 
-export function VineScene({ onDone }: SceneProps) {
+export function VineScene({ onDone, solved = false }: SceneProps) {
   const svg = useRef<SVGSVGElement>(null);
-  const [joint, setJoint] = useState<(number | null)[]>([null, null, null]);
+  const [joint, setJoint] = useState<(number | null)[]>(solved ? [0, 1, 2] : [null, null, null]);
   const [drag, setDrag] = useState<{ b: number; p: Pt } | null>(null);
   const [sel, setSel] = useState<number | null>(null);
   const [miss, setMiss] = useState(false);
-  const [complete, finish] = useFinish(onDone, 2400);
+  const [complete, finish] = useFinish(onDone, 2400, solved);
 
   const stage = joint.filter((j) => j !== null).length;
   const freeFor = (b: number) =>

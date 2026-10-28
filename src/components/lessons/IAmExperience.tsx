@@ -1,18 +1,26 @@
 // Experiencia 2 de la lección de Jesús: «¿Qué dijo Jesús de sí mismo?».
 // Siete escenas interactivas, una por pantalla; la declaración se revela solo al completar cada escena.
 import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
-import { Check, RotateCcw } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { I_AM_DECLARATIONS, I_AM_EXODUS, I_AM_REVELATION, type IAmDeclaration, type IAmId } from "./jesusContent";
-import { loadCount, prefersReducedMotion, saveCount, useBackStep, type BackRef } from "./lessonProgress";
+import {
+  activityActions,
+  prefersReducedMotion,
+  useBackStep,
+  type ActivitySession,
+  type BackRef,
+  type SetActivity,
+} from "./lessonProgress";
 import { CR, G, G2, INK, SAND, SAND2, V, V2, WOOD, Y, type SceneProps } from "./IAmShared";
 import { BreadScene, DoorScene, LightScene, ShepherdScene } from "./IAmScenesA";
 import { PathScene, StoneScene, VineScene } from "./IAmScenesB";
 import { ProphecySymbol } from "./ProphecyArt";
+import { StepNav } from "./StepNav";
 
-const TOTAL = I_AM_DECLARATIONS.length;
-const STORAGE_KEY = "fuego.jesus.yosoy";
+export const I_AM_TOTAL = I_AM_DECLARATIONS.length;
+const TOTAL = I_AM_TOTAL;
 
 const SCENES: Record<IAmId, ComponentType<SceneProps>> = {
   pan: BreadScene,
@@ -24,36 +32,39 @@ const SCENES: Record<IAmId, ComponentType<SceneProps>> = {
   vid: VineScene,
 };
 
-export function IAmExperience({ onNext, backRef }: { onNext: () => void; backRef?: BackRef }) {
-  // -1 = introducción; 0..6 = escena actual; 7 = pantalla final.
-  const [index, setIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    const done = loadCount(STORAGE_KEY, TOTAL);
-    setIndex(done === 0 ? -1 : done);
-  }, []);
+export function IAmExperience({
+  session,
+  setSession,
+  onNext,
+  backRef,
+}: {
+  // index: -1 = introducción; 0..6 = escena actual; 7 = pantalla final.
+  session: ActivitySession;
+  setSession: SetActivity;
+  onNext: () => void;
+  backRef?: BackRef;
+}) {
+  const { index, done, rounds } = session;
+  const act = activityActions(setSession);
 
   useBackStep(backRef, () => {
-    if (index === null || index < 0) return false;
-    setIndex(index - 1);
-    window.scrollTo({ top: 0 });
+    if (index < 0) return false;
+    act.go(index - 1);
     return true;
   });
 
-  if (index === null) return null;
-  if (index < 0) return <Intro onStart={() => setIndex(0)} />;
-  if (index >= TOTAL) return <Finale onNext={onNext} onReplay={() => setIndex(-1)} />;
+  if (index < 0) return <Intro onStart={() => act.go(0)} />;
+  if (index >= TOTAL) return <Finale onNext={onNext} onBack={() => act.go(TOTAL - 1)} />;
   return (
     <DeclarationStep
-      key={index}
+      key={`${index}-${rounds[index] ?? 0}`}
       d={I_AM_DECLARATIONS[index]!}
       n={index}
-      solved={index < loadCount(STORAGE_KEY, TOTAL)}
-      onSolved={() => saveCount(STORAGE_KEY, Math.max(loadCount(STORAGE_KEY, TOTAL), index + 1))}
-      onNext={() => {
-        setIndex(index + 1);
-        window.scrollTo({ top: 0 });
-      }}
+      solved={done[index] ?? false}
+      onSolved={() => act.complete(index)}
+      onNext={() => act.go(index + 1)}
+      onBack={() => act.go(index - 1)}
+      onRepeat={() => act.repeat(index)}
     />
   );
 }
@@ -90,13 +101,17 @@ function DeclarationStep({
   solved,
   onSolved,
   onNext,
+  onBack,
+  onRepeat,
 }: {
   d: IAmDeclaration;
   n: number;
-  // Ya completada antes: la declaración se muestra de una vez y la escena se puede repetir.
+  // Ya completada en esta sesión: la escena se abre resuelta y la declaración se muestra de una vez.
   solved: boolean;
   onSolved: () => void;
   onNext: () => void;
+  onBack: () => void;
+  onRepeat: () => void;
 }) {
   const [wasSolved] = useState(solved);
   const [revealed, setRevealed] = useState(solved);
@@ -113,6 +128,7 @@ function DeclarationStep({
       <p className="mt-2 text-lg font-bold">{d.instruction}</p>
       <div className="mt-3">
         <Scene
+          solved={wasSolved}
           onDone={() => {
             onSolved();
             setRevealed(true);
@@ -130,6 +146,7 @@ function DeclarationStep({
           </Button>
         </div>
       )}
+      <StepNav onBack={onBack} onRepeat={revealed ? onRepeat : undefined} />
     </div>
   );
 }
@@ -203,7 +220,7 @@ function IAmSymbol({ id, className }: { id: IAmId; className: string }) {
   );
 }
 
-function Finale({ onNext, onReplay }: { onNext: () => void; onReplay: () => void }) {
+function Finale({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const [gathered, setGathered] = useState(prefersReducedMotion);
 
   useEffect(() => {
@@ -281,13 +298,7 @@ function Finale({ onNext, onReplay }: { onNext: () => void; onReplay: () => void
             <Button size="lg" className="mt-6 w-full" onClick={onNext}>
               Continuar la lección
             </Button>
-            <button
-              type="button"
-              onClick={onReplay}
-              className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground"
-            >
-              <RotateCcw className="size-4" /> Repasar las declaraciones
-            </button>
+            <StepNav onBack={onBack} />
           </div>
         </div>
       )}

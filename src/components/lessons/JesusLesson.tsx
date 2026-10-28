@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/AppShell";
-import { IAmExperience } from "./IAmExperience";
-import { ProphecyScroll } from "./ProphecyScroll";
-import type { BackRef } from "./lessonProgress";
+import { I_AM_TOTAL, IAmExperience } from "./IAmExperience";
+import { PROPHECY_TOTAL, ProphecyScroll } from "./ProphecyScroll";
+import { clearLegacyProgress, newActivity, type BackRef } from "./lessonProgress";
 
 const STEPS = ["intro", "prophecies", "declarations", "final"] as const;
 
@@ -16,6 +16,11 @@ export function JesusLesson({ onComplete, onNext, onExit }: Props) {
   const next = () => setI((x) => Math.min(x + 1, STEPS.length - 1));
   // Cada actividad registra aquí cómo retroceder un paso dentro de ella (profecía o declaración anterior).
   const backRef: BackRef = useRef<(() => boolean) | null>(null);
+  // Sesión de aprendizaje: empieza de cero cada vez que se abre la lección desde el curso y se
+  // conserva al moverse entre pantallas. El progreso del curso (lección completada) se guarda aparte.
+  const [prophecies, setProphecies] = useState(() => newActivity(PROPHECY_TOTAL));
+  const [declarations, setDeclarations] = useState(() => newActivity(I_AM_TOTAL, -1));
+  useEffect(() => clearLegacyProgress(), []);
   const back = () => {
     if (backRef.current?.()) return;
     if (i > 0) setI(i - 1);
@@ -52,8 +57,8 @@ export function JesusLesson({ onComplete, onNext, onExit }: Props) {
       </div>
       <div key={step} className="mx-auto w-full max-w-2xl flex-1 animate-pop px-5 pb-10 pt-3">
         {step === "intro" && <Intro onNext={next} />}
-        {step === "prophecies" && <ProphecyScroll onNext={next} backRef={backRef} />}
-        {step === "declarations" && <IAmExperience onNext={next} backRef={backRef} />}
+        {step === "prophecies" && <ProphecyScroll session={prophecies} setSession={setProphecies} onNext={next} backRef={backRef} />}
+        {step === "declarations" && <IAmExperience session={declarations} setSession={setDeclarations} onNext={next} backRef={backRef} />}
         {step === "final" && <Final onNext={onNext} />}
       </div>
     </div>

@@ -1,46 +1,55 @@
 // Experiencia 1 de la lección de Jesús: «El rollo de las profecías».
 // Una profecía por pantalla: el usuario coloca el símbolo correcto en el pergamino para revelar su cumplimiento.
 import { useEffect, useRef, useState, type PointerEvent as RPointerEvent } from "react";
-import { Check, RotateCcw } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PROPHECIES, type Prophecy, type SymbolId } from "./jesusContent";
 import { ProphecyScene, ProphecySymbol } from "./ProphecyArt";
-import { loadCount, prefersReducedMotion as reducedMotion, saveCount, useBackStep, type BackRef } from "./lessonProgress";
+import {
+  activityActions,
+  prefersReducedMotion as reducedMotion,
+  useBackStep,
+  type ActivitySession,
+  type BackRef,
+  type SetActivity,
+} from "./lessonProgress";
+import { StepNav } from "./StepNav";
 
-const TOTAL = PROPHECIES.length;
-const STORAGE_KEY = "fuego.jesus.profecias";
+export const PROPHECY_TOTAL = PROPHECIES.length;
+const TOTAL = PROPHECY_TOTAL;
 
-const loadDone = () => loadCount(STORAGE_KEY, TOTAL);
-const saveDone = (n: number) => saveCount(STORAGE_KEY, n);
-
-export function ProphecyScroll({ onNext, backRef }: { onNext: () => void; backRef?: BackRef }) {
-  const [index, setIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    setIndex(loadDone());
-  }, []);
+export function ProphecyScroll({
+  session,
+  setSession,
+  onNext,
+  backRef,
+}: {
+  session: ActivitySession;
+  setSession: SetActivity;
+  onNext: () => void;
+  backRef?: BackRef;
+}) {
+  const { index, done, rounds } = session;
+  const act = activityActions(setSession);
 
   useBackStep(backRef, () => {
-    if (index === null || index <= 0) return false;
-    setIndex(index - 1);
-    window.scrollTo({ top: 0 });
+    if (index <= 0) return false;
+    act.go(index - 1);
     return true;
   });
 
-  if (index === null) return null;
-  if (index >= TOTAL) return <Finale onNext={onNext} onReplay={() => setIndex(0)} />;
+  if (index >= TOTAL) return <Finale onNext={onNext} onBack={() => act.go(TOTAL - 1)} />;
   return (
     <ProphecyStep
-      key={index}
+      key={`${index}-${rounds[index] ?? 0}`}
       p={PROPHECIES[index]!}
       n={index}
-      solved={index < loadDone()}
-      onSolved={() => saveDone(Math.max(loadDone(), index + 1))}
-      onNext={() => {
-        setIndex(index + 1);
-        window.scrollTo({ top: 0 });
-      }}
+      solved={done[index] ?? false}
+      onSolved={() => act.complete(index)}
+      onNext={() => act.go(index + 1)}
+      onBack={index > 0 ? () => act.go(index - 1) : undefined}
+      onRepeat={() => act.repeat(index)}
     />
   );
 }
@@ -74,13 +83,17 @@ function ProphecyStep({
   solved,
   onSolved,
   onNext,
+  onBack,
+  onRepeat,
 }: {
   p: Prophecy;
   n: number;
-  // Ya completada antes (el usuario volvió atrás): se muestra directamente su cumplimiento.
+  // Ya completada en esta sesión (el usuario volvió atrás): se muestra directamente su cumplimiento.
   solved: boolean;
   onSolved: () => void;
   onNext: () => void;
+  onBack: (() => void) | undefined;
+  onRepeat: () => void;
 }) {
   const [drag, setDrag] = useState<{ id: SymbolId; dx: number; dy: number } | null>(null);
   const [over, setOver] = useState(false);
@@ -282,11 +295,12 @@ function ProphecyStep({
           <div className="mt-4 grid grid-cols-3 gap-3">{p.options.map(tile)}</div>
         </div>
       )}
+      <StepNav onBack={onBack} onRepeat={revealed ? onRepeat : undefined} />
     </div>
   );
 }
 
-function Finale({ onNext, onReplay }: { onNext: () => void; onReplay: () => void }) {
+function Finale({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const [gathered, setGathered] = useState(reducedMotion);
 
   useEffect(() => {
@@ -350,13 +364,7 @@ function Finale({ onNext, onReplay }: { onNext: () => void; onReplay: () => void
         <Button size="lg" className="mt-6 w-full" onClick={onNext}>
           Continuar la lección
         </Button>
-        <button
-          type="button"
-          onClick={onReplay}
-          className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground"
-        >
-          <RotateCcw className="size-4" /> Repasar las profecías
-        </button>
+        <StepNav onBack={onBack} />
       </div>
     </div>
   );
