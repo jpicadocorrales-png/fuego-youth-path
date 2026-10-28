@@ -345,13 +345,30 @@ const scenes: Record<string, ReactNode> = {
   monedas: (
     <>
       <rect width="320" height="200" fill={CR} />
-      <circle cx="160" cy="104" r="80" fill={Y} opacity="0.18" />
-      <path d="M0 132c30-6 60-10 90-6l26 4c8 1 10 10 2 12l-24 4c-30 4-60 4-94 0z" fill={SKIN} />
-      <path d="M320 92c-30-6-60-8-90-2l-24 6c-8 2-8 12 0 12l26 2c30 2 60 0 88-6z" fill="#d29a73" />
-      <path d="M148 64h26l-5 10c13 5 20 17 20 28 0 12-12 16-28 16s-28-4-28-16c0-11 7-23 20-28z" fill="#fff6ea" stroke={STONE} strokeWidth="2" />
-      <path d="M152 74h20" stroke={WOOD} strokeWidth="4" strokeLinecap="round" />
-      {([[120, 0], [196, 0.15], [140, 0.3], [182, 0.45], [160, 0.6]] as const).map(([x, d]) => (
-        <ellipse key={x} className="pr-coin" style={{ animationDelay: `${d}s` }} cx={x} cy="168" rx="11" ry="5" fill={SILVER} stroke={STONE2} strokeWidth="1.5" />
+      <circle cx="175" cy="118" r="86" fill={Y} opacity="0.2" />
+      <ellipse cx="170" cy="172" rx="130" ry="12" fill="#f2d7b3" />
+      {/* Saco caído de lado, con la boca hacia la derecha */}
+      <g transform="translate(110 122) rotate(100) scale(1.2)">
+        <path d="M-14 -50h28l-6 12c18 7 30 24 30 40 0 18-17 26-38 26s-38-8-38-26c0-16 12-33 30-40z" fill="#fff6ea" stroke={STONE} strokeWidth="2.5" strokeLinejoin="round" />
+        <ellipse cx="0" cy="-50" rx="14" ry="4.5" fill="#e6d6c2" stroke={STONE} strokeWidth="2" />
+        <rect x="-12" y="-42" width="24" height="6" rx="3" fill={WOOD} />
+      </g>
+      {/* Monedas saliendo del saco y amontonándose */}
+      {([
+        [184, 142, 35, 0.2], [196, 154, 18, 0.35], [184, 166, 0, 0.5],
+        [206, 164, 0, 0.6], [230, 164, 0, 0.7], [254, 164, 0, 0.8],
+        [218, 157, 0, 0.9], [242, 157, 0, 1], [230, 150, 0, 1.1], [282, 166, 0, 1.25],
+      ] as const).map(([x, y, tilt, d]) => (
+        <g key={`${x}-${y}`} className="pr-spill" style={{ animationDelay: `${d}s` }}>
+          <g transform={`rotate(${tilt} ${x} ${y})`}>
+            <ellipse cx={x} cy={y + 3} rx="12" ry="5" fill={STONE2} />
+            <ellipse cx={x} cy={y} rx="12" ry="5" fill={SILVER} stroke={STONE2} strokeWidth="1.2" />
+            <ellipse cx={x} cy={y} rx="6.5" ry="2.4" fill="none" stroke={STONE2} strokeWidth="1" />
+          </g>
+        </g>
+      ))}
+      {([[262, 136], [206, 134], [244, 122]] as const).map(([x, y]) => (
+        <path key={x} className="pr-twinkle" d={`M${x} ${y - 7}l2 5 5 2-5 2-2 5-2-5-5-2 5-2z`} fill={Y} />
       ))}
     </>
   ),
