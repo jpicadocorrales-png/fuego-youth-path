@@ -6,29 +6,13 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PROPHECIES, type Prophecy, type SymbolId } from "./jesusContent";
 import { ProphecyScene, ProphecySymbol } from "./ProphecyArt";
+import { loadCount, prefersReducedMotion as reducedMotion, saveCount } from "./lessonProgress";
 
 const TOTAL = PROPHECIES.length;
 const STORAGE_KEY = "fuego.jesus.profecias";
 
-// Cantidad de profecías completadas, guardada para no perder el avance al navegar.
-function loadDone() {
-  try {
-    const n = Number(localStorage.getItem(STORAGE_KEY));
-    return Number.isFinite(n) ? Math.min(Math.max(Math.floor(n), 0), TOTAL) : 0;
-  } catch {
-    return 0;
-  }
-}
-function saveDone(n: number) {
-  try {
-    localStorage.setItem(STORAGE_KEY, String(n));
-  } catch {
-    // Sin almacenamiento disponible: el avance solo dura mientras la pantalla esté abierta.
-  }
-}
-
-const reducedMotion = () =>
-  typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+const loadDone = () => loadCount(STORAGE_KEY, TOTAL);
+const saveDone = (n: number) => saveCount(STORAGE_KEY, n);
 
 export function ProphecyScroll({ onNext }: { onNext: () => void }) {
   const [index, setIndex] = useState<number | null>(null);

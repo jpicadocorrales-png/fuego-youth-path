@@ -1,9 +1,8 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { ArrowLeft, Check, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/AppShell";
-import { cn } from "@/lib/utils";
-import { I_AM_STATEMENTS, I_AM_REVELATION } from "./jesusContent";
+import { IAmExperience } from "./IAmExperience";
 import { ProphecyScroll } from "./ProphecyScroll";
 
 const STEPS = ["intro", "prophecies", "declarations", "final"] as const;
@@ -46,53 +45,8 @@ export function JesusLesson({ onComplete, onNext, onExit }: Props) {
       <div key={step} className="mx-auto w-full max-w-2xl flex-1 animate-pop px-5 pb-10 pt-3">
         {step === "intro" && <Intro onNext={next} />}
         {step === "prophecies" && <ProphecyScroll onNext={next} />}
-        {step === "declarations" && <Declarations onNext={next} />}
+        {step === "declarations" && <IAmExperience onNext={next} />}
         {step === "final" && <Final onNext={onNext} />}
-      </div>
-    </div>
-  );
-}
-
-function FlipCard({
-  front,
-  back,
-  onReveal,
-}: {
-  front: ReactNode;
-  back: ReactNode;
-  onReveal: () => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const flip = () => {
-    setOpen(!open);
-    if (!open) onReveal();
-  };
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-pressed={open}
-      onClick={flip}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          flip();
-        }
-      }}
-      className="block w-full cursor-pointer [perspective:1000px]"
-    >
-      <div
-        className={cn(
-          "relative min-h-44 transition-transform duration-500 [transform-style:preserve-3d]",
-          open && "[transform:rotateY(180deg)]",
-        )}
-      >
-        <div className="card-chunky absolute inset-0 flex flex-col justify-center p-5 [backface-visibility:hidden]">
-          {front}
-        </div>
-        <div className="card-chunky absolute inset-0 flex flex-col justify-center overflow-auto border-primary/30 bg-card p-5 [backface-visibility:hidden] [transform:rotateY(180deg)]">
-          {back}
-        </div>
       </div>
     </div>
   );
@@ -108,54 +62,6 @@ function Intro({ onNext }: { onNext: () => void }) {
       </div>
       <Button size="lg" className="mt-6 w-full" onClick={onNext}>
         Descubrir las profecías
-      </Button>
-    </div>
-  );
-}
-
-function Declarations({ onNext }: { onNext: () => void }) {
-  const [seen, setSeen] = useState<Set<string>>(new Set());
-  const mark = (id: string) => setSeen((s) => new Set(s).add(id));
-  const total = I_AM_STATEMENTS.length;
-  const done = seen.size >= total;
-  return (
-    <div>
-      <h2 className="text-2xl font-bold">Las declaraciones «YO SOY»</h2>
-      <p className="text-muted-foreground">
-        Toca cada declaración para descubrir qué revela ({seen.size}/{total})
-      </p>
-      <div className="mt-4 space-y-3">
-        {I_AM_STATEMENTS.map((s) => (
-          <FlipCard
-            key={s.id}
-            onReveal={() => mark(s.id)}
-            front={
-              <>
-                <div className="text-xs font-extrabold uppercase text-secondary">{s.ref}</div>
-                <p className="mt-2 font-display text-2xl font-black">{s.statement}</p>
-                {seen.has(s.id) && <Check className="mt-2 !size-6 text-primary" />}
-              </>
-            }
-            back={
-              <>
-                <p className="text-lg leading-relaxed">{s.meaning}</p>
-                <p className="mt-3 text-base font-bold text-primary">Reflexión: {s.reflection}</p>
-              </>
-            }
-          />
-        ))}
-      </div>
-      {done && (
-        <div className="card-chunky mt-6 animate-pop border-gold p-5">
-          <div className="text-xs font-extrabold uppercase text-gold">{I_AM_REVELATION.ref}</div>
-          <p className="mt-2 font-display text-xl font-bold">{I_AM_REVELATION.text}</p>
-          <p className="mt-2 text-muted-foreground">
-            Jesús se revela con el mismo nombre con que Dios se presentó.
-          </p>
-        </div>
-      )}
-      <Button size="lg" className="mt-6 w-full" disabled={!done} onClick={onNext}>
-        {done ? "Continuar" : `Descubre ${total - seen.size} más`}
       </Button>
     </div>
   );
