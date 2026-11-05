@@ -2,7 +2,7 @@
 
 **Cursos bíblicos interactivos para jóvenes, al estilo Duolingo.**
 
-Fuego+ convierte el estudio de la Biblia en un recorrido de lecciones cortas, visuales y participativas. En lugar de leer bloques de texto, los jóvenes descubren cada enseñanza haciendo algo: arrastrar, iluminar, abrir, conectar. Los administradores siguen el avance de cada estudiante.
+Fuego+ acompaña a los jóvenes en sus primeros pasos en la fe con lecciones cortas, visuales y participativas, donde cada enseñanza bíblica se vive antes de leerse. Los líderes pueden acompañar el avance de cada joven a lo largo del camino.
 
 > «¿No ardía nuestro corazón…?» — Lucas 24:32
 
