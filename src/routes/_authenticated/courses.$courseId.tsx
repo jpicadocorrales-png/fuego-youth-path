@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Check, Lock, BookOpen } from "lucide-react";
-import imgReligiones from "@/assets/lessons/religiones.jpg";
+import imgReligiones from "@/assets/lessons/religiones.webp";
 import imgJesus from "@/assets/lessons/jesus.jpg";
 import imgDios from "@/assets/lessons/dios.jpg";
 import imgEspiritu from "@/assets/lessons/espiritu.jpg";
