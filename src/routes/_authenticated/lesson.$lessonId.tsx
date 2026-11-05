@@ -80,6 +80,26 @@ function LessonPlayer() {
     );
   }
 
+  // Lecciones con una experiencia propia que todavía se está desarrollando (por ejemplo «jesus-01»).
+  if (lesson.experience) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-6 text-center">
+        <img src={mascot} alt="" width={1024} height={1024} className="w-40 animate-pop" />
+        <h1 className="text-3xl font-bold text-primary">Estamos trabajando en el contenido</h1>
+        <p className="max-w-sm text-lg text-muted-foreground">
+          La lección «{lesson.title}» estará disponible muy pronto. ¡Gracias por tu paciencia!
+        </p>
+        <Button
+          size="lg"
+          className="mt-4 w-64"
+          onClick={() => navigate({ to: "/courses/$courseId", params: { courseId: lesson.course_id } })}
+        >
+          Volver al curso
+        </Button>
+      </div>
+    );
+  }
+
   function next() {
     const newCorrect = correct + (isRight ? 1 : 0);
     setCorrect(newCorrect);
