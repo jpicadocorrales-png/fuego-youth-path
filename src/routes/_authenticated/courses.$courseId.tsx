@@ -3,17 +3,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Check, Lock, BookOpen } from "lucide-react";
 import imgReligiones from "@/assets/lessons/religiones.webp";
-import imgJesus from "@/assets/lessons/jesus.jpg";
-import imgDios from "@/assets/lessons/dios.jpg";
-import imgEspiritu from "@/assets/lessons/espiritu.jpg";
-import imgPecado from "@/assets/lessons/pecado.jpg";
-import imgSalvacion from "@/assets/lessons/salvacion.jpg";
-import imgOracion from "@/assets/lessons/oracion.jpg";
-import imgIglesia from "@/assets/lessons/iglesia.jpg";
+import imgJesus from "@/assets/lessons/jesus.webp";
 
+// Solo estas lecciones tienen ilustración; las demás muestran el ícono de libro.
 const ILL: [RegExp, string][] = [
-  [/religi/i, imgReligiones], [/jes[uú]s/i, imgJesus], [/esp[ií]ritu/i, imgEspiritu], [/^dios/i, imgDios],
-  [/pecado/i, imgPecado], [/salvaci/i, imgSalvacion], [/oraci/i, imgOracion], [/iglesia/i, imgIglesia],
+  [/religi/i, imgReligiones], [/jes[uú]s/i, imgJesus],
 ];
 function illustrationFor(title: string) {
   return ILL.find(([re]) => re.test(title))?.[1];
@@ -96,10 +90,13 @@ function CoursePath() {
                   "relative flex items-center justify-center rounded-full bg-cream shadow-[var(--shadow-soft)] transition-transform",
                   isNext ? "size-24 ring-4 ring-primary ring-offset-4 ring-offset-card hover:scale-105" : "size-20",
                   l.done && "ring-4 ring-green ring-offset-2 ring-offset-card",
-                  locked && "cursor-not-allowed opacity-60 grayscale",
+                  locked && "cursor-not-allowed bg-muted",
                 )}
               >
-                {img ? (
+                {/* Las lecciones bloqueadas muestran solo el candado, sin su ilustración */}
+                {locked ? (
+                  <Lock className="!size-8 text-muted-foreground" />
+                ) : img ? (
                   <img src={img} alt="" width={816} height={816} loading="lazy" className="size-full rounded-full object-cover" />
                 ) : (
                   <BookOpen className="!size-9 text-primary" />
@@ -107,11 +104,6 @@ function CoursePath() {
                 {l.done && (
                   <span className="absolute -right-1.5 -top-1.5 flex size-7 items-center justify-center rounded-full bg-green text-primary-foreground ring-2 ring-card">
                     <Check className="!size-4" strokeWidth={3.5} />
-                  </span>
-                )}
-                {locked && (
-                  <span className="absolute -right-1 -top-1 flex size-7 items-center justify-center rounded-full bg-foreground text-background ring-2 ring-card">
-                    <Lock className="!size-3.5" />
                   </span>
                 )}
               </div>
