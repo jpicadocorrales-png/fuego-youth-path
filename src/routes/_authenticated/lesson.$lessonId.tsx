@@ -8,7 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import mascot from "@/assets/fuego-mascot.png";
 import { ReligionsLesson } from "@/components/lessons/ReligionsLesson";
-import { JesusLesson } from "@/components/lessons/JesusLesson";
 
 export const Route = createFileRoute("/_authenticated/lesson/$lessonId")({
   head: () => ({ meta: [{ title: "Lección — Sendero" }, { name: "description", content: "Responde y gana XP." }] }),
@@ -70,16 +69,6 @@ function LessonPlayer() {
       navigate({ to: "/lesson/$lessonId", params: { lessonId: next.id } });
     } else navigate({ to: "/courses/$courseId", params: { courseId: lesson.course_id } });
   };
-
-  if (lesson.experience === "jesus-01") {
-    return (
-      <JesusLesson
-        onComplete={() => void finish(0, false)}
-        onNext={() => void goNext()}
-        onExit={() => navigate({ to: "/courses/$courseId", params: { courseId: lesson.course_id } })}
-      />
-    );
-  }
 
   if (lesson.experience === "religions-01") {
     return (
