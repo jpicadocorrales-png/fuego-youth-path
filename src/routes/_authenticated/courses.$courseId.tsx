@@ -61,7 +61,7 @@ function CoursePath() {
         <Link to="/courses" className="text-xs font-semibold opacity-90">← Cursos</Link>
         <h1 className="mt-1 flex items-center gap-2.5 text-2xl font-extrabold tracking-normal">
           <span className="flex size-9 items-center justify-center rounded-xl bg-card/25">
-            <look.icon className="size-5" strokeWidth={2.5} />
+            <look.icon className="size-5 text-white" strokeWidth={2.5} />
           </span>
           {course.title}
         </h1>

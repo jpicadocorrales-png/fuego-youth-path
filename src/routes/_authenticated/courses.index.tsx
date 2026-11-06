@@ -19,7 +19,7 @@ function CoursesPage() {
     return (
     <Link to="/courses/$courseId" params={{ courseId: c.id }} className="card-chunky block overflow-hidden transition-transform hover:-translate-y-1">
       <div className={cn("flex h-24 items-center justify-center", look.bg, look.text)}>
-        <look.icon className="size-12" strokeWidth={2} />
+        <look.icon className="size-12 text-white" strokeWidth={2} />
       </div>
       <div className="p-4">
         <div className="text-xs font-extrabold uppercase text-muted-foreground">{c.level} · {c.total} lecciones</div>
