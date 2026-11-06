@@ -84,7 +84,7 @@ function LessonPlayer() {
   if (lesson.experience) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-6 text-center">
-        <img src={mascot} alt="" width={1024} height={1024} className="w-40 animate-pop" />
+        <img src={mascot} alt="" width={800} height={800} className="w-40 animate-pop" />
         <h1 className="text-3xl font-bold text-primary">Estamos trabajando en el contenido</h1>
         <p className="max-w-sm text-lg text-muted-foreground">
           La lección «{lesson.title}» estará disponible muy pronto. ¡Gracias por tu paciencia!
@@ -113,7 +113,7 @@ function LessonPlayer() {
     const pct = total ? Math.round((correct / total) * 100) : 100;
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-6 text-center">
-        <img src={mascot} alt="" width={1024} height={1024} className="w-40 animate-pop" />
+        <img src={mascot} alt="" width={800} height={800} className="w-40 animate-pop" />
         <h1 className="text-4xl font-bold text-primary">¡Lección completada!</h1>
         <div className="flex gap-3">
           <div className="card-chunky border-gold px-6 py-3"><div className="text-xs font-extrabold uppercase text-gold">XP</div><div className="font-display text-2xl font-bold">+{lesson.xp}</div></div>
@@ -143,7 +143,7 @@ function LessonPlayer() {
           <div className="animate-pop">
             <h1 className="text-2xl font-bold">{lesson.title}</h1>
             <div className="mt-6 flex items-start gap-4">
-              <img src={mascot} alt="" width={1024} height={1024} className="w-24" />
+              <img src={mascot} alt="" width={800} height={800} className="w-24" />
               <div className="card-chunky flex-1 p-5">
                 <p className="text-xl font-semibold italic">“{lesson.passage}”</p>
                 <p className="mt-2 text-sm font-extrabold text-secondary">{lesson.reference}</p>

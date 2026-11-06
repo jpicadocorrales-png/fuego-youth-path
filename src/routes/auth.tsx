@@ -58,7 +58,7 @@ function AuthPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
-        <img src={mascot} alt="" width={1024} height={1024} className="mx-auto w-28 animate-floaty" />
+        <img src={mascot} alt="" width={800} height={800} className="mx-auto w-28 animate-floaty" />
         <h1 className="mt-2 text-center text-3xl font-bold">
           {mode === "in" ? "¡Hola de nuevo!" : "Crea tu perfil"}
         </h1>
