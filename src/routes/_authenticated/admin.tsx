@@ -1,21 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { AppShell, ProgressBar } from "@/components/AppShell";
+import { Award, BookOpen, ChevronDown, Flame, Megaphone, Users, Zap, type LucideIcon } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { courseColor, useMe } from "@/lib/app-data";
+import { useMe } from "@/lib/app-data";
+import { courseLook } from "@/lib/course-look";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Administración — Fuego+" }, { name: "description", content: "Seguimiento de los jóvenes y sus cursos." }] }),
   component: AdminPage,
 });
 
-const field = "h-11 rounded-xl border-2";
+const VIOLET = "#5c30ff";
+const DAY = 864e5;
+const field = "h-12 rounded-2xl border-2 bg-background px-4 text-base";
+const tab = "rounded-full px-5 py-2 font-extrabold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none";
 
 function AdminPage() {
   const { data: me, isLoading } = useMe();
@@ -23,77 +30,257 @@ function AdminPage() {
   if (!me?.isAdmin) return <AppShell><p className="font-bold">Solo los administradores pueden ver esta página.</p></AppShell>;
   return (
     <AppShell>
-      <h1 className="text-3xl font-bold">Administración</h1>
-      <Tabs defaultValue="students" className="mt-4">
-        <TabsList className="h-auto flex-wrap rounded-xl">
-          <TabsTrigger value="students" className="font-bold">Jóvenes</TabsTrigger>
-          <TabsTrigger value="announce" className="font-bold">Anuncios</TabsTrigger>
-          <TabsTrigger value="content" className="font-bold">Crear contenido</TabsTrigger>
+      <h1 className="text-4xl font-black md:text-5xl">Administración</h1>
+      <p className="mt-1 text-muted-foreground">Seguimiento de los jóvenes y sus cursos.</p>
+      <Tabs defaultValue="stats" className="mt-6">
+        <TabsList className="h-auto flex-wrap gap-1 rounded-full bg-card p-1.5 shadow-[var(--shadow-soft)]">
+          <TabsTrigger value="stats" className={tab}>Estadísticas</TabsTrigger>
+          <TabsTrigger value="students" className={tab}>Jóvenes</TabsTrigger>
+          <TabsTrigger value="announce" className={tab}>Anuncios</TabsTrigger>
         </TabsList>
+        <TabsContent value="stats"><Stats /></TabsContent>
         <TabsContent value="students"><Students /></TabsContent>
         <TabsContent value="announce"><Announce /></TabsContent>
-        <TabsContent value="content"><Content /></TabsContent>
       </Tabs>
     </AppShell>
   );
 }
 
-function Students() {
-  const { data } = useQuery({
+// Datos de seguimiento compartidos por Estadísticas y Jóvenes.
+function useAdminData() {
+  return useQuery({
     queryKey: ["admin-students"],
     queryFn: async () => {
       const [{ data: profiles }, { data: courses }, { data: lessons }, { data: comps }, { data: ub }] = await Promise.all([
         supabase.from("profiles").select("*").order("xp", { ascending: false }),
-        supabase.from("courses").select("id, title, emoji").order("order_index"),
+        supabase.from("courses").select("id, title, color").order("order_index"),
         supabase.from("lessons").select("id, course_id"),
-        supabase.from("lesson_completions").select("user_id, course_id"),
+        supabase.from("lesson_completions").select("user_id, course_id, completed_at"),
         supabase.from("user_badges").select("user_id"),
       ]);
       return { profiles: profiles ?? [], courses: courses ?? [], lessons: lessons ?? [], comps: comps ?? [], ub: ub ?? [] };
     },
   });
-  const [open, setOpen] = useState<string | null>(null);
-  if (!data) return null;
-  const today = new Date();
-  const active = data.profiles.filter((p) => p.last_activity_date && (today.getTime() - new Date(p.last_activity_date).getTime()) / 864e5 < 7).length;
+}
+
+const daysSince = (date: string | null) => (date ? (Date.now() - new Date(date).getTime()) / DAY : Infinity);
+
+function SectionTitle({ children, aside }: { children: ReactNode; aside?: ReactNode }) {
+  return (
+    <div className="mb-4 mt-10 flex items-end justify-between gap-3">
+      <h2 className="text-2xl font-black md:text-3xl">{children}</h2>
+      {aside}
+    </div>
+  );
+}
+
+function StatTile({ icon: Icon, value, label, tile, chip }: { icon: LucideIcon; value: number; label: string; tile: string; chip: string }) {
+  return (
+    <div className={cn("flex min-h-36 flex-col justify-between rounded-[1.75rem] p-5", tile)}>
+      <span className={cn("flex size-11 items-center justify-center rounded-2xl", chip)}>
+        <Icon className="size-6" strokeWidth={2.5} />
+      </span>
+      <div>
+        <div className="font-display text-4xl font-black leading-none">{value}</div>
+        <div className="mt-1.5 text-sm font-extrabold">{label}</div>
+      </div>
+    </div>
+  );
+}
+
+function ChartCard({ title, note, children }: { title: string; note?: string; children: ReactNode }) {
+  return (
+    <section className="rounded-[1.75rem] bg-card p-5 shadow-[var(--shadow-soft)] md:p-6">
+      <h3 className="text-lg font-extrabold">{title}</h3>
+      {note && <p className="text-sm text-muted-foreground">{note}</p>}
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+// Sin animación de los gráficos si el usuario pidió movimiento reducido.
+const animate = () => typeof window !== "undefined" && !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+const axis = { fontSize: 12, fill: "var(--muted-foreground)" };
+const tooltipStyle = {
+  contentStyle: { borderRadius: 14, border: "none", boxShadow: "var(--shadow-soft)", fontWeight: 700 },
+  cursor: { fill: "var(--muted)" },
+};
+
+function Stats() {
+  const { data } = useAdminData();
+  if (!data) return <p className="mt-6 text-muted-foreground">Cargando estadísticas…</p>;
+
+  const active = data.profiles.filter((p) => daysSince(p.last_activity_date) < 7).length;
+  const never = data.profiles.filter((p) => !p.last_activity_date).length;
+  const inactive = data.profiles.length - active - never;
+
+  // Lecciones completadas por día, últimos 14 días.
+  const perDay = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (13 - i));
+    const key = d.toDateString();
+    return {
+      dia: d.toLocaleDateString("es", { day: "numeric", month: "short" }),
+      lecciones: data.comps.filter((c) => new Date(c.completed_at).toDateString() === key).length,
+    };
+  });
+
+  // Avance promedio de los jóvenes en cada curso.
+  const perCourse = data.courses.map((c) => {
+    const total = data.lessons.filter((l) => l.course_id === c.id).length;
+    const sum = data.profiles.reduce((s, p) => {
+      const done = data.comps.filter((m) => m.user_id === p.id && m.course_id === c.id).length;
+      return s + (total ? done / total : 0);
+    }, 0);
+    return {
+      curso: c.title,
+      avance: data.profiles.length ? Math.round((sum / data.profiles.length) * 100) : 0,
+      color: courseLook(c).hex,
+    };
+  });
+
+  const activity = [
+    { estado: "Activos (7 días)", jovenes: active, color: "#008c47" },
+    { estado: "Inactivos", jovenes: inactive, color: "#f6bc3f" },
+    { estado: "Sin actividad", jovenes: never, color: "#e63c23" },
+  ];
+
+  const top = data.profiles.slice(0, 5).map((p) => ({ nombre: p.display_name, xp: p.xp }));
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
-        <Stat label="Jóvenes" value={data.profiles.length} emoji="👥" />
-        <Stat label="Activos (7 días)" value={active} emoji="🔥" />
-        <Stat label="Lecciones hechas" value={data.comps.length} emoji="📖" />
+    <div>
+      <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <StatTile icon={Users} value={data.profiles.length} label="jóvenes" tile="bg-primary text-primary-foreground" chip="bg-primary-foreground/20" />
+        <StatTile icon={Flame} value={active} label="activos esta semana" tile="bg-yellow text-foreground" chip="bg-card/60" />
+        <StatTile icon={BookOpen} value={data.comps.length} label="lecciones hechas" tile="bg-secondary/15 text-foreground" chip="bg-secondary text-secondary-foreground" />
+        <StatTile icon={Award} value={data.ub.length} label="insignias ganadas" tile="bg-green/15 text-foreground" chip="bg-green text-primary-foreground" />
       </div>
+
+      <SectionTitle>Estadísticas</SectionTitle>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <ChartCard title="Lecciones completadas" note="Últimos 14 días">
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={perDay} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
+              <CartesianGrid vertical={false} stroke="var(--border)" />
+              <XAxis dataKey="dia" tick={axis} tickLine={false} axisLine={false} interval={2} />
+              <YAxis allowDecimals={false} tick={axis} tickLine={false} axisLine={false} />
+              <Tooltip {...tooltipStyle} formatter={(v) => [v, "lecciones"]} />
+              <Bar dataKey="lecciones" isAnimationActive={animate()} fill={VIOLET} radius={[4, 4, 0, 0]} maxBarSize={22} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Actividad de los jóvenes" note="Según su última lección">
+          <div className="flex flex-wrap items-center gap-4">
+            <ResponsiveContainer width={180} height={180}>
+              <PieChart>
+                <Pie isAnimationActive={animate()} data={activity} dataKey="jovenes" nameKey="estado" innerRadius={52} outerRadius={80} paddingAngle={2} stroke="var(--card)" strokeWidth={2}>
+                  {activity.map((a) => (
+                    <Cell key={a.estado} fill={a.color} />
+                  ))}
+                </Pie>
+                <Tooltip {...tooltipStyle} formatter={(v, n) => [v, n]} />
+              </PieChart>
+            </ResponsiveContainer>
+            <ul className="space-y-2">
+              {activity.map((a) => (
+                <li key={a.estado} className="flex items-center gap-2 text-sm font-bold">
+                  <span className="size-3 rounded-full" style={{ background: a.color }} />
+                  {a.estado}
+                  <span className="text-muted-foreground">· {a.jovenes}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </ChartCard>
+
+        <ChartCard title="Avance promedio por curso" note="Porcentaje medio de lecciones completadas">
+          <ResponsiveContainer width="100%" height={Math.max(160, perCourse.length * 44)}>
+            <BarChart data={perCourse} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
+              <CartesianGrid horizontal={false} stroke="var(--border)" />
+              <XAxis type="number" domain={[0, 100]} unit="%" tick={axis} tickLine={false} axisLine={false} />
+              <YAxis type="category" dataKey="curso" width={130} tick={axis} tickLine={false} axisLine={false} />
+              <Tooltip {...tooltipStyle} formatter={(v) => [`${v}%`, "avance"]} />
+              <Bar dataKey="avance" isAnimationActive={animate()} radius={[0, 4, 4, 0]} maxBarSize={18}>
+                {perCourse.map((c) => (
+                  <Cell key={c.curso} fill={c.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Top 5 por XP">
+          <ResponsiveContainer width="100%" height={Math.max(160, top.length * 44)}>
+            <BarChart data={top} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
+              <CartesianGrid horizontal={false} stroke="var(--border)" />
+              <XAxis type="number" allowDecimals={false} tick={axis} tickLine={false} axisLine={false} />
+              <YAxis type="category" dataKey="nombre" width={110} tick={axis} tickLine={false} axisLine={false} />
+              <Tooltip {...tooltipStyle} formatter={(v) => [v, "XP"]} />
+              <Bar dataKey="xp" isAnimationActive={animate()} fill="#f6bc3f" radius={[0, 4, 4, 0]} maxBarSize={18} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+      </div>
+    </div>
+  );
+}
+
+function Students() {
+  const { data } = useAdminData();
+  const [open, setOpen] = useState<string | null>(null);
+  if (!data) return null;
+
+  return (
+    <div className="mt-6 space-y-3 pb-6">
       {data.profiles.map((p) => {
         const mine = data.comps.filter((c) => c.user_id === p.id);
-        const inactive = !p.last_activity_date || (today.getTime() - new Date(p.last_activity_date).getTime()) / 864e5 >= 7;
+        const inactive = daysSince(p.last_activity_date) >= 7;
+        const isOpen = open === p.id;
         return (
-          <div key={p.id} className="card-chunky p-4">
-            <button className="flex w-full items-center gap-3 text-left" onClick={() => setOpen(open === p.id ? null : p.id)}>
-              <span className="text-3xl">{p.avatar_emoji}</span>
-              <div className="flex-1">
-                <div className="font-bold">{p.display_name}</div>
-                <div className="text-xs text-muted-foreground">
+          <div key={p.id} className="rounded-[1.5rem] bg-card p-5 shadow-[var(--shadow-soft)]">
+            <button className="flex w-full items-center gap-4 text-left" onClick={() => setOpen(isOpen ? null : p.id)} aria-expanded={isOpen}>
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-2xl">{p.avatar_emoji}</span>
+              <div className="min-w-0 flex-1">
+                <div className="text-lg font-extrabold">{p.display_name}</div>
+                <div className="text-sm text-muted-foreground">
                   Última actividad: {p.last_activity_date ? new Date(p.last_activity_date).toLocaleDateString("es") : "nunca"}
                   {inactive && <span className="ml-2 font-bold text-destructive">· inactivo</span>}
                 </div>
               </div>
-              <div className="text-right text-sm font-extrabold">
-                <div className="text-gold">⚡ {p.xp}</div>
-                <div className="text-flame">🔥 {p.streak}</div>
+              <div className="hidden items-center gap-2 sm:flex">
+                <Chip icon={Zap} value={p.xp} tone="bg-yellow/25" />
+                <Chip icon={Flame} value={p.streak} tone="bg-orange/15" />
+                <Chip icon={Award} value={data.ub.filter((b) => b.user_id === p.id).length} tone="bg-green/15" />
               </div>
-              <div className="hidden text-sm font-bold sm:block">🏅 {data.ub.filter((b) => b.user_id === p.id).length}</div>
+              <ChevronDown className={cn("size-5 shrink-0 text-muted-foreground transition-transform", isOpen && "rotate-180")} />
             </button>
-            {open === p.id && (
-              <div className="mt-4 space-y-2 border-t-2 pt-3">
+            {isOpen && (
+              <div className="mt-5 space-y-3 border-t pt-4">
+                <div className="flex gap-2 sm:hidden">
+                  <Chip icon={Zap} value={p.xp} tone="bg-yellow/25" />
+                  <Chip icon={Flame} value={p.streak} tone="bg-orange/15" />
+                  <Chip icon={Award} value={data.ub.filter((b) => b.user_id === p.id).length} tone="bg-green/15" />
+                </div>
                 {data.courses.map((c) => {
+                  const look = courseLook(c);
                   const total = data.lessons.filter((l) => l.course_id === c.id).length;
                   const done = mine.filter((m) => m.course_id === c.id).length;
                   const pct = total ? Math.round((done / total) * 100) : 0;
                   return (
-                    <div key={c.id}>
-                      <div className="flex justify-between text-sm font-bold"><span>{c.emoji} {c.title}</span><span>{done}/{total} · {pct}%</span></div>
-                      <ProgressBar value={pct} className="mt-1 h-2" />
+                    <div key={c.id} className="flex items-center gap-3">
+                      <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", look.tint, look.fg)}>
+                        <look.icon className="size-5" strokeWidth={2.25} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex justify-between text-sm font-bold">
+                          <span className="truncate">{c.title}</span>
+                          <span className="shrink-0">{done}/{total} · {pct}%</span>
+                        </div>
+                        <div className="mt-1 h-2 overflow-hidden rounded-full bg-muted">
+                          <div className={cn("h-full rounded-full", look.bg)} style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
@@ -106,13 +293,11 @@ function Students() {
   );
 }
 
-function Stat({ label, value, emoji }: { label: string; value: number; emoji: string }) {
+function Chip({ icon: Icon, value, tone }: { icon: LucideIcon; value: number; tone: string }) {
   return (
-    <div className="card-chunky p-4">
-      <div className="text-2xl">{emoji}</div>
-      <div className="font-display text-2xl font-bold">{value}</div>
-      <div className="text-xs font-extrabold uppercase text-muted-foreground">{label}</div>
-    </div>
+    <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-extrabold", tone)}>
+      <Icon className="size-4" strokeWidth={2.5} /> {value}
+    </span>
   );
 }
 
@@ -128,110 +313,23 @@ function Announce() {
     qc.invalidateQueries({ queryKey: ["announcements"] });
   }
   return (
-    <div className="card-chunky space-y-3 p-5">
-      <h2 className="text-xl font-bold">Nuevo anuncio</h2>
-      <Input className={field} placeholder="Título" value={title} onChange={(e) => setTitle(e.target.value)} />
-      <Textarea className="rounded-xl border-2" placeholder="Mensaje para todos los jóvenes" value={body} onChange={(e) => setBody(e.target.value)} />
-      <Button disabled={!title || !body} onClick={post}>Publicar</Button>
-    </div>
-  );
-}
-
-type Q = { kind: string; prompt: string; options: string[]; correct: number };
-const emptyQ = (): Q => ({ kind: "multiple", prompt: "", options: ["", "", ""], correct: 0 });
-
-function Content() {
-  const qc = useQueryClient();
-  const { data: courses = [] } = useQuery({
-    queryKey: ["admin-courses"],
-    queryFn: async () => (await supabase.from("courses").select("id, title, emoji").order("order_index")).data ?? [],
-  });
-  const [c, setC] = useState({ title: "", description: "", emoji: "📖", color: "sky", level: "Principiante" });
-  const [courseId, setCourseId] = useState("");
-  const [l, setL] = useState({ title: "", passage: "", reference: "" });
-  const [qs, setQs] = useState<Q[]>([emptyQ()]);
-
-  async function createCourse() {
-    const { error } = await supabase.from("courses").insert({ ...c, order_index: courses.length + 1 });
-    if (error) { toast.error("Error al crear el curso"); return; }
-    toast.success("Curso creado");
-    setC({ ...c, title: "", description: "" });
-    qc.invalidateQueries();
-  }
-
-  async function createLesson() {
-    const { count } = await supabase.from("lessons").select("id", { count: "exact", head: true }).eq("course_id", courseId);
-    const { data: lesson, error } = await supabase.from("lessons").insert({ ...l, course_id: courseId, order_index: (count ?? 0) + 1 }).select().single();
-    if (error || !lesson) { toast.error("Error al crear la lección"); return; }
-    const rows = qs.filter((q) => q.prompt).map((q, i) => ({
-      lesson_id: lesson.id, kind: q.kind, prompt: q.prompt,
-      options: q.kind === "truefalse" ? ["Verdadero", "Falso"] : q.options.filter(Boolean),
-      correct_index: q.correct, order_index: i + 1,
-    }));
-    if (rows.length) await supabase.from("questions").insert(rows);
-    toast.success("Lección creada");
-    setL({ title: "", passage: "", reference: "" });
-    setQs([emptyQ()]);
-    qc.invalidateQueries();
-  }
-
-  const upd = (i: number, patch: Partial<Q>) => setQs(qs.map((q, j) => (j === i ? { ...q, ...patch } : q)));
-
-  return (
-    <div className="space-y-4">
-      <div className="card-chunky space-y-3 p-5">
-        <h2 className="text-xl font-bold">Nuevo curso</h2>
-        <div className="flex gap-2">
-          <Input className={`${field} w-20 text-center text-xl`} value={c.emoji} onChange={(e) => setC({ ...c, emoji: e.target.value })} />
-          <Input className={field} placeholder="Título del curso" value={c.title} onChange={(e) => setC({ ...c, title: e.target.value })} />
-        </div>
-        <Textarea className="rounded-xl border-2" placeholder="Descripción" value={c.description} onChange={(e) => setC({ ...c, description: e.target.value })} />
-        <div className="flex flex-wrap gap-2">
-          {["green", "sky", "orange", "pink"].map((col) => (
-            <button key={col} onClick={() => setC({ ...c, color: col })} className={`size-10 rounded-full ${courseColor[col]} ${c.color === col ? "ring-4 ring-ring" : ""}`} aria-label={col} />
-          ))}
-          <select className="rounded-xl border-2 bg-card px-3 font-bold" value={c.level} onChange={(e) => setC({ ...c, level: e.target.value })}>
-            <option>Principiante</option><option>Intermedio</option><option>Avanzado</option>
-          </select>
-        </div>
-        <Button disabled={!c.title} onClick={createCourse}>Crear curso</Button>
-      </div>
-
-      <div className="card-chunky space-y-3 p-5">
-        <h2 className="text-xl font-bold">Nueva lección</h2>
-        <select className="h-11 w-full rounded-xl border-2 bg-card px-3 font-bold" value={courseId} onChange={(e) => setCourseId(e.target.value)}>
-          <option value="">Elige un curso…</option>
-          {courses.map((x) => <option key={x.id} value={x.id}>{x.emoji} {x.title}</option>)}
-        </select>
-        <Input className={field} placeholder="Título de la lección" value={l.title} onChange={(e) => setL({ ...l, title: e.target.value })} />
-        <Textarea className="rounded-xl border-2" placeholder="Pasaje bíblico" value={l.passage} onChange={(e) => setL({ ...l, passage: e.target.value })} />
-        <Input className={field} placeholder="Referencia (ej. Juan 3:16)" value={l.reference} onChange={(e) => setL({ ...l, reference: e.target.value })} />
-
-        {qs.map((q, i) => (
-          <div key={i} className="space-y-2 rounded-xl bg-muted p-3">
-            <div className="flex gap-2">
-              <select className="rounded-lg border-2 bg-card px-2 text-sm font-bold" value={q.kind} onChange={(e) => upd(i, { kind: e.target.value, correct: 0 })}>
-                <option value="multiple">Opción múltiple</option>
-                <option value="fill">Completar versículo</option>
-                <option value="truefalse">Verdadero / Falso</option>
-              </select>
-              <Input className="rounded-lg border-2" placeholder={q.kind === "fill" ? "Texto con ___" : "Pregunta"} value={q.prompt} onChange={(e) => upd(i, { prompt: e.target.value })} />
-            </div>
-            {(q.kind === "truefalse" ? ["Verdadero", "Falso"] : q.options).map((o, k) => (
-              <div key={k} className="flex items-center gap-2">
-                <input type="radio" checked={q.correct === k} onChange={() => upd(i, { correct: k })} aria-label="Correcta" />
-                {q.kind === "truefalse" ? <span className="font-bold">{o}</span> : (
-                  <Input className="h-9 rounded-lg border-2" placeholder={`Opción ${k + 1}`} value={o} onChange={(e) => upd(i, { options: q.options.map((x, z) => (z === k ? e.target.value : x)) })} />
-                )}
-              </div>
-            ))}
-          </div>
-        ))}
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setQs([...qs, emptyQ()])}>+ Pregunta</Button>
-          <Button disabled={!courseId || !l.title} onClick={createLesson}>Crear lección</Button>
+    <section className="mt-6 rounded-[1.5rem] bg-card p-6 shadow-[var(--shadow-soft)]">
+      <div className="flex items-center gap-4">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-orange/15 text-orange">
+          <Megaphone className="size-6" strokeWidth={2.25} />
+        </span>
+        <div>
+          <h2 className="text-xl font-extrabold">Nuevo anuncio</h2>
+          <p className="text-sm text-muted-foreground">Lo verán todos los jóvenes en su inicio.</p>
         </div>
       </div>
-    </div>
+      <div className="mt-5 space-y-3">
+        <Input className={field} placeholder="Título" value={title} onChange={(e) => setTitle(e.target.value)} />
+        <Textarea className="min-h-28 rounded-2xl border-2 bg-background px-4 py-3 text-base" placeholder="Mensaje para todos los jóvenes" value={body} onChange={(e) => setBody(e.target.value)} />
+      </div>
+      <Button size="lg" className="mt-4 w-full rounded-full" disabled={!title || !body} onClick={post}>
+        Publicar
+      </Button>
+    </section>
   );
 }
