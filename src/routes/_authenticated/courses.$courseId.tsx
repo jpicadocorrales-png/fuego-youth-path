@@ -13,7 +13,8 @@ function illustrationFor(title: string) {
   return ILL.find(([re]) => re.test(title))?.[1];
 }
 import { AppShell } from "@/components/AppShell";
-import { courseColor, useCourses } from "@/lib/app-data";
+import { useCourses } from "@/lib/app-data";
+import { courseLook } from "@/lib/course-look";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/courses/$courseId")({
@@ -52,12 +53,18 @@ function CoursePath() {
     return `${d} C ${prev.x} ${my}, ${p.x} ${my}, ${p.x} ${p.y}`;
   }, "");
   const nextLesson = nextIdx >= 0 ? course.lessons[nextIdx] : undefined;
+  const look = courseLook(course);
 
   return (
     <AppShell>
-      <div className={`rounded-3xl px-5 py-4 text-primary-foreground ${courseColor[course.color] ?? "bg-primary"}`}>
+      <div className={cn("rounded-3xl px-5 py-4", look.bg, look.text)}>
         <Link to="/courses" className="text-xs font-semibold opacity-90">← Cursos</Link>
-        <h1 className="mt-1 text-2xl font-black">{course.title}</h1>
+        <h1 className="mt-1 flex items-center gap-2.5 text-2xl font-extrabold tracking-normal">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-card/25">
+            <look.icon className="size-5" strokeWidth={2.5} />
+          </span>
+          {course.title}
+        </h1>
         <p className="mt-0.5 line-clamp-2 text-sm opacity-90">{course.description}</p>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-primary-foreground/30">
           <div className="h-full rounded-full bg-primary-foreground transition-all duration-700" style={{ width: `${course.pct}%` }} />
