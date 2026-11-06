@@ -10,7 +10,7 @@ import mascot from "@/assets/fuego-mascot.png";
 import { ReligionsLesson } from "@/components/lessons/ReligionsLesson";
 
 export const Route = createFileRoute("/_authenticated/lesson/$lessonId")({
-  head: () => ({ meta: [{ title: "Lección — Sendero" }, { name: "description", content: "Responde y gana XP." }] }),
+  head: () => ({ meta: [{ title: "Lección — Fuego+" }, { name: "description", content: "Responde y gana XP." }] }),
   component: LessonPlayer,
 });
 
