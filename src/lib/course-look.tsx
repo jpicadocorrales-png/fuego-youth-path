@@ -21,15 +21,16 @@ function LatinCross({ className, strokeWidth = 2 }: IconProps) {
   );
 }
 
-// Fondos de color completo para las tarjetas de curso. Todos llevan texto blanco, así que
-// el amarillo y el rosa usan tonos más profundos para que el blanco se lea bien.
+// Fondos con la paleta de Fuego+ (violeta, coral, rosa, amarillo y verde). Todas las
+// tarjetas de curso llevan texto negro, que se lee bien sobre los cinco colores.
 const BG: Record<string, string> = {
   green: "bg-green",
   sky: "bg-sky",
   orange: "bg-orange",
-  pink: "bg-[#d13f95]",
-  yellow: "bg-[#b06e0a]",
+  pink: "bg-pink",
+  yellow: "bg-yellow",
 };
+const INK = "text-[#1c1626]";
 
 // Ícono y color de cada curso según su nombre, para que cada uno sea reconocible
 // y no se repitan colores. Los cursos nuevos usan el color guardado y un libro.
@@ -46,5 +47,5 @@ const LOOKS: [RegExp, { icon: ComponentType<IconProps>; color: string }][] = [
 export function courseLook(course: { title: string; color: string }): CourseLook {
   const found = LOOKS.find(([re]) => re.test(course.title))?.[1];
   const color = found?.color ?? course.color;
-  return { icon: found?.icon ?? BookOpen, bg: BG[color] ?? "bg-primary", text: "text-white" };
+  return { icon: found?.icon ?? BookOpen, bg: BG[color] ?? "bg-primary", text: INK };
 }
