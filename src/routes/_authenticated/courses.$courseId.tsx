@@ -72,11 +72,15 @@ function CoursePath() {
         </div>
       </div>
 
-      <div className="relative mt-6 w-full overflow-hidden rounded-[2rem] bg-card py-2">
+      {/* Recuadro del recorrido: fondo crema con un patrón de puntos suave */}
+      <div
+        className="relative mt-6 w-full overflow-hidden rounded-[2rem] border border-border bg-cream/60 py-2"
+        style={{ backgroundImage: "radial-gradient(oklch(0.6 0.21 33 / 0.13) 1.5px, transparent 1.5px)", backgroundSize: "22px 22px" }}
+      >
         <div className="relative mx-auto" style={{ width: W, height }}>
           <svg className="absolute inset-0" width={W} height={height} aria-hidden>
             <path d={pathD} fill="none" className="stroke-border" strokeWidth={22} strokeLinecap="round" />
-            <path d={pathD} fill="none" className="stroke-background" strokeWidth={18} strokeLinecap="round" />
+            <path d={pathD} fill="none" className="stroke-card" strokeWidth={18} strokeLinecap="round" />
             {doneCount > 0 && <path d={walked} fill="none" className="stroke-green/40" strokeWidth={8} strokeLinecap="round" />}
           </svg>
           {course.lessons.map((l, i) => {
@@ -87,10 +91,10 @@ function CoursePath() {
             const node = (
               <div
                 className={cn(
-                  "relative flex items-center justify-center rounded-full bg-cream shadow-[var(--shadow-soft)] transition-transform",
+                  "relative flex items-center justify-center rounded-full bg-card shadow-[var(--shadow-soft)] transition-transform",
                   isNext ? "size-[7.5rem] ring-4 ring-primary ring-offset-4 ring-offset-card hover:scale-105" : "size-[6.5rem]",
                   l.done && "ring-4 ring-green ring-offset-2 ring-offset-card",
-                  locked && "cursor-not-allowed bg-muted",
+                  locked && "cursor-not-allowed",
                 )}
               >
                 {/* Las lecciones bloqueadas muestran solo el candado, sin su ilustración */}
