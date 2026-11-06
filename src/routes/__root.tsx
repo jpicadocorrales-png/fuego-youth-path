@@ -65,11 +65,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Aprende la Biblia jugando: cursos, rachas e insignias para jóvenes." },
       { property: "og:type", content: "website" },
       // Imagen de vista previa al compartir el enlace (1200×630).
-      { property: "og:image", content: "/og-image.png" },
+      { property: "og:url", content: "https://fuego-youth-path.lovable.app" },
+      { property: "og:image", content: "https://fuego-youth-path.lovable.app/og-image.png" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: "/og-image.png" },
+      { name: "twitter:image", content: "https://fuego-youth-path.lovable.app/og-image.png" },
       { name: "theme-color", content: "#5c30ff" },
     ],
     links: [

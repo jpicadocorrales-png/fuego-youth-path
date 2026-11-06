@@ -9,8 +9,10 @@ Fuego+ es una app de cursos bíblicos para jóvenes: lecciones cortas con activi
 
 > «¿No ardía nuestro corazón…?» — Lucas 24:32
 
-<!-- ⚠️ PENDIENTE: descomentar cuando estén el enlace publicado y la cuenta de demostración
-**[Ver la app en vivo](https://ENLACE-PUBLICADO)** · Cuenta de demostración: `correo@demo` / `contraseña`
+**[Ver la app en vivo → fuego-youth-path.lovable.app](https://fuego-youth-path.lovable.app)**
+
+<!-- ⚠️ PENDIENTE: agregar la cuenta de demostración
+Cuenta de demostración: `correo@demo` / `contraseña`
 -->
 
 <!-- ⚠️ PENDIENTE: capturas de la app en docs/ y descomentar
