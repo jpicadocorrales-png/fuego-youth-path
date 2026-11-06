@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell, ProgressBar } from "@/components/AppShell";
-import { courseColor, useCourses } from "@/lib/app-data";
+import { useCourses } from "@/lib/app-data";
+import { courseLook } from "@/lib/course-look";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/courses/")({
   head: () => ({ meta: [{ title: "Cursos — Fuego+" }, { name: "description", content: "Tus cursos bíblicos y sugerencias." }] }),
@@ -12,9 +14,13 @@ function CoursesPage() {
   const mine = courses.filter((c) => c.pct > 0);
   const suggested = courses.filter((c) => c.pct === 0);
 
-  const Card = ({ c }: { c: (typeof courses)[number] }) => (
+  const Card = ({ c }: { c: (typeof courses)[number] }) => {
+    const look = courseLook(c);
+    return (
     <Link to="/courses/$courseId" params={{ courseId: c.id }} className="card-chunky block overflow-hidden transition-transform hover:-translate-y-1">
-      <div className={`flex h-24 items-center justify-center text-6xl ${courseColor[c.color] ?? "bg-primary"}`}>{c.emoji}</div>
+      <div className={cn("flex h-24 items-center justify-center", look.bg, look.text)}>
+        <look.icon className="size-12" strokeWidth={2} />
+      </div>
       <div className="p-4">
         <div className="text-xs font-extrabold uppercase text-muted-foreground">{c.level} · {c.total} lecciones</div>
         <h3 className="mt-1 text-lg font-bold">{c.title}</h3>
@@ -23,7 +29,8 @@ function CoursesPage() {
         <div className="mt-1 text-xs font-bold">{c.pct === 100 ? "¡Completado! 🏆" : `${c.pct}%`}</div>
       </div>
     </Link>
-  );
+    );
+  };
 
   return (
     <AppShell>

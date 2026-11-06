@@ -6,7 +6,6 @@ import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  courseColor,
   useAnnouncements,
   useBadges,
   useCompletions,
@@ -14,6 +13,7 @@ import {
   useMe,
   useNotifications,
 } from "@/lib/app-data";
+import { courseLook } from "@/lib/course-look";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/home")({
@@ -22,8 +22,6 @@ export const Route = createFileRoute("/_authenticated/home")({
 });
 
 const days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-// El curso amarillo necesita texto oscuro para leerse bien.
-const onCourse = (color: string) => (color === "yellow" ? "text-foreground" : "text-primary-foreground");
 
 function SectionTitle({ children, aside }: { children: ReactNode; aside?: ReactNode }) {
   return (
@@ -75,6 +73,7 @@ function HomePage() {
   const { data: ann = [] } = useAnnouncements();
 
   const current = courses.find((c) => c.pct > 0 && c.pct < 100) ?? courses.find((c) => c.pct < 100);
+  const currentLook = courseLook(current ?? { title: "", color: "" });
   const week = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - (6 - i));
@@ -125,15 +124,13 @@ function HomePage() {
       {current && (
         <>
           <SectionTitle>Continúa aprendiendo</SectionTitle>
-          <div className={cn("relative overflow-hidden rounded-[2rem] p-6 md:p-8", courseColor[current.color] ?? "bg-primary", onCourse(current.color))}>
-            <span aria-hidden className="pointer-events-none absolute -right-6 -top-8 select-none text-[9rem] leading-none opacity-20">
-              {current.emoji}
-            </span>
+          <div className={cn("relative overflow-hidden rounded-[2rem] p-6 md:p-8", currentLook.bg, currentLook.text)}>
+            <currentLook.icon className="pointer-events-none absolute -right-8 -top-8 size-48 opacity-15" strokeWidth={1.75} />
             <div className="relative">
               <span className="inline-block rounded-full bg-card/25 px-3 py-1 text-xs font-extrabold uppercase tracking-wide">
                 {current.completed} de {current.total} lecciones
               </span>
-              <h3 className="mt-3 text-3xl font-black md:text-4xl">{current.title}</h3>
+              <h3 className="mt-3 text-3xl font-extrabold tracking-normal md:text-4xl">{current.title}</h3>
               <div className="mt-5 h-3 overflow-hidden rounded-full bg-card/30">
                 <div className="h-full rounded-full bg-card transition-all duration-700" style={{ width: `${current.pct}%` }} />
               </div>
@@ -181,20 +178,24 @@ function HomePage() {
       {/* Avance por curso */}
       <SectionTitle>Tus cursos</SectionTitle>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-        {courses.map((c) => (
+        {courses.map((c) => {
+          const look = courseLook(c);
+          return (
           <Link
             key={c.id}
             to="/courses/$courseId"
             params={{ courseId: c.id }}
             className={cn(
               "flex min-h-44 flex-col justify-between rounded-[1.75rem] p-5 transition-transform hover:scale-[1.02]",
-              courseColor[c.color] ?? "bg-primary",
-              onCourse(c.color),
+              look.bg,
+              look.text,
             )}
           >
-            <span className="text-4xl leading-none">{c.emoji}</span>
+            <span className="flex size-11 items-center justify-center rounded-2xl bg-card/25">
+              <look.icon className="size-6" strokeWidth={2.5} />
+            </span>
             <div>
-              <div className="text-lg font-black leading-tight">{c.title}</div>
+              <div className="text-lg font-bold leading-snug">{c.title}</div>
               <div className="mt-1 text-sm font-bold opacity-80">
                 {c.completed} de {c.total} lecciones
               </div>
@@ -203,7 +204,8 @@ function HomePage() {
               </div>
             </div>
           </Link>
-        ))}
+          );
+        })}
       </div>
 
       {/* Anuncios */}
