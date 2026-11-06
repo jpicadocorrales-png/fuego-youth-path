@@ -24,23 +24,23 @@ function LatinCross({ className, strokeWidth = 2 }: IconProps) {
 
 // Ícono y color de cada curso según su nombre, para que cada uno sea reconocible
 // y no se repitan colores. Los cursos nuevos usan el color guardado y un libro.
-// `soft` es la versión tenue del color, para fondos con texto oscuro.
+// `soft` es una versión más suave del color, para fondos con texto oscuro.
 export type CourseLook = { icon: ComponentType<IconProps>; bg: string; soft: string; text: string };
 
 const LOOKS: [RegExp, CourseLook][] = [
-  [/fundamentos/i, { icon: Church, bg: "bg-orange", soft: "bg-orange/15", text: "text-primary-foreground" }],
-  [/creaci|g[eé]nesis/i, { icon: Globe, bg: "bg-green", soft: "bg-green/15", text: "text-primary-foreground" }],
-  [/jes[uú]s/i, { icon: LatinCross, bg: "bg-sky", soft: "bg-sky/15", text: "text-primary-foreground" }],
-  [/h[eé]roes/i, { icon: Shield, bg: "bg-yellow", soft: "bg-yellow/30", text: "text-foreground" }],
-  [/fruto/i, { icon: Grape, bg: "bg-pink", soft: "bg-pink/20", text: "text-foreground" }],
+  [/fundamentos/i, { icon: Church, bg: "bg-orange", soft: "bg-orange/50", text: "text-primary-foreground" }],
+  [/creaci|g[eé]nesis/i, { icon: Globe, bg: "bg-green", soft: "bg-green/45", text: "text-primary-foreground" }],
+  [/jes[uú]s/i, { icon: LatinCross, bg: "bg-sky", soft: "bg-sky/45", text: "text-primary-foreground" }],
+  [/h[eé]roes/i, { icon: Shield, bg: "bg-yellow", soft: "bg-yellow/90", text: "text-foreground" }],
+  [/fruto/i, { icon: Grape, bg: "bg-pink", soft: "bg-pink/60", text: "text-foreground" }],
 ];
 
 const SOFT: Record<string, string> = {
-  green: "bg-green/15",
-  sky: "bg-sky/15",
-  orange: "bg-orange/15",
-  pink: "bg-pink/20",
-  yellow: "bg-yellow/30",
+  green: "bg-green/45",
+  sky: "bg-sky/45",
+  orange: "bg-orange/50",
+  pink: "bg-pink/60",
+  yellow: "bg-yellow/90",
 };
 
 export function courseLook(course: { title: string; color: string }): CourseLook {
@@ -49,7 +49,7 @@ export function courseLook(course: { title: string; color: string }): CourseLook
   return {
     icon: BookOpen,
     bg: courseColor[course.color] ?? "bg-primary",
-    soft: SOFT[course.color] ?? "bg-primary/15",
+    soft: SOFT[course.color] ?? "bg-primary/45",
     text: course.color === "yellow" || course.color === "pink" ? "text-foreground" : "text-primary-foreground",
   };
 }
