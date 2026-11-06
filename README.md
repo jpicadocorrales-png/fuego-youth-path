@@ -1,29 +1,39 @@
-# Fuego+ 🔥
+# Fuego+
+
+![Fuego+: cursos bíblicos interactivos para jóvenes](public/og-image.png)
 
 **Cursos bíblicos interactivos para jóvenes, al estilo Duolingo.**
 
 <!-- ⚠️ PENDIENTE: descripción en tus palabras -->
-Fuego+ es una app de cursos bíblicos para jóvenes: lecciones cortas con actividades, un recorrido por cada curso, insignias por avanzar y un panel para que los líderes den seguimiento.
+Fuego+ es una app de cursos bíblicos para jóvenes: lecciones cortas con actividades, un recorrido por cada curso, rachas e insignias por avanzar, y un panel para que los líderes den seguimiento.
 
 > «¿No ardía nuestro corazón…?» — Lucas 24:32
 
-<!-- ⚠️ PENDIENTE: reemplazar por el enlace publicado (Publish en Lovable) y una cuenta de prueba -->
-**[Ver la app en vivo](https://ENLACE-PUBLICADO)** · Cuenta de demostración: `correo@demo` / `contraseña`
+**[Ver la app en vivo → fuego-youth-path.lovable.app](https://fuego-youth-path.lovable.app)**
 
-<!-- ⚠️ PENDIENTE: agregar capturas o un GIF en docs/ y descomentar
-![Mapa del curso](docs/mapa-curso.png)
+<!-- ⚠️ PENDIENTE: agregar la cuenta de demostración
+Cuenta de demostración: `correo@demo` / `contraseña`
+-->
+
+<!-- ⚠️ PENDIENTE: capturas de la app en docs/ y descomentar
+| Inicio | Curso | Insignias |
+|---|---|---|
+| ![Inicio](docs/inicio.png) | ![Mapa del curso](docs/curso.png) | ![Insignias](docs/insignias.png) |
 -->
 
 ---
 
 ## Qué incluye
 
-- **Inicio** con estadísticas del progreso, anuncios y notificaciones.
-- **Cursos** con un mapa de recorrido: cada lección se desbloquea al completar la anterior.
-- **Lecciones interactivas** (ver abajo), con progreso que se registra en el curso.
-- **Insignias** como premio por metas cumplidas.
-- **Ajustes**: perfil, contraseña, modo oscuro y preferencias.
-- **Panel de administración** para dar seguimiento a estudiantes y cursos.
+- **Inicio:** saludo, tarjetas de racha, XP, lecciones e insignias; el curso en progreso destacado; gráfico de actividad de la semana; tus cursos, anuncios y notificaciones.
+- **Cursos:** cada curso con su propio ícono y color, y un mapa de recorrido donde cada lección se desbloquea al completar la anterior.
+- **Lecciones interactivas** (ver abajo). Las lecciones que aún se están preparando muestran un aviso de «Estamos trabajando en el contenido».
+- **Insignias:** premios por metas cumplidas (lecciones, XP, rachas, cursos completos), cada una con su ícono.
+- **Ajustes:** perfil y avatar, meta diaria, modo oscuro, sonido, recordatorios y contraseña.
+- **Panel de administración:**
+  - **Estadísticas con gráficos:** lecciones completadas por día, actividad de los jóvenes, avance promedio por curso y los cinco con más XP.
+  - **Seguimiento de cada joven:** su avance en cada curso.
+  - **Anuncios** para todos los jóvenes.
 
 ## Las lecciones
 
@@ -32,16 +42,20 @@ El curso **Fundamentos de la fe** tiene 8 lecciones. La primera ya está desarro
 ### Religiones del mundo
 Comparación entre el cristianismo y otras religiones mediante tarjetas que se voltean, una pila de tarjetas para deslizar y una actividad de «descartar» la afirmación que no corresponde.
 
-## Detalles de diseño
+## Diseño
 
-- **Identidad visual propia:** paleta Fuego+ (violeta, coral, rosa, amarillo, verde y crema) e íconos vectoriales hechos para la app.
+- **Identidad visual propia:** paleta Fuego+ (violeta `#5C30FF`, coral `#E63C23`, rosa `#F971C3`, amarillo `#F6BC3F`, verde `#008C47` y crema `#FFE8CE`), mascota propia y tipografía Nunito Sans.
+- **Íconos de línea** para cursos, insignias y ajustes en lugar de emojis, con colores de la paleta.
+- **Tarjetas grandes y redondeadas** con títulos grandes y espacio generoso, inspiradas en apps de aprendizaje.
 - **Arrastrar y soltar real** con mouse y pantallas táctiles (Pointer Events), sin bibliotecas adicionales.
+- **Accesibilidad:** las animaciones de los gráficos se desactivan si el sistema pide movimiento reducido, y los estados no dependen solo del color.
 - **Pensado primero para celular.**
 
 ## Tecnologías
 
 - **React 19** con **TanStack Start / Router** y **TypeScript**
 - **Tailwind CSS 4** y componentes **Radix UI**
+- **Recharts** para los gráficos del panel de administración
 - **Supabase**: autenticación, base de datos y progreso de los cursos
 - Animaciones con CSS y SVG
 - **Vitest** para pruebas
@@ -56,6 +70,7 @@ Comparación entre el cristianismo y otras religiones mediante tarjetas que se v
 
 - [x] Plataforma base, mapa del curso, insignias y administración
 - [x] Lección «Religiones del mundo»
+- [x] Rediseño visual: inicio, cursos, insignias, ajustes y panel con estadísticas
 - [ ] Las 7 lecciones restantes de *Fundamentos de la fe*: Jesús, Dios, Espíritu Santo, Pecado, Salvación, Oración e Iglesia
 - [ ] Más cursos
 
