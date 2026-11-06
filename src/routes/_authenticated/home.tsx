@@ -50,15 +50,15 @@ function StatTile({
 }) {
   return (
     <div
-      className={cn("flex min-h-40 animate-pop flex-col justify-between rounded-[1.75rem] p-5", tile)}
+      className={cn("flex min-h-40 animate-pop flex-col gap-6 rounded-[1.75rem] p-5 md:p-6", tile)}
       style={{ animationDelay: `${delay}ms` }}
     >
       <span className={cn("flex size-11 items-center justify-center rounded-2xl", chip)}>
         <Icon className="size-6" strokeWidth={2.5} />
       </span>
-      <div>
+      <div className="mt-auto">
         <div className="font-display text-4xl font-black leading-none">{value}</div>
-        <div className="mt-1.5 text-sm font-extrabold">{label}</div>
+        <div className="mt-2 text-sm font-extrabold leading-snug">{label}</div>
       </div>
     </div>
   );
