@@ -35,7 +35,7 @@ function Landing() {
         </Button>
       </header>
       <main className="mx-auto grid max-w-5xl items-center gap-10 px-6 py-12 md:grid-cols-2">
-        <img src={mascot} alt="Fuego+, la llama con el signo más" width={1024} height={1024} className="mx-auto w-72 animate-floaty rounded-[3rem] bg-cream p-8 md:w-96" />
+        <img src={mascot} alt="Fuego+, la llama sonriente" width={800} height={800} className="mx-auto w-72 animate-floaty rounded-[3rem] bg-cream p-8 md:w-96" />
         <div className="text-center md:text-left">
           <h1 className="text-5xl font-black leading-[1.02] tracking-tight md:text-7xl">
             Conoce su Palabra. <span className="text-primary">Arde por Él.</span>
