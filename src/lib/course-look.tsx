@@ -22,18 +22,19 @@ function LatinCross({ className, strokeWidth = 2 }: IconProps) {
 }
 
 // Clases de la paleta de Fuego+ para cada color de curso: fondo completo (`bg`),
-// ícono o texto de ese color (`fg`) y un fondo suave para el recuadro del ícono (`tint`).
-const PALETTE: Record<string, { bg: string; fg: string; tint: string }> = {
-  green: { bg: "bg-green", fg: "text-green", tint: "bg-green/15" },
-  sky: { bg: "bg-sky", fg: "text-sky", tint: "bg-sky/15" },
-  orange: { bg: "bg-orange", fg: "text-orange", tint: "bg-orange/15" },
-  pink: { bg: "bg-pink", fg: "text-pink", tint: "bg-pink/20" },
-  yellow: { bg: "bg-yellow", fg: "text-yellow", tint: "bg-yellow/25" },
+// ícono o texto de ese color (`fg`), un fondo suave para el recuadro del ícono (`tint`)
+// y el color en hexadecimal (`hex`) para los gráficos.
+const PALETTE: Record<string, { bg: string; fg: string; tint: string; hex: string }> = {
+  green: { bg: "bg-green", fg: "text-green", tint: "bg-green/15", hex: "#008c47" },
+  sky: { bg: "bg-sky", fg: "text-sky", tint: "bg-sky/15", hex: "#5c30ff" },
+  orange: { bg: "bg-orange", fg: "text-orange", tint: "bg-orange/15", hex: "#e63c23" },
+  pink: { bg: "bg-pink", fg: "text-pink", tint: "bg-pink/20", hex: "#f971c3" },
+  yellow: { bg: "bg-yellow", fg: "text-yellow", tint: "bg-yellow/25", hex: "#f6bc3f" },
 };
 
 // Ícono y color de cada curso según su nombre, para que cada uno sea reconocible
 // y no se repitan colores. Los cursos nuevos usan el color guardado y un libro.
-export type CourseLook = { icon: ComponentType<IconProps>; bg: string; fg: string; tint: string };
+export type CourseLook = { icon: ComponentType<IconProps>; bg: string; fg: string; tint: string; hex: string };
 
 const LOOKS: [RegExp, { icon: ComponentType<IconProps>; color: string }][] = [
   [/fundamentos/i, { icon: Church, color: "orange" }],
@@ -46,6 +47,6 @@ const LOOKS: [RegExp, { icon: ComponentType<IconProps>; color: string }][] = [
 export function courseLook(course: { title: string; color: string }): CourseLook {
   const found = LOOKS.find(([re]) => re.test(course.title))?.[1];
   const color = found?.color ?? course.color;
-  const p = PALETTE[color] ?? { bg: "bg-primary", fg: "text-primary", tint: "bg-primary/15" };
+  const p = PALETTE[color] ?? { bg: "bg-primary", fg: "text-primary", tint: "bg-primary/15", hex: "#5c30ff" };
   return { icon: found?.icon ?? BookOpen, ...p };
 }
