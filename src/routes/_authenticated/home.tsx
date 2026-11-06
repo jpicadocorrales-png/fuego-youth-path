@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { ArrowRight, Award, Bell, BookOpen, Flame, Megaphone, Zap, type LucideIcon } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { CourseRow } from "@/components/CourseRow";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -57,7 +58,7 @@ function StatTile({
       </span>
       <div>
         <div className="font-display text-4xl font-black leading-none">{value}</div>
-        <div className="mt-1.5 text-sm font-bold opacity-70">{label}</div>
+        <div className="mt-1.5 text-sm font-extrabold">{label}</div>
       </div>
     </div>
   );
@@ -114,10 +115,10 @@ function HomePage() {
 
       {/* Estadísticas */}
       <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatTile icon={Flame} value={streak} label={streak === 1 ? "día de racha" : "días de racha"} tile="bg-primary text-[#1c1626]" chip="bg-white/35" delay={0} />
-        <StatTile icon={Zap} value={me?.profile?.xp ?? 0} label="XP total" tile="bg-yellow text-[#1c1626]" chip="bg-white/45" delay={70} />
-        <StatTile icon={BookOpen} value={completions.length} label="lecciones" tile="bg-secondary/15 text-[#1c1626]" chip="bg-white/70" delay={140} />
-        <StatTile icon={Award} value={badges.filter((b) => b.earnedAt).length} label="insignias" tile="bg-green/15 text-[#1c1626]" chip="bg-white/70" delay={210} />
+        <StatTile icon={Flame} value={streak} label={streak === 1 ? "día de racha" : "días de racha"} tile="bg-primary text-primary-foreground" chip="bg-primary-foreground/20" delay={0} />
+        <StatTile icon={Zap} value={me?.profile?.xp ?? 0} label="XP total" tile="bg-yellow text-foreground" chip="bg-card/60" delay={70} />
+        <StatTile icon={BookOpen} value={completions.length} label="lecciones" tile="bg-secondary/15 text-foreground" chip="bg-secondary text-secondary-foreground" delay={140} />
+        <StatTile icon={Award} value={badges.filter((b) => b.earnedAt).length} label="insignias" tile="bg-green/15 text-foreground" chip="bg-green text-primary-foreground" delay={210} />
       </div>
 
       {/* Continúa aprendiendo */}
@@ -177,35 +178,10 @@ function HomePage() {
 
       {/* Avance por curso */}
       <SectionTitle>Tus cursos</SectionTitle>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-        {courses.map((c) => {
-          const look = courseLook(c);
-          return (
-          <Link
-            key={c.id}
-            to="/courses/$courseId"
-            params={{ courseId: c.id }}
-            className={cn(
-              "flex min-h-44 flex-col justify-between rounded-[1.75rem] p-5 transition-transform hover:scale-[1.02]",
-              look.bg,
-              "text-white",
-            )}
-          >
-            <span className="flex size-11 items-center justify-center rounded-2xl bg-white/25">
-              <look.icon className="size-6" strokeWidth={2.5} />
-            </span>
-            <div>
-              <div className="text-lg font-bold leading-snug">{c.title}</div>
-              <div className="mt-1 text-sm font-bold opacity-80">
-                {c.completed} de {c.total} lecciones
-              </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/30">
-                <div className="h-full rounded-full bg-white" style={{ width: `${c.pct}%` }} />
-              </div>
-            </div>
-          </Link>
-          );
-        })}
+      <div className="space-y-3">
+        {courses.map((c) => (
+          <CourseRow key={c.id} c={c} />
+        ))}
       </div>
 
       {/* Anuncios */}
