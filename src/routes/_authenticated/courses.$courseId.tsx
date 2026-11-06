@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_authenticated/courses/$courseId")({
   component: CoursePath,
 });
 
-const STEP_Y = 150;
+const STEP_Y = 170;
 const W = 340;
 // Horizontal positions (0-1) that make the path wind left and right
 const xs = [0.5, 0.78, 0.62, 0.25, 0.4, 0.75, 0.55, 0.22];
@@ -36,7 +36,7 @@ function CoursePath() {
   const nextIdx = course.lessons.findIndex((l) => !l.done);
   const n = course.lessons.length;
   const height = n * STEP_Y + 60;
-  const pts = course.lessons.map((_, i) => ({ x: (xs[i % xs.length] ?? 0.5) * W, y: 70 + i * STEP_Y }));
+  const pts = course.lessons.map((_, i) => ({ x: (xs[i % xs.length] ?? 0.5) * W, y: 80 + i * STEP_Y }));
   const doneCount = course.completed;
   const pathD = pts.reduce((d, p, i) => {
     if (i === 0) return `M ${p.x} ${p.y}`;
@@ -55,14 +55,14 @@ function CoursePath() {
 
   return (
     <AppShell>
-      <div className={`rounded-3xl p-6 text-primary-foreground ${courseColor[course.color] ?? "bg-primary"}`}>
-        <Link to="/courses" className="text-sm font-semibold opacity-90">← Cursos</Link>
-        <h1 className="mt-2 text-3xl font-black">{course.title}</h1>
-        <p className="mt-1 opacity-90">{course.description}</p>
-        <div className="mt-4 h-3 overflow-hidden rounded-full bg-primary-foreground/30">
+      <div className={`rounded-3xl px-5 py-4 text-primary-foreground ${courseColor[course.color] ?? "bg-primary"}`}>
+        <Link to="/courses" className="text-xs font-semibold opacity-90">← Cursos</Link>
+        <h1 className="mt-1 text-2xl font-black">{course.title}</h1>
+        <p className="mt-0.5 line-clamp-2 text-sm opacity-90">{course.description}</p>
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-primary-foreground/30">
           <div className="h-full rounded-full bg-primary-foreground transition-all duration-700" style={{ width: `${course.pct}%` }} />
         </div>
-        <div className="mt-2 flex items-center justify-between text-sm font-bold">
+        <div className="mt-2 flex items-center justify-between text-xs font-bold">
           <span>{course.completed} de {course.total} lecciones completadas</span>
           {nextLesson && (
             <Link to="/lesson/$lessonId" params={{ lessonId: nextLesson.id }} className="rounded-full bg-primary-foreground px-4 py-2 text-foreground">
@@ -72,7 +72,7 @@ function CoursePath() {
         </div>
       </div>
 
-      <div className="relative mx-auto mt-6 rounded-[2rem] bg-card" style={{ maxWidth: W + 40 }}>
+      <div className="relative mt-6 w-full overflow-hidden rounded-[2rem] bg-card py-2">
         <div className="relative mx-auto" style={{ width: W, height }}>
           <svg className="absolute inset-0" width={W} height={height} aria-hidden>
             <path d={pathD} fill="none" className="stroke-border" strokeWidth={22} strokeLinecap="round" />
@@ -88,18 +88,18 @@ function CoursePath() {
               <div
                 className={cn(
                   "relative flex items-center justify-center rounded-full bg-cream shadow-[var(--shadow-soft)] transition-transform",
-                  isNext ? "size-24 ring-4 ring-primary ring-offset-4 ring-offset-card hover:scale-105" : "size-20",
+                  isNext ? "size-[7.5rem] ring-4 ring-primary ring-offset-4 ring-offset-card hover:scale-105" : "size-[6.5rem]",
                   l.done && "ring-4 ring-green ring-offset-2 ring-offset-card",
                   locked && "cursor-not-allowed bg-muted",
                 )}
               >
                 {/* Las lecciones bloqueadas muestran solo el candado, sin su ilustración */}
                 {locked ? (
-                  <Lock className="!size-8 text-muted-foreground" />
+                  <Lock className="!size-10 text-muted-foreground" />
                 ) : img ? (
                   <img src={img} alt="" width={816} height={816} loading="lazy" className="size-full rounded-full object-cover" />
                 ) : (
-                  <BookOpen className="!size-9 text-primary" />
+                  <BookOpen className="!size-11 text-primary" />
                 )}
                 {l.done && (
                   <span className="absolute -right-1.5 -top-1.5 flex size-7 items-center justify-center rounded-full bg-green text-primary-foreground ring-2 ring-card">
