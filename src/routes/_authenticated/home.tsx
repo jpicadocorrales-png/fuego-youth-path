@@ -114,24 +114,24 @@ function HomePage() {
 
       {/* Estadísticas */}
       <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatTile icon={Flame} value={streak} label={streak === 1 ? "día de racha" : "días de racha"} tile="bg-primary text-primary-foreground" chip="bg-primary-foreground/20" delay={0} />
-        <StatTile icon={Zap} value={me?.profile?.xp ?? 0} label="XP total" tile="bg-yellow text-foreground" chip="bg-card/60" delay={70} />
-        <StatTile icon={BookOpen} value={completions.length} label="lecciones" tile="bg-secondary/15 text-foreground" chip="bg-secondary text-secondary-foreground" delay={140} />
-        <StatTile icon={Award} value={badges.filter((b) => b.earnedAt).length} label="insignias" tile="bg-green/15 text-foreground" chip="bg-green text-primary-foreground" delay={210} />
+        <StatTile icon={Flame} value={streak} label={streak === 1 ? "día de racha" : "días de racha"} tile="bg-primary text-[#1c1626]" chip="bg-white/35" delay={0} />
+        <StatTile icon={Zap} value={me?.profile?.xp ?? 0} label="XP total" tile="bg-yellow text-[#1c1626]" chip="bg-white/45" delay={70} />
+        <StatTile icon={BookOpen} value={completions.length} label="lecciones" tile="bg-secondary/15 text-[#1c1626]" chip="bg-white/70" delay={140} />
+        <StatTile icon={Award} value={badges.filter((b) => b.earnedAt).length} label="insignias" tile="bg-green/15 text-[#1c1626]" chip="bg-white/70" delay={210} />
       </div>
 
       {/* Continúa aprendiendo */}
       {current && (
         <>
           <SectionTitle>Continúa aprendiendo</SectionTitle>
-          <div className={cn("relative overflow-hidden rounded-[2rem] p-6 md:p-8", currentLook.bg, currentLook.text)}>
-            <currentLook.icon className="pointer-events-none absolute -right-8 -top-8 size-48 opacity-10" strokeWidth={1.75} />
+          <div className={cn("relative overflow-hidden rounded-[2rem] p-6 md:p-8", currentLook.bg, "text-white")}>
+            <currentLook.icon className="pointer-events-none absolute -right-8 -top-8 size-48 opacity-15" strokeWidth={1.75} />
             <div className="relative">
-              <span className="inline-block rounded-full bg-white/35 px-3 py-1 text-xs font-extrabold uppercase tracking-wide">
+              <span className="inline-block rounded-full bg-white/25 px-3 py-1 text-xs font-extrabold uppercase tracking-wide">
                 {current.completed} de {current.total} lecciones
               </span>
               <h3 className="mt-3 text-3xl font-extrabold tracking-normal md:text-4xl">{current.title}</h3>
-              <div className="mt-5 h-3 overflow-hidden rounded-full bg-black/15">
+              <div className="mt-5 h-3 overflow-hidden rounded-full bg-white/30">
                 <div className="h-full rounded-full bg-white transition-all duration-700" style={{ width: `${current.pct}%` }} />
               </div>
               <div className="mt-2 text-sm font-bold opacity-90">{current.pct}% completado</div>
@@ -188,10 +188,10 @@ function HomePage() {
             className={cn(
               "flex min-h-44 flex-col justify-between rounded-[1.75rem] p-5 transition-transform hover:scale-[1.02]",
               look.bg,
-              look.text,
+              "text-white",
             )}
           >
-            <span className="flex size-11 items-center justify-center rounded-2xl bg-white/35">
+            <span className="flex size-11 items-center justify-center rounded-2xl bg-white/25">
               <look.icon className="size-6" strokeWidth={2.5} />
             </span>
             <div>
@@ -199,7 +199,7 @@ function HomePage() {
               <div className="mt-1 text-sm font-bold opacity-80">
                 {c.completed} de {c.total} lecciones
               </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-black/15">
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/30">
                 <div className="h-full rounded-full bg-white" style={{ width: `${c.pct}%` }} />
               </div>
             </div>
