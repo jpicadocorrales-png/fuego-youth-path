@@ -125,7 +125,7 @@ function HomePage() {
         <>
           <SectionTitle>Continúa aprendiendo</SectionTitle>
           <div className={cn("relative overflow-hidden rounded-[2rem] p-6 md:p-8", currentLook.bg, currentLook.text)}>
-            <currentLook.icon className="pointer-events-none absolute -right-8 -top-8 size-48 opacity-15" strokeWidth={1.75} />
+            <currentLook.icon className="pointer-events-none absolute -right-8 -top-8 size-48 text-white opacity-25" strokeWidth={1.75} />
             <div className="relative">
               <span className="inline-block rounded-full bg-card/25 px-3 py-1 text-xs font-extrabold uppercase tracking-wide">
                 {current.completed} de {current.total} lecciones
@@ -192,7 +192,7 @@ function HomePage() {
             )}
           >
             <span className="flex size-11 items-center justify-center rounded-2xl bg-card/25">
-              <look.icon className="size-6" strokeWidth={2.5} />
+              <look.icon className="size-6 text-white" strokeWidth={2.5} />
             </span>
             <div>
               <div className="text-lg font-bold leading-snug">{c.title}</div>
