@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Lock } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useBadges } from "@/lib/app-data";
-import { badgeLook } from "@/lib/badge-look";
+import { badgeLook, sortBadges } from "@/lib/badge-look";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/badges")({
@@ -27,8 +27,8 @@ function BadgesPage() {
       </div>
 
       <div className="mt-8 grid grid-cols-2 gap-4 pb-6 sm:grid-cols-3">
-        {badges.map((b, i) => {
-          const look = badgeLook(b);
+        {sortBadges(badges).map((b, i) => {
+          const look = badgeLook(b, i);
           const won = !!b.earnedAt;
           return (
             <div
@@ -42,7 +42,7 @@ function BadgesPage() {
               <span
                 className={cn(
                   "relative flex size-16 items-center justify-center rounded-2xl",
-                  won ? look.solid : "bg-muted text-muted-foreground",
+                  won ? cn(look.solid, "text-white") : "bg-muted text-muted-foreground",
                 )}
               >
                 <look.icon className="size-8" strokeWidth={2.25} />

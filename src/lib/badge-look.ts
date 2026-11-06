@@ -1,7 +1,6 @@
 import {
   Award,
   Bird,
-  BookOpen,
   BookOpenCheck,
   CalendarCheck,
   Crown,
@@ -13,32 +12,47 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-// Ícono de línea para cada insignia (mismo estilo que los íconos de estadísticas) y un color
-// de la paleta según el tipo de meta, igual que en las tarjetas del inicio:
-// lecciones = coral, XP = amarillo, racha = violeta, cursos = verde, perfecto = rosa.
-const ICON_BY_CODE: Record<string, LucideIcon> = {
-  first: Sprout,
-  five: BookOpenCheck,
-  ten: Bird,
-  xp100: Zap,
-  xp300: Flame,
-  streak3: CalendarCheck,
-  streak7: Crown,
-  course1: Trophy,
-  perfect: Gem,
-};
+// Colores de la paleta de Fuego+: fondo del recuadro del ícono y color de la fecha.
+const COLORS = {
+  green: { solid: "bg-green", fg: "text-green" },
+  coral: { solid: "bg-orange", fg: "text-orange" },
+  violet: { solid: "bg-primary", fg: "text-primary" },
+  yellow: { solid: "bg-yellow", fg: "text-[#a8740f]" },
+  pink: { solid: "bg-pink", fg: "text-[#d13f95]" },
+} as const;
+type Color = keyof typeof COLORS;
 
-const BY_KIND: Record<string, { icon: LucideIcon; solid: string; fg: string }> = {
-  lessons: { icon: BookOpen, solid: "bg-orange text-white", fg: "text-orange" },
-  xp: { icon: Zap, solid: "bg-yellow text-foreground", fg: "text-foreground" },
-  streak: { icon: Flame, solid: "bg-primary text-primary-foreground", fg: "text-primary" },
-  courses: { icon: Trophy, solid: "bg-green text-white", fg: "text-green" },
-  perfect: { icon: Gem, solid: "bg-pink text-white", fg: "text-pink" },
-};
+// Cada insignia tiene su ícono y un color fijo, en un orden fijo. El orden y los colores
+// están pensados para que dos insignias vecinas nunca compartan color, tanto en la
+// cuadrícula de 3 columnas como en la de 2.
+const BADGES: { code: string; icon: LucideIcon; color: Color }[] = [
+  { code: "first", icon: Sprout, color: "green" },
+  { code: "five", icon: BookOpenCheck, color: "pink" },
+  { code: "ten", icon: Bird, color: "violet" },
+  { code: "xp100", icon: Zap, color: "yellow" },
+  { code: "xp300", icon: Flame, color: "coral" },
+  { code: "streak3", icon: CalendarCheck, color: "green" },
+  { code: "streak7", icon: Crown, color: "violet" },
+  { code: "course1", icon: Trophy, color: "yellow" },
+  { code: "perfect", icon: Gem, color: "pink" },
+];
+
+// Para insignias nuevas que no estén en la lista: se reparten los colores por posición.
+const CYCLE: Color[] = ["green", "coral", "violet", "yellow", "pink"];
 
 export type BadgeLook = { icon: LucideIcon; solid: string; fg: string };
 
-export function badgeLook(badge: { code: string; kind: string }): BadgeLook {
-  const kind = BY_KIND[badge.kind] ?? { icon: Award, solid: "bg-primary text-primary-foreground", fg: "text-primary" };
-  return { ...kind, icon: ICON_BY_CODE[badge.code] ?? kind.icon };
+export function badgeLook(badge: { code: string }, position: number): BadgeLook {
+  const known = BADGES.find((b) => b.code === badge.code);
+  const color = known?.color ?? CYCLE[position % CYCLE.length]!;
+  return { icon: known?.icon ?? Award, ...COLORS[color] };
+}
+
+// Orden de presentación: primero las conocidas en su orden, luego las nuevas.
+export function sortBadges<T extends { code: string }>(badges: T[]): T[] {
+  const rank = (code: string) => {
+    const i = BADGES.findIndex((b) => b.code === code);
+    return i === -1 ? BADGES.length : i;
+  };
+  return [...badges].sort((a, b) => rank(a.code) - rank(b.code));
 }
