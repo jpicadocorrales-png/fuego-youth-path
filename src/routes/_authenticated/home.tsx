@@ -125,14 +125,14 @@ function HomePage() {
         <>
           <SectionTitle>Continúa aprendiendo</SectionTitle>
           <div className={cn("relative overflow-hidden rounded-[2rem] p-6 md:p-8", currentLook.bg, currentLook.text)}>
-            <currentLook.icon className="pointer-events-none absolute -right-8 -top-8 size-48 text-white opacity-25" strokeWidth={1.75} />
+            <currentLook.icon className="pointer-events-none absolute -right-8 -top-8 size-48 opacity-10" strokeWidth={1.75} />
             <div className="relative">
-              <span className="inline-block rounded-full bg-card/25 px-3 py-1 text-xs font-extrabold uppercase tracking-wide">
+              <span className="inline-block rounded-full bg-white/35 px-3 py-1 text-xs font-extrabold uppercase tracking-wide">
                 {current.completed} de {current.total} lecciones
               </span>
               <h3 className="mt-3 text-3xl font-extrabold tracking-normal md:text-4xl">{current.title}</h3>
-              <div className="mt-5 h-3 overflow-hidden rounded-full bg-card/30">
-                <div className="h-full rounded-full bg-card transition-all duration-700" style={{ width: `${current.pct}%` }} />
+              <div className="mt-5 h-3 overflow-hidden rounded-full bg-black/15">
+                <div className="h-full rounded-full bg-white transition-all duration-700" style={{ width: `${current.pct}%` }} />
               </div>
               <div className="mt-2 text-sm font-bold opacity-90">{current.pct}% completado</div>
               <Link
@@ -191,16 +191,16 @@ function HomePage() {
               look.text,
             )}
           >
-            <span className="flex size-11 items-center justify-center rounded-2xl bg-card/25">
-              <look.icon className="size-6 text-white" strokeWidth={2.5} />
+            <span className="flex size-11 items-center justify-center rounded-2xl bg-white/35">
+              <look.icon className="size-6" strokeWidth={2.5} />
             </span>
             <div>
               <div className="text-lg font-bold leading-snug">{c.title}</div>
               <div className="mt-1 text-sm font-bold opacity-80">
                 {c.completed} de {c.total} lecciones
               </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-card/30">
-                <div className="h-full rounded-full bg-card" style={{ width: `${c.pct}%` }} />
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-black/15">
+                <div className="h-full rounded-full bg-white" style={{ width: `${c.pct}%` }} />
               </div>
             </div>
           </Link>

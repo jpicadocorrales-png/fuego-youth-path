@@ -60,14 +60,14 @@ function CoursePath() {
       <div className={cn("rounded-3xl px-5 py-4", look.bg, look.text)}>
         <Link to="/courses" className="text-xs font-semibold opacity-90">← Cursos</Link>
         <h1 className="mt-1 flex items-center gap-2.5 text-2xl font-extrabold tracking-normal">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-card/25">
-            <look.icon className="size-5 text-white" strokeWidth={2.5} />
+          <span className="flex size-9 items-center justify-center rounded-xl bg-white/35">
+            <look.icon className="size-5" strokeWidth={2.5} />
           </span>
           {course.title}
         </h1>
         <p className="mt-0.5 line-clamp-2 text-sm opacity-90">{course.description}</p>
-        <div className="mt-3 h-2 overflow-hidden rounded-full bg-primary-foreground/30">
-          <div className="h-full rounded-full bg-primary-foreground transition-all duration-700" style={{ width: `${course.pct}%` }} />
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-black/15">
+          <div className="h-full rounded-full bg-white transition-all duration-700" style={{ width: `${course.pct}%` }} />
         </div>
         <div className="mt-2 flex items-center justify-between text-xs font-bold">
           <span>{course.completed} de {course.total} lecciones completadas</span>
