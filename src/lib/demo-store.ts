@@ -14,7 +14,8 @@ export type Profile = {
   last_activity_date: string | null;
 };
 export type Completion = { lesson_id: string; course_id: string; completed_at: string; score: number };
-export type Notification = { id: string; title: string; body: string; read: boolean; created_at: string };
+// Las notificaciones de insignias guardan `badge_id` para mostrarse en el idioma elegido.
+export type Notification = { id: string; title: string; body: string; read: boolean; created_at: string; badge_id?: string };
 export type Announcement = { id: string; title: string; body: string; created_at: string };
 
 export type DemoState = {
@@ -27,7 +28,7 @@ export type DemoState = {
 
 const initial = (): DemoState => ({
   profile: {
-    display_name: "Visitante",
+    display_name: "", // vacío = «Visitante» / «Visitor» según el idioma
     avatar_emoji: "🦁",
     daily_goal: 1,
     sound_enabled: true,
@@ -103,7 +104,7 @@ export function completeLesson(lessonId: string, courseId: string, score: number
       const metric = { lessons: completions.length, xp: profile.xp, streak: profile.streak, courses: coursesDone, perfect: score >= 100 ? 1 : 0 }[b.kind];
       if (metric >= b.threshold) {
         badges.push({ badge_id: b.id, earned_at: now.toISOString() });
-        notifications.unshift({ id: uid(), title: `Nueva insignia: ${b.name} ${b.emoji}`, body: b.description, read: false, created_at: now.toISOString() });
+        notifications.unshift({ id: uid(), title: `Nueva insignia: ${b.name.es} ${b.emoji}`, body: b.description.es, read: false, created_at: now.toISOString(), badge_id: b.id });
       }
     }
     return { ...s, profile, completions, badges, notifications };

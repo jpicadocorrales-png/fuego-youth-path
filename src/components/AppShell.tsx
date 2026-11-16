@@ -2,18 +2,20 @@ import { Link } from "@tanstack/react-router";
 import { Flame, Zap, Home, BookOpen, Award, Settings, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { useMe } from "@/lib/app-data";
+import { LangSwitch, useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 const nav = [
-  { to: "/home", label: "Inicio", icon: Home },
-  { to: "/courses", label: "Cursos", icon: BookOpen },
-  { to: "/badges", label: "Insignias", icon: Award },
-  { to: "/settings", label: "Ajustes", icon: Settings },
+  { to: "/home", label: ["Inicio", "Home"], icon: Home },
+  { to: "/courses", label: ["Cursos", "Courses"], icon: BookOpen },
+  { to: "/badges", label: ["Insignias", "Badges"], icon: Award },
+  { to: "/settings", label: ["Ajustes", "Settings"], icon: Settings },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { data: me } = useMe();
-  const items = me?.isAdmin ? [...nav, { to: "/admin", label: "Admin", icon: ShieldCheck } as const] : nav;
+  const { t } = useLang();
+  const items = me?.isAdmin ? [...nav, { to: "/admin", label: ["Admin", "Admin"], icon: ShieldCheck } as const] : nav;
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-0 md:pl-60">
       <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col gap-2 bg-sidebar p-4 md:flex">
@@ -25,12 +27,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             className="flex items-center gap-3 rounded-xl px-4 py-3 font-semibold text-muted-foreground hover:bg-muted"
             activeProps={{ className: "bg-primary !text-primary-foreground" }}
           >
-            <n.icon className="size-6" /> {n.label}
+            <n.icon className="size-6" /> {t(n.label[0], n.label[1])}
           </Link>
         ))}
       </aside>
-      <header className="sticky top-0 z-10 flex items-center justify-end gap-5 bg-background/90 px-5 py-3 backdrop-blur">
+      <header className="sticky top-0 z-10 flex items-center justify-end gap-4 bg-background/90 px-5 py-3 backdrop-blur sm:gap-5">
         <span className="mr-auto font-display text-2xl font-black tracking-tight md:hidden">fuego<span className="text-secondary">+</span></span>
+        <LangSwitch className="md:mr-auto" />
         <span className="flex items-center gap-1 font-extrabold text-flame">
           <Flame className="size-5 fill-current" /> {me?.profile?.streak ?? 0}
         </span>
@@ -49,7 +52,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             activeProps={{ className: "!text-primary bg-primary/10" }}
           >
             <n.icon className="size-6" />
-            {n.label}
+            {t(n.label[0], n.label[1])}
           </Link>
         ))}
       </nav>

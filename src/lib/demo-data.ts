@@ -1,16 +1,21 @@
 // Datos de la versión demo (portafolio). La app no usa cuentas ni base de datos:
 // los cursos viven aquí y el progreso de cada visitante se guarda en su navegador
-// (ver demo-store.ts).
+// (ver demo-store.ts). Los textos están en español e inglés.
 //
 // Solo el primer curso se puede abrir. Los demás, y las lecciones sin experiencia
 // lista, muestran el aviso «Estamos trabajando en el contenido».
+
+import type { Lang } from "./i18n";
+
+export type Text = { es: string; en: string };
+export const tx = (text: Text, lang: Lang) => text[lang];
 
 /** Experiencias de lección ya desarrolladas. Las demás muestran el aviso. */
 export const READY_EXPERIENCES = new Set(["religions-01"]);
 
 export type DemoLesson = {
   id: string;
-  title: string;
+  title: Text;
   xp: number;
   order_index: number;
   experience: string | null;
@@ -18,75 +23,111 @@ export type DemoLesson = {
 
 export type DemoCourse = {
   id: string;
-  title: string;
-  description: string;
+  title: Text;
+  description: Text;
   color: string;
-  level: string;
+  level: Text;
   order_index: number;
   lessons: DemoLesson[];
 };
 
-function lessons(courseId: string, list: (string | [string, string])[]): DemoLesson[] {
-  return list.map((item, i) => {
-    const [title, experience] = typeof item === "string" ? [item, null] : item;
-    return { id: `${courseId}-${i + 1}`, title, xp: 10, order_index: i + 1, experience };
-  });
+const BEGINNER: Text = { es: "Principiante", en: "Beginner" };
+const INTERMEDIATE: Text = { es: "Intermedio", en: "Intermediate" };
+
+function lessons(courseId: string, list: [string, string, string?][]): DemoLesson[] {
+  return list.map(([es, en, experience], i) => ({
+    id: `${courseId}-${i + 1}`,
+    title: { es, en },
+    xp: 10,
+    order_index: i + 1,
+    experience: experience ?? null,
+  }));
 }
 
 export const COURSES: DemoCourse[] = [
   {
     id: "fundamentos",
-    title: "Fundamentos",
-    description: "Descubre qué creemos los cristianos, qué hace diferente al cristianismo y por qué Jesús está en el centro de nuestra fe.",
+    title: { es: "Fundamentos", en: "Foundations" },
+    description: {
+      es: "Descubre qué creemos los cristianos, qué hace diferente al cristianismo y por qué Jesús está en el centro de nuestra fe.",
+      en: "Discover what Christians believe, what makes Christianity different, and why Jesus is at the center of our faith.",
+    },
     color: "orange",
-    level: "Principiante",
+    level: BEGINNER,
     order_index: 1,
     lessons: lessons("fundamentos", [
-      ["Religiones", "religions-01"],
-      ["Jesús", "jesus-01"],
-      "Dios",
-      "Espíritu Santo",
-      "Pecado",
-      "Salvación",
-      "Oración",
-      "Iglesia",
+      ["Religiones", "Religions", "religions-01"],
+      ["Jesús", "Jesus", "jesus-01"],
+      ["Dios", "God"],
+      ["Espíritu Santo", "Holy Spirit"],
+      ["Pecado", "Sin"],
+      ["Salvación", "Salvation"],
+      ["Oración", "Prayer"],
+      ["Iglesia", "Church"],
     ]),
   },
   {
     id: "creacion",
-    title: "Creación y Génesis",
-    description: "Descubre cómo empezó todo: la creación, Adán y Eva, Noé y Abraham.",
+    title: { es: "Creación y Génesis", en: "Creation and Genesis" },
+    description: {
+      es: "Descubre cómo empezó todo: la creación, Adán y Eva, Noé y Abraham.",
+      en: "Discover how it all began: creation, Adam and Eve, Noah and Abraham.",
+    },
     color: "green",
-    level: "Principiante",
+    level: BEGINNER,
     order_index: 2,
-    lessons: lessons("creacion", ["La creación", "Adán y Eva", "Noé y Abraham"]),
+    lessons: lessons("creacion", [
+      ["La creación", "Creation"],
+      ["Adán y Eva", "Adam and Eve"],
+      ["Noé y Abraham", "Noah and Abraham"],
+    ]),
   },
   {
     id: "vida-de-jesus",
-    title: "Vida de Jesús",
-    description: "Nacimiento, milagros, enseñanzas y resurrección de Jesús.",
+    title: { es: "Vida de Jesús", en: "Life of Jesus" },
+    description: {
+      es: "Nacimiento, milagros, enseñanzas y resurrección de Jesús.",
+      en: "The birth, miracles, teachings and resurrection of Jesus.",
+    },
     color: "sky",
-    level: "Principiante",
+    level: BEGINNER,
     order_index: 3,
-    lessons: lessons("vida-de-jesus", ["Nacimiento", "Milagros", "Enseñanzas", "Resurrección"]),
+    lessons: lessons("vida-de-jesus", [
+      ["Nacimiento", "Birth"],
+      ["Milagros", "Miracles"],
+      ["Enseñanzas", "Teachings"],
+      ["Resurrección", "Resurrection"],
+    ]),
   },
   {
     id: "heroes",
-    title: "Héroes de la fe",
-    description: "David, Ester, Daniel y otros que confiaron en Dios.",
+    title: { es: "Héroes de la fe", en: "Heroes of Faith" },
+    description: {
+      es: "David, Ester, Daniel y otros que confiaron en Dios.",
+      en: "David, Esther, Daniel and others who trusted God.",
+    },
     color: "yellow",
-    level: "Intermedio",
+    level: INTERMEDIATE,
     order_index: 4,
-    lessons: lessons("heroes", ["David y Ester", "Daniel"]),
+    lessons: lessons("heroes", [
+      ["David y Ester", "David and Esther"],
+      ["Daniel", "Daniel"],
+    ]),
   },
   {
     id: "frutos",
-    title: "Frutos del Espíritu",
-    description: "Amor, gozo, paz y más: cómo vivirlos hoy.",
+    title: { es: "Frutos del Espíritu", en: "Fruits of the Spirit" },
+    description: {
+      es: "Amor, gozo, paz y más: cómo vivirlos hoy.",
+      en: "Love, joy, peace and more: how to live them today.",
+    },
     color: "pink",
-    level: "Intermedio",
+    level: INTERMEDIATE,
     order_index: 5,
-    lessons: lessons("frutos", ["Amor, gozo y paz", "Vivirlos hoy"]),
+    lessons: lessons("frutos", [
+      ["Amor, gozo y paz", "Love, joy and peace"],
+      ["Vivirlos hoy", "Living them today"],
+    ]),
   },
 ];
 
@@ -104,48 +145,56 @@ export function findLesson(lessonId: string) {
 export type DemoBadge = {
   id: string;
   code: string;
-  name: string;
-  description: string;
+  name: Text;
+  description: Text;
   emoji: string;
   kind: "lessons" | "xp" | "streak" | "courses" | "perfect";
   threshold: number;
 };
 
-const badge = (code: string, name: string, description: string, emoji: string, kind: DemoBadge["kind"], threshold: number): DemoBadge => ({
-  id: code,
-  code,
-  name,
-  description,
-  emoji,
-  kind,
-  threshold,
-});
+const badge = (
+  code: string,
+  name: Text,
+  description: Text,
+  emoji: string,
+  kind: DemoBadge["kind"],
+  threshold: number,
+): DemoBadge => ({ id: code, code, name, description, emoji, kind, threshold });
 
 export const BADGES: DemoBadge[] = [
-  badge("first", "Primer paso", "Completaste tu primera lección", "🌱", "lessons", 1),
-  badge("five", "Lector constante", "Completaste 5 lecciones", "📚", "lessons", 5),
-  badge("ten", "Discípulo", "Completaste 10 lecciones", "🕊️", "lessons", 10),
-  badge("xp100", "100 XP", "Alcanzaste 100 puntos de experiencia", "⚡", "xp", 100),
-  badge("xp300", "Llama encendida", "Alcanzaste 300 XP", "🔥", "xp", 300),
-  badge("streak3", "Racha de 3 días", "Estudiaste 3 días seguidos", "🌟", "streak", 3),
-  badge("streak7", "Semana fiel", "Estudiaste 7 días seguidos", "👑", "streak", 7),
-  badge("course1", "Curso completo", "Terminaste un curso entero", "🏆", "courses", 1),
-  badge("perfect", "Perfecto", "Lección sin errores", "💎", "perfect", 1),
+  badge("first", { es: "Primer paso", en: "First step" }, { es: "Completaste tu primera lección", en: "You completed your first lesson" }, "🌱", "lessons", 1),
+  badge("five", { es: "Lector constante", en: "Steady reader" }, { es: "Completaste 5 lecciones", en: "You completed 5 lessons" }, "📚", "lessons", 5),
+  badge("ten", { es: "Discípulo", en: "Disciple" }, { es: "Completaste 10 lecciones", en: "You completed 10 lessons" }, "🕊️", "lessons", 10),
+  badge("xp100", { es: "100 XP", en: "100 XP" }, { es: "Alcanzaste 100 puntos de experiencia", en: "You reached 100 experience points" }, "⚡", "xp", 100),
+  badge("xp300", { es: "Llama encendida", en: "Burning flame" }, { es: "Alcanzaste 300 XP", en: "You reached 300 XP" }, "🔥", "xp", 300),
+  badge("streak3", { es: "Racha de 3 días", en: "3-day streak" }, { es: "Estudiaste 3 días seguidos", en: "You studied 3 days in a row" }, "🌟", "streak", 3),
+  badge("streak7", { es: "Semana fiel", en: "Faithful week" }, { es: "Estudiaste 7 días seguidos", en: "You studied 7 days in a row" }, "👑", "streak", 7),
+  badge("course1", { es: "Curso completo", en: "Course complete" }, { es: "Terminaste un curso entero", en: "You finished an entire course" }, "🏆", "courses", 1),
+  badge("perfect", { es: "Perfecto", en: "Perfect" }, { es: "Lección sin errores", en: "A lesson with no mistakes" }, "💎", "perfect", 1),
 ];
 
+/** Anuncios y notificaciones de ejemplo, traducidos por su id. */
+export const BUILT_IN_TEXT: Record<string, { title: Text; body: Text }> = {
+  bienvenida: {
+    title: { es: "¡Bienvenidos a la app!", en: "Welcome to the app!" },
+    body: { es: "Cada semana publicaremos nuevos cursos. ¡Mantén tu racha!", en: "We'll publish new courses every week. Keep your streak going!" },
+  },
+  reto: {
+    title: { es: "Reto del mes", en: "Challenge of the month" },
+    body: {
+      es: "Completa el curso \"Vida de Jesús\" este mes y gana una sorpresa en el grupo de jóvenes.",
+      en: "Complete the \"Life of Jesus\" course this month and win a surprise at youth group.",
+    },
+  },
+  welcome: {
+    title: { es: "¡Bienvenido! 🎉", en: "Welcome! 🎉" },
+    body: { es: "Empieza tu primer curso y gana tu primera insignia.", en: "Start your first course and earn your first badge." },
+  },
+};
+
 export const INITIAL_ANNOUNCEMENTS = [
-  {
-    id: "bienvenida",
-    title: "¡Bienvenidos a la app!",
-    body: "Cada semana publicaremos nuevos cursos. ¡Mantén tu racha!",
-    created_at: "2026-11-02T12:00:00Z",
-  },
-  {
-    id: "reto",
-    title: "Reto del mes",
-    body: "Completa el curso \"Vida de Jesús\" este mes y gana una sorpresa en el grupo de jóvenes.",
-    created_at: "2026-11-01T12:00:00Z",
-  },
+  { id: "bienvenida", title: BUILT_IN_TEXT["bienvenida"]!.title.es, body: BUILT_IN_TEXT["bienvenida"]!.body.es, created_at: "2026-11-02T12:00:00Z" },
+  { id: "reto", title: BUILT_IN_TEXT["reto"]!.title.es, body: BUILT_IN_TEXT["reto"]!.body.es, created_at: "2026-11-01T12:00:00Z" },
 ];
 
 /**

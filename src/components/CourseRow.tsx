@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Check } from "lucide-react";
 import type { useCourses } from "@/lib/app-data";
 import { courseLook } from "@/lib/course-look";
+import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export type Course = NonNullable<ReturnType<typeof useCourses>["data"]>[number];
@@ -10,6 +11,7 @@ export type Course = NonNullable<ReturnType<typeof useCourses>["data"]>[number];
 // y el ícono del curso en su color de la paleta. Se usa en el inicio y en la página de cursos.
 export function CourseRow({ c }: { c: Course }) {
   const look = courseLook(c);
+  const { t } = useLang();
   const done = c.pct === 100;
   return (
     <Link
@@ -24,11 +26,11 @@ export function CourseRow({ c }: { c: Course }) {
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <h3 className="text-lg font-extrabold tracking-normal">{c.title}</h3>
           <span className="rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">
-            {c.level} · {c.total} lecciones
+            {c.level} · {c.total} {t("lecciones", "lessons")}
           </span>
           {!c.available && (
             <span className="rounded-full bg-yellow/25 px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-[#a8740f]">
-              Próximamente
+              {t("Próximamente", "Coming soon")}
             </span>
           )}
         </div>
@@ -39,11 +41,11 @@ export function CourseRow({ c }: { c: Course }) {
           </div>
           {done ? (
             <span className="inline-flex shrink-0 items-center gap-1 text-sm font-bold">
-              <Check className="size-4" strokeWidth={3} /> Completado
+              <Check className="size-4" strokeWidth={3} /> {t("Completado", "Completed")}
             </span>
           ) : (
             <span className="shrink-0 text-sm font-bold">
-              {c.completed} de {c.total} · {c.pct}%
+              {c.completed} {t("de", "of")} {c.total} · {c.pct}%
             </span>
           )}
         </div>

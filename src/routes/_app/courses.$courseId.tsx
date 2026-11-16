@@ -16,6 +16,7 @@ import { AppShell } from "@/components/AppShell";
 import { ComingSoon } from "@/components/ComingSoon";
 import { useCourses } from "@/lib/app-data";
 import { courseLook } from "@/lib/course-look";
+import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/courses/$courseId")({
@@ -33,8 +34,9 @@ function CoursePath() {
   const { data: courses = [] } = useCourses();
   const navigate = useNavigate();
   const [opening, setOpening] = useState<string | null>(null);
+  const { t } = useLang();
   const course = courses.find((c) => c.id === courseId);
-  if (!course) return <AppShell><p>Cargando…</p></AppShell>;
+  if (!course) return <AppShell><p>{t("Cargando…", "Loading…")}</p></AppShell>;
   if (!course.available) return <ComingSoon kind="course" title={course.title} />;
   const nextIdx = course.lessons.findIndex((l) => !l.done);
   const n = course.lessons.length;
@@ -60,7 +62,7 @@ function CoursePath() {
   return (
     <AppShell>
       <div className={cn("rounded-3xl px-5 py-4", look.bg, "text-white")}>
-        <Link to="/courses" className="text-xs font-semibold opacity-90">← Cursos</Link>
+        <Link to="/courses" className="text-xs font-semibold opacity-90">← {t("Cursos", "Courses")}</Link>
         <h1 className="mt-1 flex items-center gap-2.5 text-2xl font-extrabold tracking-normal">
           <span className="flex size-9 items-center justify-center rounded-xl bg-white/25">
             <look.icon className="size-5" strokeWidth={2.5} />
@@ -72,10 +74,10 @@ function CoursePath() {
           <div className="h-full rounded-full bg-white transition-all duration-700" style={{ width: `${course.pct}%` }} />
         </div>
         <div className="mt-2 flex items-center justify-between text-xs font-bold">
-          <span>{course.completed} de {course.total} lecciones completadas</span>
+          <span>{t(`${course.completed} de ${course.total} lecciones completadas`, `${course.completed} of ${course.total} lessons completed`)}</span>
           {nextLesson && (
             <Link to="/lesson/$lessonId" params={{ lessonId: nextLesson.id }} className="rounded-full bg-primary-foreground px-4 py-2 text-foreground">
-              {course.completed ? "Continuar" : "Comenzar"}
+              {course.completed ? t("Continuar", "Continue") : t("Comenzar", "Start")}
             </Link>
           )}
         </div>
@@ -126,11 +128,11 @@ function CoursePath() {
               <div key={l.id} className="absolute" style={{ left: p.x, top: p.y, transform: "translate(-50%, -50%)" }}>
                 <button
                   type="button"
-                  aria-label={locked ? `Lección ${i + 1} bloqueada` : `Lección ${i + 1}: ${l.title}`}
+                  aria-label={locked ? t(`Lección ${i + 1} bloqueada`, `Lesson ${i + 1} locked`) : t(`Lección ${i + 1}: ${l.title}`, `Lesson ${i + 1}: ${l.title}`)}
                   className={cn("block transition-transform duration-300", opening === l.id && "scale-110 animate-pulse")}
                   onClick={() => {
                     if (locked) {
-                      toast(`Completa la lección ${i} para desbloquear esta etapa`, { icon: "🔒" });
+                      toast(t(`Completa la lección ${i} para desbloquear esta etapa`, `Complete lesson ${i} to unlock this step`), { icon: "🔒" });
                       return;
                     }
                     setOpening(l.id);
@@ -146,7 +148,7 @@ function CoursePath() {
                   )}
                 >
                   {!locked && <span className="block text-base font-extrabold text-foreground">{l.title}</span>}
-                  {isNext && <span className="mt-1 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-bold text-primary">Continuar →</span>}
+                  {isNext && <span className="mt-1 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-bold text-primary">{t("Continuar →", "Continue →")}</span>}
                 </div>
               </div>
             );
