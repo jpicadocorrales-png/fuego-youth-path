@@ -3,6 +3,7 @@ import { Lock } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useBadges } from "@/lib/app-data";
 import { badgeLook, sortBadges } from "@/lib/badge-look";
+import { locale, useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/badges")({
@@ -12,17 +13,18 @@ export const Route = createFileRoute("/_app/badges")({
 
 function BadgesPage() {
   const { data: badges = [] } = useBadges();
+  const { lang, t } = useLang();
   const earned = badges.filter((b) => b.earnedAt).length;
   const pct = badges.length ? Math.round((earned / badges.length) * 100) : 0;
   return (
     <AppShell>
-      <h1 className="text-4xl font-black md:text-5xl">Insignias</h1>
+      <h1 className="text-4xl font-black md:text-5xl">{t("Insignias", "Badges")}</h1>
       <div className="mt-4 flex items-center gap-3">
         <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
           <div className="h-full rounded-full bg-green transition-all duration-700" style={{ width: `${pct}%` }} />
         </div>
         <span className="shrink-0 text-sm font-extrabold">
-          {earned} de {badges.length} ganadas
+          {t(`${earned} de ${badges.length} ganadas`, `${earned} of ${badges.length} earned`)}
         </span>
       </div>
 
@@ -56,7 +58,7 @@ function BadgesPage() {
               <p className="mt-1 text-sm text-muted-foreground">{b.description}</p>
               {won && (
                 <div className={cn("mt-2 text-xs font-extrabold uppercase tracking-wide", look.fg)}>
-                  Ganada el {new Date(b.earnedAt!).toLocaleDateString("es")}
+                  {t("Ganada el", "Earned on")} {new Date(b.earnedAt!).toLocaleDateString(locale(lang))}
                 </div>
               )}
             </div>

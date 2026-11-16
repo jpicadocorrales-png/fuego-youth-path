@@ -37,11 +37,11 @@ const PALETTE: Record<string, { bg: string; fg: string; tint: string; hex: strin
 export type CourseLook = { icon: ComponentType<IconProps>; bg: string; fg: string; tint: string; hex: string };
 
 const LOOKS: [RegExp, { icon: ComponentType<IconProps>; color: string }][] = [
-  [/fundamentos/i, { icon: Church, color: "orange" }],
-  [/creaci|g[eé]nesis/i, { icon: Globe, color: "green" }],
+  [/fundament/i, { icon: Church, color: "orange" }],
+  [/creaci|g[eé]nesis|creation/i, { icon: Globe, color: "green" }],
   [/jes[uú]s/i, { icon: LatinCross, color: "sky" }],
   [/h[eé]roes/i, { icon: Shield, color: "yellow" }],
-  [/fruto/i, { icon: Grape, color: "pink" }],
+  [/frut|fruit/i, { icon: Grape, color: "pink" }],
 ];
 
 export function courseLook(course: { title: string; color: string }): CourseLook {

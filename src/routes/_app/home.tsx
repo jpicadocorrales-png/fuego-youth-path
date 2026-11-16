@@ -15,6 +15,7 @@ import {
   useNotifications,
 } from "@/lib/app-data";
 import { courseLook } from "@/lib/course-look";
+import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/home")({
@@ -22,7 +23,10 @@ export const Route = createFileRoute("/_app/home")({
   component: HomePage,
 });
 
-const days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+const days = {
+  es: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+  en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+};
 
 function SectionTitle({ children, aside }: { children: ReactNode; aside?: ReactNode }) {
   return (
@@ -66,6 +70,7 @@ function StatTile({
 
 function HomePage() {
   const qc = useQueryClient();
+  const { lang, t } = useLang();
   const { data: me } = useMe();
   const { data: courses = [] } = useCourses();
   const { data: completions = [] } = useCompletions();
@@ -79,7 +84,7 @@ function HomePage() {
     const d = new Date();
     d.setDate(d.getDate() - (6 - i));
     const key = d.toDateString();
-    return { label: days[d.getDay()], count: completions.filter((c) => new Date(c.completed_at).toDateString() === key).length };
+    return { label: days[lang][d.getDay()], count: completions.filter((c) => new Date(c.completed_at).toDateString() === key).length };
   });
   const max = Math.max(1, ...week.map((w) => w.count));
   const weekTotal = week.reduce((s, w) => s + w.count, 0);
@@ -96,12 +101,12 @@ function HomePage() {
       {/* Saludo */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-lg font-bold text-muted-foreground">¡Hola!</p>
-          <h1 className="text-4xl font-black leading-tight md:text-5xl">{me?.profile?.display_name ?? "joven"}</h1>
+          <p className="text-lg font-bold text-muted-foreground">{t("¡Hola!", "Hi!")}</p>
+          <h1 className="text-4xl font-black leading-tight md:text-5xl">{me?.profile?.display_name ?? t("joven", "friend")}</h1>
         </div>
         <a
           href="#notificaciones"
-          aria-label={`Notificaciones: ${unread.length} sin leer`}
+          aria-label={t(`Notificaciones: ${unread.length} sin leer`, `Notifications: ${unread.length} unread`)}
           className="relative flex size-12 shrink-0 items-center justify-center rounded-2xl bg-card shadow-[var(--shadow-soft)]"
         >
           <Bell className="size-5" />
@@ -115,33 +120,33 @@ function HomePage() {
 
       {/* Estadísticas */}
       <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatTile icon={Flame} value={streak} label={streak === 1 ? "día de racha" : "días de racha"} tile="bg-primary text-primary-foreground" chip="bg-primary-foreground/20" delay={0} />
-        <StatTile icon={Zap} value={me?.profile?.xp ?? 0} label="XP total" tile="bg-yellow text-foreground" chip="bg-card/60" delay={70} />
-        <StatTile icon={BookOpen} value={completions.length} label="lecciones" tile="bg-secondary/15 text-foreground" chip="bg-secondary text-secondary-foreground" delay={140} />
-        <StatTile icon={Award} value={badges.filter((b) => b.earnedAt).length} label="insignias" tile="bg-green/15 text-foreground" chip="bg-green text-primary-foreground" delay={210} />
+        <StatTile icon={Flame} value={streak} label={streak === 1 ? t("día de racha", "day streak") : t("días de racha", "day streak")} tile="bg-primary text-primary-foreground" chip="bg-primary-foreground/20" delay={0} />
+        <StatTile icon={Zap} value={me?.profile?.xp ?? 0} label={t("XP total", "total XP")} tile="bg-yellow text-foreground" chip="bg-card/60" delay={70} />
+        <StatTile icon={BookOpen} value={completions.length} label={t("lecciones", "lessons")} tile="bg-secondary/15 text-foreground" chip="bg-secondary text-secondary-foreground" delay={140} />
+        <StatTile icon={Award} value={badges.filter((b) => b.earnedAt).length} label={t("insignias", "badges")} tile="bg-green/15 text-foreground" chip="bg-green text-primary-foreground" delay={210} />
       </div>
 
       {/* Continúa aprendiendo */}
       {current && (
         <>
-          <SectionTitle>Continúa aprendiendo</SectionTitle>
+          <SectionTitle>{t("Continúa aprendiendo", "Keep learning")}</SectionTitle>
           <div className={cn("relative overflow-hidden rounded-[2rem] p-6 md:p-8", currentLook.bg, "text-white")}>
             <currentLook.icon className="pointer-events-none absolute -right-8 -top-8 size-48 opacity-15" strokeWidth={1.75} />
             <div className="relative">
               <span className="inline-block rounded-full bg-white/25 px-3 py-1 text-xs font-extrabold uppercase tracking-wide">
-                {current.completed} de {current.total} lecciones
+                {t(`${current.completed} de ${current.total} lecciones`, `${current.completed} of ${current.total} lessons`)}
               </span>
               <h3 className="mt-3 text-3xl font-extrabold tracking-normal md:text-4xl">{current.title}</h3>
               <div className="mt-5 h-3 overflow-hidden rounded-full bg-white/30">
                 <div className="h-full rounded-full bg-white transition-all duration-700" style={{ width: `${current.pct}%` }} />
               </div>
-              <div className="mt-2 text-sm font-bold opacity-90">{current.pct}% completado</div>
+              <div className="mt-2 text-sm font-bold opacity-90">{current.pct}% {t("completado", "complete")}</div>
               <Link
                 to="/courses/$courseId"
                 params={{ courseId: current.id }}
                 className="mt-6 inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 font-extrabold text-background transition-transform hover:scale-[1.03]"
               >
-                Continuar <ArrowRight className="size-4" />
+                {t("Continuar", "Continue")} <ArrowRight className="size-4" />
               </Link>
             </div>
           </div>
@@ -149,8 +154,8 @@ function HomePage() {
       )}
 
       {/* Actividad de la semana */}
-      <SectionTitle aside={<span className="text-sm font-bold text-muted-foreground">{weekTotal} {weekTotal === 1 ? "lección" : "lecciones"} esta semana</span>}>
-        Tu semana
+      <SectionTitle aside={<span className="text-sm font-bold text-muted-foreground">{weekTotal} {weekTotal === 1 ? t("lección", "lesson") : t("lecciones", "lessons")} {t("esta semana", "this week")}</span>}>
+        {t("Tu semana", "Your week")}
       </SectionTitle>
       <section className="rounded-[2rem] bg-card p-5 shadow-[var(--shadow-soft)] md:p-6">
         <div className="flex h-44 items-end justify-between gap-2 md:gap-4">
@@ -161,7 +166,7 @@ function HomePage() {
                 <div className="relative flex w-full max-w-12 flex-1 items-end overflow-visible rounded-full bg-primary/10">
                   {today && (
                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-foreground px-2.5 py-1 text-[11px] font-bold text-background">
-                      Hoy: {w.count}
+                      {t("Hoy", "Today")}: {w.count}
                     </span>
                   )}
                   <div
@@ -177,7 +182,7 @@ function HomePage() {
       </section>
 
       {/* Avance por curso */}
-      <SectionTitle>Tus cursos</SectionTitle>
+      <SectionTitle>{t("Tus cursos", "Your courses")}</SectionTitle>
       <div className="space-y-3">
         {courses.map((c) => (
           <CourseRow key={c.id} c={c} />
@@ -185,7 +190,7 @@ function HomePage() {
       </div>
 
       {/* Anuncios */}
-      <SectionTitle>Anuncios</SectionTitle>
+      <SectionTitle>{t("Anuncios", "Announcements")}</SectionTitle>
       <div className="space-y-3">
         {ann.map((a) => (
           <div key={a.id} className="flex items-start gap-4 rounded-[1.5rem] bg-card p-5 shadow-[var(--shadow-soft)]">
@@ -198,13 +203,13 @@ function HomePage() {
             </div>
           </div>
         ))}
-        {!ann.length && <p className="rounded-[1.5rem] bg-card p-5 text-muted-foreground">Sin anuncios por ahora.</p>}
+        {!ann.length && <p className="rounded-[1.5rem] bg-card p-5 text-muted-foreground">{t("Sin anuncios por ahora.", "No announcements yet.")}</p>}
       </div>
 
       {/* Notificaciones */}
       <div id="notificaciones" className="scroll-mt-6">
-        <SectionTitle aside={unread.length > 0 && <Button variant="ghost" size="sm" onClick={markRead}>Marcar leídas</Button>}>
-          Notificaciones
+        <SectionTitle aside={unread.length > 0 && <Button variant="ghost" size="sm" onClick={markRead}>{t("Marcar leídas", "Mark as read")}</Button>}>
+          {t("Notificaciones", "Notifications")}
         </SectionTitle>
         <div className="space-y-3 pb-6">
           {notifs.map((n) => (
@@ -223,13 +228,13 @@ function HomePage() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 text-lg font-extrabold">
                   {n.title}
-                  {!n.read && <span className="size-2 shrink-0 rounded-full bg-destructive" aria-label="sin leer" />}
+                  {!n.read && <span className="size-2 shrink-0 rounded-full bg-destructive" aria-label={t("sin leer", "unread")} />}
                 </div>
                 <p className="mt-0.5 text-muted-foreground">{n.body}</p>
               </div>
             </div>
           ))}
-          {!notifs.length && <p className="rounded-[1.5rem] bg-card p-5 text-muted-foreground">No tienes notificaciones.</p>}
+          {!notifs.length && <p className="rounded-[1.5rem] bg-card p-5 text-muted-foreground">{t("No tienes notificaciones.", "You have no notifications.")}</p>}
         </div>
       </div>
     </AppShell>

@@ -4,6 +4,7 @@ import { ComingSoon } from "@/components/ComingSoon";
 import { ReligionsLesson } from "@/components/lessons/ReligionsLesson";
 import { READY_EXPERIENCES, findLesson, isCourseAvailable } from "@/lib/demo-data";
 import { completeLesson } from "@/lib/demo-store";
+import { useLang } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_app/lesson/$lessonId")({
   head: () => ({ meta: [{ title: "Lección — Fuego+" }, { name: "description", content: "Aprende y gana XP." }] }),
@@ -14,15 +15,16 @@ function LessonPlayer() {
   const { lessonId } = Route.useParams();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { lang, t } = useLang();
   const found = findLesson(lessonId);
 
-  if (!found) return <ComingSoon kind="course" title="desconocido" />;
+  if (!found) return <ComingSoon kind="course" title={t("desconocido", "unknown")} />;
   const { course, lesson } = found;
-  if (!isCourseAvailable(course.id)) return <ComingSoon kind="course" title={course.title} />;
+  if (!isCourseAvailable(course.id)) return <ComingSoon kind="course" title={course.title[lang]} />;
 
   // Lecciones cuyo contenido todavía se está preparando (por ejemplo «Jesús»).
   if (!lesson.experience || !READY_EXPERIENCES.has(lesson.experience)) {
-    return <ComingSoon kind="lesson" title={lesson.title} courseId={course.id} />;
+    return <ComingSoon kind="lesson" title={lesson.title[lang]} courseId={course.id} />;
   }
 
   const exit = () => navigate({ to: "/courses/$courseId", params: { courseId: course.id } });

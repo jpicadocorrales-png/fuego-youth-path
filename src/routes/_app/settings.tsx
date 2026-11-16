@@ -2,13 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { Mail, Moon, RotateCcw, Target, Volume2, type LucideIcon } from "lucide-react";
+import { Languages, Mail, Moon, RotateCcw, Target, Volume2, type LucideIcon } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { resetState, updateState } from "@/lib/demo-store";
 import { applyTheme, useMe } from "@/lib/app-data";
+import { LangSwitch, useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/settings")({
@@ -54,6 +55,7 @@ function SettingRow({
 
 function SettingsPage() {
   const qc = useQueryClient();
+  const { t } = useLang();
   const { data: me } = useMe();
   const [name, setName] = useState("");
   const [avatar, setAvatar] = useState("🦁");
@@ -78,32 +80,32 @@ function SettingsPage() {
       ...s,
       profile: { ...s.profile, display_name: name, avatar_emoji: avatar, daily_goal: goal, sound_enabled: sound, email_notifications: emailN },
     }));
-    toast.success("¡Guardado!");
+    toast.success(t("¡Guardado!", "Saved!"));
     qc.invalidateQueries({ queryKey: ["me"] });
   }
 
   function reset() {
     resetState();
     qc.invalidateQueries();
-    toast.success("Progreso reiniciado");
+    toast.success(t("Progreso reiniciado", "Progress reset"));
   }
 
   return (
     <AppShell>
-      <h1 className="text-4xl font-black md:text-5xl">Ajustes</h1>
+      <h1 className="text-4xl font-black md:text-5xl">{t("Ajustes", "Settings")}</h1>
 
       {/* Perfil */}
       <section className="mt-8 rounded-[1.5rem] bg-card p-6 shadow-[var(--shadow-soft)]">
         <div className="flex items-center gap-4">
           <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-primary/10 text-5xl">{avatar}</span>
           <div className="min-w-0">
-            <div className="truncate text-2xl font-black">{name || "Tu nombre"}</div>
-            <div className="text-sm text-muted-foreground">Versión demo: tu progreso se guarda en este navegador.</div>
+            <div className="truncate text-2xl font-black">{name || t("Tu nombre", "Your name")}</div>
+            <div className="text-sm text-muted-foreground">{t("Versión demo: tu progreso se guarda en este navegador.", "Demo version: your progress is saved in this browser.")}</div>
           </div>
         </div>
-        <label className="mt-6 block text-sm font-extrabold" htmlFor="nombre">Nombre</label>
-        <Input id="nombre" className={cn(field, "mt-2")} value={name} onChange={(e) => setName(e.target.value)} placeholder="Nombre" />
-        <div className="mt-5 text-sm font-extrabold">Avatar</div>
+        <label className="mt-6 block text-sm font-extrabold" htmlFor="nombre">{t("Nombre", "Name")}</label>
+        <Input id="nombre" className={cn(field, "mt-2")} value={name} onChange={(e) => setName(e.target.value)} placeholder={t("Nombre", "Name")} />
+        <div className="mt-5 text-sm font-extrabold">{t("Avatar", "Avatar")}</div>
         <div className="mt-2 flex flex-wrap gap-2">
           {avatars.map((a) => (
             <button
@@ -123,9 +125,12 @@ function SettingsPage() {
       </section>
 
       {/* Preferencias */}
-      <SectionTitle>Preferencias</SectionTitle>
+      <SectionTitle>{t("Preferencias", "Preferences")}</SectionTitle>
       <div className="space-y-3">
-        <SettingRow icon={Target} tone="bg-orange/15 text-orange" title="Meta diaria" description="Lecciones que quieres completar cada día.">
+        <SettingRow icon={Languages} tone="bg-sky/15 text-sky" title={t("Idioma", "Language")} description={t("Español o inglés.", "Spanish or English.")}>
+          <LangSwitch />
+        </SettingRow>
+        <SettingRow icon={Target} tone="bg-orange/15 text-orange" title={t("Meta diaria", "Daily goal")} description={t("Lecciones que quieres completar cada día.", "Lessons you want to complete each day.")}>
           <div className="flex gap-1.5">
             {[1, 2, 3, 5].map((g) => (
               <button
@@ -143,18 +148,18 @@ function SettingsPage() {
             ))}
           </div>
         </SettingRow>
-        <SettingRow icon={Moon} tone="bg-primary/15 text-primary" title="Modo oscuro" description="Colores oscuros para estudiar de noche.">
-          <Switch checked={dark} onCheckedChange={(v) => { setDark(v); applyTheme(v); }} aria-label="Modo oscuro" />
+        <SettingRow icon={Moon} tone="bg-primary/15 text-primary" title={t("Modo oscuro", "Dark mode")} description={t("Colores oscuros para estudiar de noche.", "Dark colors for studying at night.")}>
+          <Switch checked={dark} onCheckedChange={(v) => { setDark(v); applyTheme(v); }} aria-label={t("Modo oscuro", "Dark mode")} />
         </SettingRow>
-        <SettingRow icon={Volume2} tone="bg-yellow/25 text-[#a8740f]" title="Efectos de sonido" description="Sonidos al responder y completar lecciones.">
-          <Switch checked={sound} onCheckedChange={setSound} aria-label="Efectos de sonido" />
+        <SettingRow icon={Volume2} tone="bg-yellow/25 text-[#a8740f]" title={t("Efectos de sonido", "Sound effects")} description={t("Sonidos al responder y completar lecciones.", "Sounds when answering and finishing lessons.")}>
+          <Switch checked={sound} onCheckedChange={setSound} aria-label={t("Efectos de sonido", "Sound effects")} />
         </SettingRow>
-        <SettingRow icon={Mail} tone="bg-green/15 text-green" title="Recordatorios por correo" description="Te avisamos para que no pierdas tu racha.">
-          <Switch checked={emailN} onCheckedChange={setEmailN} aria-label="Recordatorios por correo" />
+        <SettingRow icon={Mail} tone="bg-green/15 text-green" title={t("Recordatorios por correo", "Email reminders")} description={t("Te avisamos para que no pierdas tu racha.", "We remind you so you don't lose your streak.")}>
+          <Switch checked={emailN} onCheckedChange={setEmailN} aria-label={t("Recordatorios por correo", "Email reminders")} />
         </SettingRow>
       </div>
       <Button size="lg" className="mt-5 w-full rounded-full" onClick={save}>
-        Guardar cambios
+        {t("Guardar cambios", "Save changes")}
       </Button>
 
       {/* Reiniciar la demo */}
@@ -166,7 +171,7 @@ function SettingsPage() {
         <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-orange/15 text-orange">
           <RotateCcw className="size-6" strokeWidth={2.25} />
         </span>
-        <span className="text-lg font-extrabold">Reiniciar progreso de la demo</span>
+        <span className="text-lg font-extrabold">{t("Reiniciar progreso de la demo", "Reset demo progress")}</span>
       </button>
     </AppShell>
   );

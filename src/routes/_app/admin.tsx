@@ -9,9 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { displayName } from "@/lib/app-data";
 import { COURSES, DEMO_STUDENTS } from "@/lib/demo-data";
 import { addAnnouncement, loadState } from "@/lib/demo-store";
 import { courseLook } from "@/lib/course-look";
+import { locale, useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/admin")({
@@ -25,18 +27,22 @@ const field = "h-12 rounded-2xl border-2 bg-background px-4 text-base";
 const tab = "rounded-full px-5 py-2 font-extrabold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none";
 
 function AdminPage() {
+  const { t } = useLang();
   return (
     <AppShell>
-      <h1 className="text-4xl font-black md:text-5xl">Administración</h1>
-      <p className="mt-1 text-muted-foreground">Seguimiento de los jóvenes y sus cursos.</p>
+      <h1 className="text-4xl font-black md:text-5xl">{t("Administración", "Admin")}</h1>
+      <p className="mt-1 text-muted-foreground">{t("Seguimiento de los jóvenes y sus cursos.", "Track your youth group and their courses.")}</p>
       <p className="mt-4 rounded-[1.25rem] bg-yellow/25 px-4 py-3 text-sm font-bold">
-        Vista de demostración: los jóvenes son ficticios y tus cambios no se guardan en ningún servidor.
+        {t(
+          "Vista de demostración: los jóvenes son ficticios y tus cambios no se guardan en ningún servidor.",
+          "Demo view: the students are fictional and your changes are not saved to any server.",
+        )}
       </p>
       <Tabs defaultValue="stats" className="mt-6">
         <TabsList className="h-auto flex-wrap gap-1 rounded-full bg-card p-1.5 shadow-[var(--shadow-soft)]">
-          <TabsTrigger value="stats" className={tab}>Estadísticas</TabsTrigger>
-          <TabsTrigger value="students" className={tab}>Jóvenes</TabsTrigger>
-          <TabsTrigger value="announce" className={tab}>Anuncios</TabsTrigger>
+          <TabsTrigger value="stats" className={tab}>{t("Estadísticas", "Stats")}</TabsTrigger>
+          <TabsTrigger value="students" className={tab}>{t("Jóvenes", "Students")}</TabsTrigger>
+          <TabsTrigger value="announce" className={tab}>{t("Anuncios", "Announcements")}</TabsTrigger>
         </TabsList>
         <TabsContent value="stats"><Stats /></TabsContent>
         <TabsContent value="students"><Students /></TabsContent>
@@ -49,12 +55,13 @@ function AdminPage() {
 // Datos de seguimiento compartidos por Estadísticas y Jóvenes. En la demo son
 // jóvenes ficticios (demo-data.ts) más el visitante actual.
 function useAdminData() {
+  const { lang } = useLang();
   return useQuery({
-    queryKey: ["admin-students"],
+    queryKey: ["admin-students", lang],
     queryFn: () => {
       const now = Date.now();
       const ago = (d: number) => new Date(now - d * DAY).toISOString();
-      const courses = COURSES.map(({ id, title, color }) => ({ id, title, color }));
+      const courses = COURSES.map(({ id, title, color }) => ({ id, title: title[lang], color }));
       const lessons = COURSES.flatMap((c) => c.lessons.map((l) => ({ id: l.id, course_id: c.id })));
       const comps: { user_id: string; course_id: string; completed_at: string }[] = [];
       const ub: { user_id: string }[] = [];
@@ -79,11 +86,12 @@ function useAdminData() {
       const me = loadState();
       profiles.push({
         id: "me",
-        display_name: `${me.profile.display_name} (tú)`,
+        display_name: `${displayName(me.profile.display_name, lang)} (${lang === "es" ? "tú" : "you"})`,
         avatar_emoji: me.profile.avatar_emoji,
         xp: me.profile.xp,
         streak: me.profile.streak,
-        last_activity_date: me.profile.last_activity_date,
+        // Fecha local AAAA-MM-DD: se lee al mediodía para que la zona horaria no la mueva de día.
+        last_activity_date: me.profile.last_activity_date ? `${me.profile.last_activity_date}T12:00:00` : null,
       });
       for (const c of me.completions) comps.push({ user_id: "me", course_id: c.course_id, completed_at: c.completed_at });
       for (let i = 0; i < me.badges.length; i++) ub.push({ user_id: "me" });
@@ -138,7 +146,8 @@ const tooltipStyle = {
 
 function Stats() {
   const { data } = useAdminData();
-  if (!data) return <p className="mt-6 text-muted-foreground">Cargando estadísticas…</p>;
+  const { lang, t } = useLang();
+  if (!data) return <p className="mt-6 text-muted-foreground">{t("Cargando estadísticas…", "Loading stats…")}</p>;
 
   const active = data.profiles.filter((p) => daysSince(p.last_activity_date) < 7).length;
   const never = data.profiles.filter((p) => !p.last_activity_date).length;
@@ -150,7 +159,7 @@ function Stats() {
     d.setDate(d.getDate() - (13 - i));
     const key = d.toDateString();
     return {
-      dia: d.toLocaleDateString("es", { day: "numeric", month: "short" }),
+      dia: d.toLocaleDateString(locale(lang), { day: "numeric", month: "short" }),
       lecciones: data.comps.filter((c) => new Date(c.completed_at).toDateString() === key).length,
     };
   });
@@ -170,9 +179,9 @@ function Stats() {
   });
 
   const activity = [
-    { estado: "Activos (7 días)", jovenes: active, color: "#008c47" },
-    { estado: "Inactivos", jovenes: inactive, color: "#f6bc3f" },
-    { estado: "Sin actividad", jovenes: never, color: "#e63c23" },
+    { estado: t("Activos (7 días)", "Active (7 days)"), jovenes: active, color: "#008c47" },
+    { estado: t("Inactivos", "Inactive"), jovenes: inactive, color: "#f6bc3f" },
+    { estado: t("Sin actividad", "No activity"), jovenes: never, color: "#e63c23" },
   ];
 
   const top = data.profiles.slice(0, 5).map((p) => ({ nombre: p.display_name, xp: p.xp }));
@@ -180,27 +189,27 @@ function Stats() {
   return (
     <div>
       <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatTile icon={Users} value={data.profiles.length} label="jóvenes" tile="bg-primary text-primary-foreground" chip="bg-primary-foreground/20" />
-        <StatTile icon={Flame} value={active} label="activos esta semana" tile="bg-yellow text-foreground" chip="bg-card/60" />
-        <StatTile icon={BookOpen} value={data.comps.length} label="lecciones hechas" tile="bg-secondary/15 text-foreground" chip="bg-secondary text-secondary-foreground" />
-        <StatTile icon={Award} value={data.ub.length} label="insignias ganadas" tile="bg-green/15 text-foreground" chip="bg-green text-primary-foreground" />
+        <StatTile icon={Users} value={data.profiles.length} label={t("jóvenes", "students")} tile="bg-primary text-primary-foreground" chip="bg-primary-foreground/20" />
+        <StatTile icon={Flame} value={active} label={t("activos esta semana", "active this week")} tile="bg-yellow text-foreground" chip="bg-card/60" />
+        <StatTile icon={BookOpen} value={data.comps.length} label={t("lecciones hechas", "lessons done")} tile="bg-secondary/15 text-foreground" chip="bg-secondary text-secondary-foreground" />
+        <StatTile icon={Award} value={data.ub.length} label={t("insignias ganadas", "badges earned")} tile="bg-green/15 text-foreground" chip="bg-green text-primary-foreground" />
       </div>
 
-      <SectionTitle>Estadísticas</SectionTitle>
+      <SectionTitle>{t("Estadísticas", "Stats")}</SectionTitle>
       <div className="grid gap-4 lg:grid-cols-2">
-        <ChartCard title="Lecciones completadas" note="Últimos 14 días">
+        <ChartCard title={t("Lecciones completadas", "Lessons completed")} note={t("Últimos 14 días", "Last 14 days")}>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={perDay} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
               <CartesianGrid vertical={false} stroke="var(--border)" />
               <XAxis dataKey="dia" tick={axis} tickLine={false} axisLine={false} interval={2} />
               <YAxis allowDecimals={false} tick={axis} tickLine={false} axisLine={false} />
-              <Tooltip {...tooltipStyle} formatter={(v) => [v, "lecciones"]} />
+              <Tooltip {...tooltipStyle} formatter={(v) => [v, t("lecciones", "lessons")]} />
               <Bar dataKey="lecciones" isAnimationActive={animate()} fill={VIOLET} radius={[4, 4, 0, 0]} maxBarSize={22} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Actividad de los jóvenes" note="Según su última lección">
+        <ChartCard title={t("Actividad de los jóvenes", "Student activity")} note={t("Según su última lección", "Based on their latest lesson")}>
           <div className="flex flex-wrap items-center gap-4">
             <ResponsiveContainer width={180} height={180}>
               <PieChart>
@@ -224,13 +233,13 @@ function Stats() {
           </div>
         </ChartCard>
 
-        <ChartCard title="Avance promedio por curso" note="Porcentaje medio de lecciones completadas">
+        <ChartCard title={t("Avance promedio por curso", "Average progress by course")} note={t("Porcentaje medio de lecciones completadas", "Average share of lessons completed")}>
           <ResponsiveContainer width="100%" height={Math.max(160, perCourse.length * 44)}>
             <BarChart data={perCourse} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
               <CartesianGrid horizontal={false} stroke="var(--border)" />
               <XAxis type="number" domain={[0, 100]} unit="%" tick={axis} tickLine={false} axisLine={false} />
               <YAxis type="category" dataKey="curso" width={130} tick={axis} tickLine={false} axisLine={false} />
-              <Tooltip {...tooltipStyle} formatter={(v) => [`${v}%`, "avance"]} />
+              <Tooltip {...tooltipStyle} formatter={(v) => [`${v}%`, t("avance", "progress")]} />
               <Bar dataKey="avance" isAnimationActive={animate()} radius={[0, 4, 4, 0]} maxBarSize={18}>
                 {perCourse.map((c) => (
                   <Cell key={c.curso} fill={c.color} />
@@ -240,7 +249,7 @@ function Stats() {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Top 5 por XP">
+        <ChartCard title={t("Top 5 por XP", "Top 5 by XP")}>
           <ResponsiveContainer width="100%" height={Math.max(160, top.length * 44)}>
             <BarChart data={top} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
               <CartesianGrid horizontal={false} stroke="var(--border)" />
@@ -258,6 +267,7 @@ function Stats() {
 
 function Students() {
   const { data } = useAdminData();
+  const { lang, t } = useLang();
   const [open, setOpen] = useState<string | null>(null);
   if (!data) return null;
 
@@ -274,8 +284,8 @@ function Students() {
               <div className="min-w-0 flex-1">
                 <div className="text-lg font-extrabold">{p.display_name}</div>
                 <div className="text-sm text-muted-foreground">
-                  Última actividad: {p.last_activity_date ? new Date(p.last_activity_date).toLocaleDateString("es") : "nunca"}
-                  {inactive && <span className="ml-2 font-bold text-destructive">· inactivo</span>}
+                  {t("Última actividad", "Last activity")}: {p.last_activity_date ? new Date(p.last_activity_date).toLocaleDateString(locale(lang)) : t("nunca", "never")}
+                  {inactive && <span className="ml-2 font-bold text-destructive">· {t("inactivo", "inactive")}</span>}
                 </div>
               </div>
               <div className="hidden items-center gap-2 sm:flex">
@@ -333,12 +343,13 @@ function Chip({ icon: Icon, value, tone }: { icon: LucideIcon; value: number; to
 
 function Announce() {
   const qc = useQueryClient();
+  const { t } = useLang();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   function post() {
     addAnnouncement(title, body);
     setTitle(""); setBody("");
-    toast.success("Anuncio publicado: lo verás en tu inicio");
+    toast.success(t("Anuncio publicado: lo verás en tu inicio", "Announcement posted: you'll see it on your home page"));
     qc.invalidateQueries({ queryKey: ["announcements"] });
   }
   return (
@@ -348,16 +359,16 @@ function Announce() {
           <Megaphone className="size-6" strokeWidth={2.25} />
         </span>
         <div>
-          <h2 className="text-xl font-extrabold">Nuevo anuncio</h2>
-          <p className="text-sm text-muted-foreground">Lo verán todos los jóvenes en su inicio.</p>
+          <h2 className="text-xl font-extrabold">{t("Nuevo anuncio", "New announcement")}</h2>
+          <p className="text-sm text-muted-foreground">{t("Lo verán todos los jóvenes en su inicio.", "Everyone in the group will see it on their home page.")}</p>
         </div>
       </div>
       <div className="mt-5 space-y-3">
-        <Input className={field} placeholder="Título" value={title} onChange={(e) => setTitle(e.target.value)} />
-        <Textarea className="min-h-28 rounded-2xl border-2 bg-background px-4 py-3 text-base" placeholder="Mensaje para todos los jóvenes" value={body} onChange={(e) => setBody(e.target.value)} />
+        <Input className={field} placeholder={t("Título", "Title")} value={title} onChange={(e) => setTitle(e.target.value)} />
+        <Textarea className="min-h-28 rounded-2xl border-2 bg-background px-4 py-3 text-base" placeholder={t("Mensaje para todos los jóvenes", "Message for the whole group")} value={body} onChange={(e) => setBody(e.target.value)} />
       </div>
       <Button size="lg" className="mt-4 w-full rounded-full" disabled={!title || !body} onClick={post}>
-        Publicar
+        {t("Publicar", "Post")}
       </Button>
     </section>
   );

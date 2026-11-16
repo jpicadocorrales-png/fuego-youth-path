@@ -1,15 +1,22 @@
 import { useRef, useState, type PointerEvent as RPointerEvent } from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLang, type Lang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { ReligionBadge, type ReligionKey } from "./ReligionIcons";
 
-const NAME: Record<ReligionKey, string> = { cri: "Cristianismo", isl: "Islam", jud: "Judaísmo", hin: "Hinduismo", bud: "Budismo" };
+const NAME: Record<Lang, Record<ReligionKey, string>> = {
+  es: { cri: "Cristianismo", isl: "Islam", jud: "Judaísmo", hin: "Hinduismo", bud: "Budismo" },
+  en: { cri: "Christianity", isl: "Islam", jud: "Judaism", hin: "Hinduism", bud: "Buddhism" },
+};
 
 type Q = { options: { text: string; r: ReligionKey; fb: string }[]; correct: number };
-const PROMPT = "¿Cuál de estas afirmaciones es una enseñanza del cristianismo?";
+const PROMPT: Record<Lang, string> = {
+  es: "¿Cuál de estas afirmaciones es una enseñanza del cristianismo?",
+  en: "Which of these statements is a teaching of Christianity?",
+};
 
-export const testQuestions: Q[] = [
+const testQuestionsEs: Q[] = [
   { correct: 1, options: [
     { text: "Jesús fue un maestro espiritual que mostró un camino de iluminación.", r: "bud", fb: "No exactamente. Esta interpretación presenta a Jesús como un maestro espiritual, pero no refleja la enseñanza cristiana sobre quién es Jesús." },
     { text: "Jesús es el Hijo de Dios y el Salvador de la humanidad.", r: "cri", fb: "¡Correcto! El cristianismo enseña que Jesús es el Hijo de Dios y el Salvador de la humanidad." },
@@ -42,25 +49,62 @@ export const testQuestions: Q[] = [
   ] },
 ];
 
+const testQuestionsEn: Q[] = [
+  { correct: 1, options: [
+    { text: "Jesus was a spiritual teacher who showed a path to enlightenment.", r: "bud", fb: "Not quite. This view presents Jesus as a spiritual teacher, but it doesn't reflect Christian teaching about who Jesus is." },
+    { text: "Jesus is the Son of God and the Savior of humanity.", r: "cri", fb: "Correct! Christianity teaches that Jesus is the Son of God and the Savior of humanity." },
+    { text: "Jesus was a prophet of God, but he is not divine.", r: "isl", fb: "Not quite. Islam recognizes Jesus as a prophet, but not as the Son of God or as Savior." },
+    { text: "Jesus is one manifestation of the divine among many others.", r: "hin", fb: "Not quite. Some Hindu interpretations may understand Jesus within a broad view of the divine." },
+  ] },
+  { correct: 3, options: [
+    { text: "Salvation is reached by following the path to nirvana.", r: "bud", fb: "Not quite. Nirvana is a central concept in Buddhism and is not the same as Christian salvation through Jesus Christ." },
+    { text: "Spiritual liberation means escaping the cycle of rebirth.", r: "hin", fb: "Not quite. Liberation from the cycle of rebirth is a goal found in Hindu traditions. Christianity teaches salvation through Jesus Christ." },
+    { text: "A person's actions determine their destiny through karma.", r: "hin", fb: "Not quite. Karma plays an important role in several traditions of Indian origin. Christianity teaches that salvation is received by grace through faith in Jesus Christ." },
+    { text: "Salvation is received by grace through faith in Jesus Christ.", r: "cri", fb: "Correct! Christianity teaches that salvation is a gift of God's grace, received through faith in Jesus Christ." },
+  ] },
+  { correct: 0, options: [
+    { text: "There will be a resurrection and eternal life.", r: "cri", fb: "Correct! Christianity teaches the resurrection and the hope of eternal life with God." },
+    { text: "The soul can pass through many lives.", r: "hin", fb: "Not quite. Reincarnation is part of various Hindu traditions. The Christian hope is centered on the resurrection and eternal life." },
+    { text: "Existence continues through different cycles of rebirth.", r: "hin", fb: "Not quite. The cycle of rebirth is an idea found in several traditions of Indian origin. Christianity teaches the resurrection." },
+    { text: "The final goal is to reach nirvana.", r: "bud", fb: "Not quite. Nirvana is a central concept in Buddhism. Christianity teaches the resurrection and eternal life with God." },
+  ] },
+  { correct: 2, options: [
+    { text: "God is one and has no Son.", r: "isl", fb: "Not quite. Islam affirms the absolute oneness of God and rejects that he has a divine Son. Christianity confesses one God: Father, Son and Holy Spirit." },
+    { text: "The divine shows itself in many different ways and forms.", r: "hin", fb: "Not quite. Hindu traditions have diverse understandings of the divine. Christian teaching affirms one God: Father, Son and Holy Spirit." },
+    { text: "There is one God: Father, Son and Holy Spirit.", r: "cri", fb: "Correct! Christianity teaches that there is one God, revealed as Father, Son and Holy Spirit." },
+    { text: "There is no creator God; reality is understood through a spiritual path.", r: "bud", fb: "Not quite. Many Buddhist traditions don't place a creator God at the center of their teachings. Christianity does believe in a creator God." },
+  ] },
+  { correct: 0, options: [
+    { text: "Good works are the fruit of true faith.", r: "cri", fb: "Correct! Christianity teaches that we are not saved by piling up good works. Good works are the fruit of true faith and a life transformed by God." },
+    { text: "Actions determine karma and future lives.", r: "hin", fb: "Not quite. Karma shapes how various Hindu traditions explain actions and their consequences. In Christianity, good works are the fruit of faith, not a way to buy salvation." },
+    { text: "Salvation depends on piling up enough good works.", r: "cri", fb: "Not quite. Christianity teaches that salvation is by grace, not something earned by piling up good works. Good works are the fruit of faith." },
+    { text: "Liberation is reached by following a path of enlightenment.", r: "bud", fb: "Not quite. Buddhism offers a path of practice to reach liberation from suffering. Christianity teaches salvation by grace through faith in Jesus Christ." },
+  ] },
+];
+
+export const testQuestions: Record<Lang, Q[]> = { es: testQuestionsEs, en: testQuestionsEn };
+
 export function Test({ onNext }: { onNext: () => void }) {
+  const { lang, t } = useLang();
+  const questions = testQuestions[lang];
   const [n, setN] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
-  const q = testQuestions[n]!;
+  const q = questions[n]!;
   const sel = picked !== null ? q.options[picked]! : null;
   const ok = picked === q.correct;
   const go = () => {
-    if (n + 1 >= testQuestions.length) return onNext();
+    if (n + 1 >= questions.length) return onNext();
     setN(n + 1);
     setPicked(null);
   };
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-black">Selección única</h2>
-        <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-extrabold text-primary">{n + 1} de {testQuestions.length}</span>
+        <h2 className="text-2xl font-black">{t("Selección única", "Single choice")}</h2>
+        <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-extrabold text-primary">{n + 1} {t("de", "of")} {questions.length}</span>
       </div>
       <div key={n} className="animate-pop">
-        <p className="mt-4 text-xl font-bold">{PROMPT}</p>
+        <p className="mt-4 text-xl font-bold">{PROMPT[lang]}</p>
         <div className="mt-4 grid gap-3">
           {q.options.map((o, i) => (
             <button
@@ -81,19 +125,19 @@ export function Test({ onNext }: { onNext: () => void }) {
         {sel && (
           <div className={cn("mt-4 animate-pop rounded-2xl p-4", ok ? "bg-green/10" : "bg-secondary/10")}>
             <div className="flex items-center gap-2 font-black">
-              <ReligionBadge k={sel.r} size="sm" /> {NAME[sel.r]}
+              <ReligionBadge k={sel.r} size="sm" /> {NAME[lang][sel.r]}
             </div>
             <p className={cn("mt-2 font-semibold", ok ? "text-green" : "text-foreground")}>{sel.fb}</p>
           </div>
         )}
-        {picked !== null && <Button size="lg" className="mt-5 w-full" onClick={go}>Continuar →</Button>}
+        {picked !== null && <Button size="lg" className="mt-5 w-full" onClick={go}>{t("Continuar →", "Continue →")}</Button>}
       </div>
     </div>
   );
 }
 
 type Round = { a: string; b: string; cri: "a" | "b"; other: ReligionKey; exp: string };
-export const discardRounds: Round[] = [
+const discardRoundsEs: Round[] = [
   { a: "Jesús es un profeta de Dios, pero no es divino.", b: "Jesús es el Hijo de Dios y Salvador.", cri: "b", other: "isl", exp: "El cristianismo enseña que Jesús no es solamente un profeta: es el Hijo de Dios y el Salvador." },
   { a: "La salvación se recibe por gracia mediante la fe en Jesucristo.", b: "La liberación se alcanza mediante el camino hacia el nirvana.", cri: "a", other: "bud", exp: "El cristianismo enseña que la salvación es un regalo de la gracia de Dios, recibido por medio de la fe en Jesucristo." },
   { a: "El alma puede atravesar múltiples vidas.", b: "Habrá resurrección y vida eterna.", cri: "b", other: "hin", exp: "La esperanza cristiana no está en la reencarnación, sino en la resurrección y la vida eterna con Dios." },
@@ -101,7 +145,19 @@ export const discardRounds: Round[] = [
   { a: "Las buenas obras son fruto de una fe verdadera.", b: "Las acciones determinan el karma y las futuras vidas.", cri: "a", other: "hin", exp: "El cristianismo enseña que las buenas obras no compran nuestra salvación; son fruto de una vida transformada por Dios." },
 ];
 
+const discardRoundsEn: Round[] = [
+  { a: "Jesus is a prophet of God, but he is not divine.", b: "Jesus is the Son of God and Savior.", cri: "b", other: "isl", exp: "Christianity teaches that Jesus is not only a prophet: he is the Son of God and the Savior." },
+  { a: "Salvation is received by grace through faith in Jesus Christ.", b: "Liberation is reached by following the path to nirvana.", cri: "a", other: "bud", exp: "Christianity teaches that salvation is a gift of God's grace, received through faith in Jesus Christ." },
+  { a: "The soul can pass through many lives.", b: "There will be a resurrection and eternal life.", cri: "b", other: "hin", exp: "The Christian hope is not in reincarnation, but in the resurrection and eternal life with God." },
+  { a: "One God who has no Son.", b: "One God: Father, Son and Holy Spirit.", cri: "b", other: "isl", exp: "Christianity teaches that there is one God: Father, Son and Holy Spirit." },
+  { a: "Good works are the fruit of true faith.", b: "Actions determine karma and future lives.", cri: "a", other: "hin", exp: "Christianity teaches that good works don't buy our salvation; they are the fruit of a life transformed by God." },
+];
+
+export const discardRounds: Record<Lang, Round[]> = { es: discardRoundsEs, en: discardRoundsEn };
+
 export function Discard({ onNext }: { onNext: () => void }) {
+  const { lang, t } = useLang();
+  const rounds = discardRounds[lang];
   const [n, setN] = useState(0);
   const [sel, setSel] = useState<"a" | "b" | null>(null);
   const [drag, setDrag] = useState<{ k: "a" | "b"; dx: number; dy: number } | null>(null);
@@ -110,7 +166,7 @@ export function Discard({ onNext }: { onNext: () => void }) {
   const [wrong, setWrong] = useState(false);
   const start = useRef({ x: 0, y: 0 });
   const trash = useRef<HTMLDivElement>(null);
-  const r = discardRounds[n]!;
+  const r = rounds[n]!;
   const solved = gone !== null;
 
   const inTrash = (x: number, y: number) => {
@@ -144,7 +200,7 @@ export function Discard({ onNext }: { onNext: () => void }) {
     else if (!moved) setSel(sel === k ? null : k);
   }
   function go() {
-    if (n + 1 >= discardRounds.length) return onNext();
+    if (n + 1 >= rounds.length) return onNext();
     setN(n + 1); setGone(null); setSel(null); setWrong(false);
   }
 
@@ -186,10 +242,10 @@ export function Discard({ onNext }: { onNext: () => void }) {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-black">¿Cuál no representa al cristianismo?</h2>
-        <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-sm font-extrabold text-primary">{n + 1} de {discardRounds.length}</span>
+        <h2 className="text-2xl font-black">{t("¿Cuál no representa al cristianismo?", "Which one doesn't represent Christianity?")}</h2>
+        <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-sm font-extrabold text-primary">{n + 1} {t("de", "of")} {rounds.length}</span>
       </div>
-      <p className="mt-1 text-muted-foreground">Descarta la afirmación que NO representa al cristianismo.</p>
+      <p className="mt-1 text-muted-foreground">{t("Descarta la afirmación que NO representa al cristianismo.", "Discard the statement that does NOT represent Christianity.")}</p>
       <div key={n} className="mt-5 grid gap-3 sm:grid-cols-2">
         {card("a")}
         {card("b")}
@@ -203,25 +259,25 @@ export function Discard({ onNext }: { onNext: () => void }) {
               over && "scale-105 border-secondary bg-secondary/10",
             )}
           >
-            <Trash2 className="!size-8" /> Arrastra aquí para descartar
+            <Trash2 className="!size-8" /> {t("Arrastra aquí para descartar", "Drag here to discard")}
           </div>
           <Button size="lg" variant="outline" className="mt-4 w-full" disabled={!sel} onClick={() => sel && discard(sel)}>
-            <Trash2 /> Descartar
+            <Trash2 /> {t("Descartar", "Discard")}
           </Button>
         </>
       )}
       {wrong && (
         <div className="mt-4 animate-pop rounded-2xl bg-yellow/30 p-4">
-          <div className="text-lg font-black">Mmm… 👀</div>
-          <p className="font-semibold">Esa es la afirmación cristiana. Intenta de nuevo.</p>
+          <div className="text-lg font-black">{t("Mmm… 👀", "Hmm… 👀")}</div>
+          <p className="font-semibold">{t("Esa es la afirmación cristiana. Intenta de nuevo.", "That's the Christian statement. Try again.")}</p>
         </div>
       )}
       {solved && (
         <div className="mt-4 animate-pop rounded-2xl bg-green/10 p-4">
-          <div className="text-lg font-black text-green">✨ ¡Correcto!</div>
-          <div className="mt-2 flex items-center gap-2 font-black"><ReligionBadge k="cri" size="sm" /> Cristianismo</div>
+          <div className="text-lg font-black text-green">✨ {t("¡Correcto!", "Correct!")}</div>
+          <div className="mt-2 flex items-center gap-2 font-black"><ReligionBadge k="cri" size="sm" /> {NAME[lang].cri}</div>
           <p className="mt-2 font-semibold">{r.exp}</p>
-          <Button size="lg" className="mt-4 w-full" onClick={go}>Continuar →</Button>
+          <Button size="lg" className="mt-4 w-full" onClick={go}>{t("Continuar →", "Continue →")}</Button>
         </div>
       )}
     </div>

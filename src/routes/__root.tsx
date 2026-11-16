@@ -13,16 +13,18 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
+import { LangProvider, useLang } from "@/lib/i18n";
 
 function NotFoundComponent() {
+  const { t } = useLang();
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <div className="text-7xl">🐑</div>
-        <h1 className="mt-4 text-3xl font-bold">Página no encontrada</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Esta oveja se perdió del camino.</p>
+        <h1 className="mt-4 text-3xl font-bold">{t("Página no encontrada", "Page not found")}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t("Esta oveja se perdió del camino.", "This sheep wandered off the path.")}</p>
         <Link to="/" className="mt-6 inline-block font-bold text-secondary underline">
-          Volver al inicio
+          {t("Volver al inicio", "Back to home")}
         </Link>
       </div>
     </div>
@@ -32,13 +34,14 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
+  const { t } = useLang();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold">Algo salió mal</h1>
+        <h1 className="text-xl font-semibold">{t("Algo salió mal", "Something went wrong")}</h1>
         <button
           onClick={() => {
             router.invalidate();
@@ -46,7 +49,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
           }}
           className="mt-6 rounded-xl bg-primary px-4 py-2 font-bold text-primary-foreground"
         >
-          Intentar de nuevo
+          {t("Intentar de nuevo", "Try again")}
         </button>
       </div>
     </div>
@@ -103,7 +106,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <LangProvider>{children}</LangProvider>
         <Scripts />
       </body>
     </html>
