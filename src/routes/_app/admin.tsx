@@ -9,12 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase } from "@/integrations/supabase/client";
-import { useMe } from "@/lib/app-data";
+import { COURSES, DEMO_STUDENTS } from "@/lib/demo-data";
+import { addAnnouncement, loadState } from "@/lib/demo-store";
 import { courseLook } from "@/lib/course-look";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/admin")({
+export const Route = createFileRoute("/_app/admin")({
   head: () => ({ meta: [{ title: "Administración — Fuego+" }, { name: "description", content: "Seguimiento de los jóvenes y sus cursos." }] }),
   component: AdminPage,
 });
@@ -25,13 +25,13 @@ const field = "h-12 rounded-2xl border-2 bg-background px-4 text-base";
 const tab = "rounded-full px-5 py-2 font-extrabold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none";
 
 function AdminPage() {
-  const { data: me, isLoading } = useMe();
-  if (isLoading) return <AppShell><p>Cargando…</p></AppShell>;
-  if (!me?.isAdmin) return <AppShell><p className="font-bold">Solo los administradores pueden ver esta página.</p></AppShell>;
   return (
     <AppShell>
       <h1 className="text-4xl font-black md:text-5xl">Administración</h1>
       <p className="mt-1 text-muted-foreground">Seguimiento de los jóvenes y sus cursos.</p>
+      <p className="mt-4 rounded-[1.25rem] bg-yellow/25 px-4 py-3 text-sm font-bold">
+        Vista de demostración: los jóvenes son ficticios y tus cambios no se guardan en ningún servidor.
+      </p>
       <Tabs defaultValue="stats" className="mt-6">
         <TabsList className="h-auto flex-wrap gap-1 rounded-full bg-card p-1.5 shadow-[var(--shadow-soft)]">
           <TabsTrigger value="stats" className={tab}>Estadísticas</TabsTrigger>
@@ -46,19 +46,49 @@ function AdminPage() {
   );
 }
 
-// Datos de seguimiento compartidos por Estadísticas y Jóvenes.
+// Datos de seguimiento compartidos por Estadísticas y Jóvenes. En la demo son
+// jóvenes ficticios (demo-data.ts) más el visitante actual.
 function useAdminData() {
   return useQuery({
     queryKey: ["admin-students"],
-    queryFn: async () => {
-      const [{ data: profiles }, { data: courses }, { data: lessons }, { data: comps }, { data: ub }] = await Promise.all([
-        supabase.from("profiles").select("*").order("xp", { ascending: false }),
-        supabase.from("courses").select("id, title, color").order("order_index"),
-        supabase.from("lessons").select("id, course_id"),
-        supabase.from("lesson_completions").select("user_id, course_id, completed_at"),
-        supabase.from("user_badges").select("user_id"),
-      ]);
-      return { profiles: profiles ?? [], courses: courses ?? [], lessons: lessons ?? [], comps: comps ?? [], ub: ub ?? [] };
+    queryFn: () => {
+      const now = Date.now();
+      const ago = (d: number) => new Date(now - d * DAY).toISOString();
+      const courses = COURSES.map(({ id, title, color }) => ({ id, title, color }));
+      const lessons = COURSES.flatMap((c) => c.lessons.map((l) => ({ id: l.id, course_id: c.id })));
+      const comps: { user_id: string; course_id: string; completed_at: string }[] = [];
+      const ub: { user_id: string }[] = [];
+      const profiles = DEMO_STUDENTS.map((s) => {
+        // Reparte sus lecciones en los días previos a su última actividad.
+        let n = 0;
+        for (const [course_id, count] of Object.entries(s.done)) {
+          for (let i = 0; i < count; i++, n++) {
+            comps.push({ user_id: s.id, course_id, completed_at: ago((s.daysAgo ?? 0) + Math.floor(n / 2)) });
+          }
+        }
+        for (let i = 0; i < s.badges; i++) ub.push({ user_id: s.id });
+        return {
+          id: s.id,
+          display_name: s.display_name,
+          avatar_emoji: s.avatar_emoji,
+          xp: n * 10,
+          streak: s.streak,
+          last_activity_date: s.daysAgo === null ? null : ago(s.daysAgo),
+        };
+      });
+      const me = loadState();
+      profiles.push({
+        id: "me",
+        display_name: `${me.profile.display_name} (tú)`,
+        avatar_emoji: me.profile.avatar_emoji,
+        xp: me.profile.xp,
+        streak: me.profile.streak,
+        last_activity_date: me.profile.last_activity_date,
+      });
+      for (const c of me.completions) comps.push({ user_id: "me", course_id: c.course_id, completed_at: c.completed_at });
+      for (let i = 0; i < me.badges.length; i++) ub.push({ user_id: "me" });
+      profiles.sort((a, b) => b.xp - a.xp);
+      return { profiles, courses, lessons, comps, ub };
     },
   });
 }
@@ -305,11 +335,10 @@ function Announce() {
   const qc = useQueryClient();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  async function post() {
-    const { error } = await supabase.from("announcements").insert({ title, body });
-    if (error) { toast.error("No se pudo publicar"); return; }
+  function post() {
+    addAnnouncement(title, body);
     setTitle(""); setBody("");
-    toast.success("Anuncio publicado");
+    toast.success("Anuncio publicado: lo verás en tu inicio");
     qc.invalidateQueries({ queryKey: ["announcements"] });
   }
   return (

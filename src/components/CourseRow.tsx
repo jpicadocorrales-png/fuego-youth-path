@@ -26,6 +26,11 @@ export function CourseRow({ c }: { c: Course }) {
           <span className="rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">
             {c.level} · {c.total} lecciones
           </span>
+          {!c.available && (
+            <span className="rounded-full bg-yellow/25 px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-[#a8740f]">
+              Próximamente
+            </span>
+          )}
         </div>
         <p className="mt-0.5 line-clamp-2 text-muted-foreground">{c.description}</p>
         <div className="mt-3 flex items-center gap-3">

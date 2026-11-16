@@ -5,7 +5,7 @@ import { ArrowRight, Award, Bell, BookOpen, Flame, Megaphone, Zap, type LucideIc
 import { AppShell } from "@/components/AppShell";
 import { CourseRow } from "@/components/CourseRow";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { updateState } from "@/lib/demo-store";
 import {
   useAnnouncements,
   useBadges,
@@ -17,7 +17,7 @@ import {
 import { courseLook } from "@/lib/course-look";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/home")({
+export const Route = createFileRoute("/_app/home")({
   head: () => ({ meta: [{ title: "Inicio — Fuego+" }, { name: "description", content: "Tus estadísticas, anuncios y notificaciones." }] }),
   component: HomePage,
 });
@@ -86,8 +86,8 @@ function HomePage() {
   const unread = notifs.filter((n) => !n.read);
   const streak = me?.profile?.streak ?? 0;
 
-  async function markRead() {
-    await supabase.from("notifications").update({ read: true }).in("id", unread.map((n) => n.id));
+  function markRead() {
+    updateState((s) => ({ ...s, notifications: s.notifications.map((n) => ({ ...n, read: true })) }));
     qc.invalidateQueries({ queryKey: ["notifications"] });
   }
 

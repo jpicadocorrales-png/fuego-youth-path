@@ -1,18 +1,18 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { KeyRound, LogOut, Mail, Moon, Target, Volume2, type LucideIcon } from "lucide-react";
+import { Mail, Moon, RotateCcw, Target, Volume2, type LucideIcon } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { supabase } from "@/integrations/supabase/client";
+import { resetState, updateState } from "@/lib/demo-store";
 import { applyTheme, useMe } from "@/lib/app-data";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Ajustes — Fuego+" }, { name: "description", content: "Perfil, contraseña y preferencias." }] }),
+export const Route = createFileRoute("/_app/settings")({
+  head: () => ({ meta: [{ title: "Ajustes — Fuego+" }, { name: "description", content: "Perfil y preferencias." }] }),
   component: SettingsPage,
 });
 
@@ -54,7 +54,6 @@ function SettingRow({
 
 function SettingsPage() {
   const qc = useQueryClient();
-  const navigate = useNavigate();
   const { data: me } = useMe();
   const [name, setName] = useState("");
   const [avatar, setAvatar] = useState("🦁");
@@ -62,8 +61,6 @@ function SettingsPage() {
   const [sound, setSound] = useState(true);
   const [emailN, setEmailN] = useState(true);
   const [dark, setDark] = useState(false);
-  const [curPw, setCurPw] = useState("");
-  const [pw, setPw] = useState("");
 
   useEffect(() => {
     if (me?.profile) {
@@ -76,27 +73,19 @@ function SettingsPage() {
   }, [me?.profile]);
   useEffect(() => setDark(document.documentElement.classList.contains("dark")), []);
 
-  async function save() {
-    const { error } = await supabase.from("profiles").update({
-      display_name: name, avatar_emoji: avatar, daily_goal: goal, sound_enabled: sound, email_notifications: emailN,
-    }).eq("id", me!.id);
-    if (error) { toast.error("No se pudo guardar"); return; }
+  function save() {
+    updateState((s) => ({
+      ...s,
+      profile: { ...s.profile, display_name: name, avatar_emoji: avatar, daily_goal: goal, sound_enabled: sound, email_notifications: emailN },
+    }));
     toast.success("¡Guardado!");
     qc.invalidateQueries({ queryKey: ["me"] });
   }
 
-  async function changePw() {
-    const { error } = await supabase.auth.updateUser({ password: pw, current_password: curPw } as never);
-    if (error) { toast.error(error.message); return; }
-    setPw(""); setCurPw("");
-    toast.success("Contraseña actualizada");
-  }
-
-  async function signOut() {
-    await qc.cancelQueries();
-    qc.clear();
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+  function reset() {
+    resetState();
+    qc.invalidateQueries();
+    toast.success("Progreso reiniciado");
   }
 
   return (
@@ -109,7 +98,7 @@ function SettingsPage() {
           <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-primary/10 text-5xl">{avatar}</span>
           <div className="min-w-0">
             <div className="truncate text-2xl font-black">{name || "Tu nombre"}</div>
-            <div className="truncate text-sm text-muted-foreground">{me?.email}</div>
+            <div className="text-sm text-muted-foreground">Versión demo: tu progreso se guarda en este navegador.</div>
           </div>
         </div>
         <label className="mt-6 block text-sm font-extrabold" htmlFor="nombre">Nombre</label>
@@ -168,34 +157,16 @@ function SettingsPage() {
         Guardar cambios
       </Button>
 
-      {/* Contraseña */}
-      <SectionTitle>Contraseña</SectionTitle>
-      <section className="rounded-[1.5rem] bg-card p-6 shadow-[var(--shadow-soft)]">
-        <div className="flex items-center gap-4">
-          <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-pink/20 text-[#d13f95]">
-            <KeyRound className="size-6" strokeWidth={2.25} />
-          </span>
-          <p className="text-sm text-muted-foreground">Usa al menos 6 caracteres.</p>
-        </div>
-        <div className="mt-5 space-y-3">
-          <Input className={field} type="password" placeholder="Contraseña actual" value={curPw} onChange={(e) => setCurPw(e.target.value)} />
-          <Input className={field} type="password" placeholder="Nueva contraseña" minLength={6} value={pw} onChange={(e) => setPw(e.target.value)} />
-        </div>
-        <Button variant="secondary" className="mt-4 w-full rounded-full" disabled={pw.length < 6} onClick={changePw}>
-          Cambiar contraseña
-        </Button>
-      </section>
-
-      {/* Sesión */}
+      {/* Reiniciar la demo */}
       <button
         type="button"
-        onClick={signOut}
+        onClick={reset}
         className="mb-6 mt-12 flex w-full items-center gap-4 rounded-[1.5rem] bg-card p-5 text-left shadow-[var(--shadow-soft)] transition-transform hover:-translate-y-0.5"
       >
         <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-orange/15 text-orange">
-          <LogOut className="size-6" strokeWidth={2.25} />
+          <RotateCcw className="size-6" strokeWidth={2.25} />
         </span>
-        <span className="text-lg font-extrabold">Cerrar sesión</span>
+        <span className="text-lg font-extrabold">Reiniciar progreso de la demo</span>
       </button>
     </AppShell>
   );
