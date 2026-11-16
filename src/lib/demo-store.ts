@@ -28,7 +28,7 @@ export type DemoState = {
 
 const initial = (): DemoState => ({
   profile: {
-    display_name: "", // vacío = «Visitante» / «Visitor» según el idioma
+    display_name: "", // vacío = nombre de ejemplo «Charlie» (ver displayName en app-data.ts)
     avatar_emoji: "🦁",
     daily_goal: 1,
     sound_enabled: true,

@@ -23,9 +23,11 @@ export const courseText: Record<string, string> = {
 // Cada hook devuelve los textos ya traducidos al idioma elegido; el idioma va en
 // la queryKey para que se recalcule al cambiarlo.
 
-/** Nombre por defecto del visitante; «Visitante» y «Visitor» guardados también cuentan como el nombre por defecto. */
-export function displayName(name: string, lang: "es" | "en") {
-  return !name || name === "Visitante" || name === "Visitor" ? (lang === "es" ? "Visitante" : "Visitor") : name;
+/** Nombre de ejemplo del visitante. «Visitante» y «Visitor» de versiones anteriores también se cambian por «Charlie». */
+export const DEFAULT_NAME = "Charlie";
+
+export function displayName(name: string, _lang?: "es" | "en") {
+  return !name || name === "Visitante" || name === "Visitor" ? DEFAULT_NAME : name;
 }
 
 export function useMe() {
