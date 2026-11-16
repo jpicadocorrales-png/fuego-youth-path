@@ -3,7 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 // Idioma de la interfaz. Cada texto se escribe en los dos idiomas donde se usa:
 //   const { t } = useLang();  t("Cursos", "Courses")
 // El idioma se elige con ?lang=en / ?lang=es en la URL, luego lo guardado en el
-// navegador y, si no hay nada, el idioma del navegador.
+// navegador y, si no hay nada, inglés.
 
 export type Lang = "es" | "en";
 
@@ -28,7 +28,7 @@ const TITLES: Record<string, string> = {
 };
 const TITLES_BACK = Object.fromEntries(Object.entries(TITLES).map(([es, en]) => [en, es]));
 
-const LangContext =createContext<Ctx>({ lang: "es", setLang: () => {}, t: (es) => es });
+const LangContext = createContext<Ctx>({ lang: "en", setLang: () => {}, t: (_es, en) => en });
 
 function detect(): Lang {
   try {
@@ -43,12 +43,12 @@ function detect(): Lang {
   } catch {
     /* almacenamiento no disponible */
   }
-  return navigator.language?.toLowerCase().startsWith("es") ? "es" : "en";
+  return "en";
 }
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  // En el servidor siempre es español; en el navegador se ajusta al montar.
-  const [lang, setLangState] = useState<Lang>("es");
+  // Inglés por defecto (también en el servidor); en el navegador se ajusta al montar.
+  const [lang, setLangState] = useState<Lang>("en");
 
   useEffect(() => setLangState(detect()), []);
   useEffect(() => {
