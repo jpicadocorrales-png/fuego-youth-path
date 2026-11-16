@@ -65,8 +65,9 @@ export function useCourses() {
   });
 }
 
+/** Sesiones de lección (incluye repasos): alimentan «lecciones» y el gráfico de la semana en Inicio. */
 export function useCompletions() {
-  return useQuery({ queryKey: ["completions"], queryFn: () => loadState().completions });
+  return useQuery({ queryKey: ["completions"], queryFn: () => loadState().sessions ?? loadState().completions });
 }
 
 export function useBadges() {
