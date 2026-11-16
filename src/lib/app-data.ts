@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { BADGES, COURSES, isCourseAvailable } from "./demo-data";
+import { loadState } from "./demo-store";
 
 export const courseColor: Record<string, string> = {
   green: "bg-green",
@@ -16,52 +17,29 @@ export const courseText: Record<string, string> = {
   yellow: "text-yellow",
 };
 
-async function uid() {
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) throw new Error("No session");
-  return data.user.id;
-}
-
+// Versión demo: no hay cuentas. Todos los visitantes ven la app como
+// administradores y su progreso se guarda en el navegador (demo-store.ts).
 export function useMe() {
   return useQuery({
     queryKey: ["me"],
-    queryFn: async () => {
-      const id = await uid();
-      const [{ data: profile }, { data: roles }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", id).maybeSingle(),
-        supabase.from("user_roles").select("role").eq("user_id", id),
-      ]);
-      const { data: u } = await supabase.auth.getUser();
-      return {
-        id,
-        email: u.user?.email ?? "",
-        profile,
-        isAdmin: !!roles?.some((r) => r.role === "admin"),
-      };
-    },
+    queryFn: () => ({ id: "demo", email: "", profile: loadState().profile, isAdmin: true }),
   });
 }
 
 export function useCourses() {
   return useQuery({
     queryKey: ["courses"],
-    queryFn: async () => {
-      const id = await uid();
-      const [{ data: courses }, { data: lessons }, { data: done }] = await Promise.all([
-        supabase.from("courses").select("*").order("order_index"),
-        supabase.from("lessons").select("id, course_id, title, order_index, xp").order("order_index"),
-        supabase.from("lesson_completions").select("lesson_id, course_id, completed_at").eq("user_id", id),
-      ]);
-      const doneSet = new Set((done ?? []).map((d) => d.lesson_id));
-      return (courses ?? []).map((c) => {
-        const ls = (lessons ?? []).filter((l) => l.course_id === c.id);
-        const completed = ls.filter((l) => doneSet.has(l.id)).length;
+    queryFn: () => {
+      const doneSet = new Set(loadState().completions.map((d) => d.lesson_id));
+      return COURSES.map((c) => {
+        const completed = c.lessons.filter((l) => doneSet.has(l.id)).length;
         return {
           ...c,
-          lessons: ls.map((l) => ({ ...l, done: doneSet.has(l.id) })),
-          total: ls.length,
+          available: isCourseAvailable(c.id),
+          lessons: c.lessons.map((l) => ({ ...l, course_id: c.id, done: doneSet.has(l.id) })),
+          total: c.lessons.length,
           completed,
-          pct: ls.length ? Math.round((completed / ls.length) * 100) : 0,
+          pct: c.lessons.length ? Math.round((completed / c.lessons.length) * 100) : 0,
         };
       });
     },
@@ -69,63 +47,32 @@ export function useCourses() {
 }
 
 export function useCompletions() {
-  return useQuery({
-    queryKey: ["completions"],
-    queryFn: async () => {
-      const id = await uid();
-      const { data } = await supabase
-        .from("lesson_completions")
-        .select("completed_at, score")
-        .eq("user_id", id);
-      return data ?? [];
-    },
-  });
+  return useQuery({ queryKey: ["completions"], queryFn: () => loadState().completions });
 }
 
 export function useBadges() {
   return useQuery({
     queryKey: ["badges"],
-    queryFn: async () => {
-      const id = await uid();
-      const [{ data: badges }, { data: mine }] = await Promise.all([
-        supabase.from("badges").select("*").order("threshold"),
-        supabase.from("user_badges").select("badge_id, earned_at").eq("user_id", id),
-      ]);
-      const m = new Map((mine ?? []).map((b) => [b.badge_id, b.earned_at]));
-      return (badges ?? []).map((b) => ({ ...b, earnedAt: m.get(b.id) ?? null }));
+    queryFn: () => {
+      const m = new Map(loadState().badges.map((b) => [b.badge_id, b.earned_at]));
+      return BADGES.map((b) => ({ ...b, earnedAt: m.get(b.id) ?? null }));
     },
   });
 }
 
 export function useNotifications() {
-  return useQuery({
-    queryKey: ["notifications"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("notifications")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(20);
-      return data ?? [];
-    },
-  });
+  return useQuery({ queryKey: ["notifications"], queryFn: () => loadState().notifications.slice(0, 20) });
 }
 
 export function useAnnouncements() {
-  return useQuery({
-    queryKey: ["announcements"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("announcements")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(10);
-      return data ?? [];
-    },
-  });
+  return useQuery({ queryKey: ["announcements"], queryFn: () => loadState().announcements.slice(0, 10) });
 }
 
 export function applyTheme(dark: boolean) {
   document.documentElement.classList.toggle("dark", dark);
-  localStorage.setItem("theme", dark ? "dark" : "light");
+  try {
+    localStorage.setItem("theme", dark ? "dark" : "light");
+  } catch {
+    /* almacenamiento no disponible */
+  }
 }

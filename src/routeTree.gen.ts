@@ -10,109 +10,96 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedBadgesRouteImport } from './routes/_authenticated/badges'
-import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
-import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedCoursesIndexRouteImport } from './routes/_authenticated/courses.index'
-import { Route as AuthenticatedCoursesCourseIdRouteImport } from './routes/_authenticated/courses.$courseId'
-import { Route as AuthenticatedLessonLessonIdRouteImport } from './routes/_authenticated/lesson.$lessonId'
+import { Route as AppRouteRouteImport } from './routes/_app/route'
+import { Route as AppAdminRouteImport } from './routes/_app/admin'
+import { Route as AppBadgesRouteImport } from './routes/_app/badges'
+import { Route as AppHomeRouteImport } from './routes/_app/home'
+import { Route as AppSettingsRouteImport } from './routes/_app/settings'
+import { Route as AppCoursesIndexRouteImport } from './routes/_app/courses.index'
+import { Route as AppCoursesCourseIdRouteImport } from './routes/_app/courses.$courseId'
+import { Route as AppLessonLessonIdRouteImport } from './routes/_app/lesson.$lessonId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+const AppAdminRoute = AppAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const AuthenticatedBadgesRoute = AuthenticatedBadgesRouteImport.update({
+const AppBadgesRoute = AppBadgesRouteImport.update({
   id: '/badges',
   path: '/badges',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+const AppHomeRoute = AppHomeRouteImport.update({
   id: '/home',
   path: '/home',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const AuthenticatedCoursesIndexRoute =
-  AuthenticatedCoursesIndexRouteImport.update({
-    id: '/courses/',
-    path: '/courses/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedCoursesCourseIdRoute =
-  AuthenticatedCoursesCourseIdRouteImport.update({
-    id: '/courses/$courseId',
-    path: '/courses/$courseId',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedLessonLessonIdRoute =
-  AuthenticatedLessonLessonIdRouteImport.update({
-    id: '/lesson/$lessonId',
-    path: '/lesson/$lessonId',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
+const AppCoursesIndexRoute = AppCoursesIndexRouteImport.update({
+  id: '/courses/',
+  path: '/courses/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppCoursesCourseIdRoute = AppCoursesCourseIdRouteImport.update({
+  id: '/courses/$courseId',
+  path: '/courses/$courseId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppLessonLessonIdRoute = AppLessonLessonIdRouteImport.update({
+  id: '/lesson/$lessonId',
+  path: '/lesson/$lessonId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/admin': typeof AuthenticatedAdminRoute
-  '/badges': typeof AuthenticatedBadgesRoute
-  '/home': typeof AuthenticatedHomeRoute
-  '/settings': typeof AuthenticatedSettingsRoute
-  '/courses/$courseId': typeof AuthenticatedCoursesCourseIdRoute
-  '/lesson/$lessonId': typeof AuthenticatedLessonLessonIdRoute
-  '/courses/': typeof AuthenticatedCoursesIndexRoute
+  '/admin': typeof AppAdminRoute
+  '/badges': typeof AppBadgesRoute
+  '/home': typeof AppHomeRoute
+  '/settings': typeof AppSettingsRoute
+  '/courses/$courseId': typeof AppCoursesCourseIdRoute
+  '/lesson/$lessonId': typeof AppLessonLessonIdRoute
+  '/courses/': typeof AppCoursesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/admin': typeof AuthenticatedAdminRoute
-  '/badges': typeof AuthenticatedBadgesRoute
-  '/home': typeof AuthenticatedHomeRoute
-  '/settings': typeof AuthenticatedSettingsRoute
-  '/courses/$courseId': typeof AuthenticatedCoursesCourseIdRoute
-  '/lesson/$lessonId': typeof AuthenticatedLessonLessonIdRoute
-  '/courses': typeof AuthenticatedCoursesIndexRoute
+  '/admin': typeof AppAdminRoute
+  '/badges': typeof AppBadgesRoute
+  '/home': typeof AppHomeRoute
+  '/settings': typeof AppSettingsRoute
+  '/courses/$courseId': typeof AppCoursesCourseIdRoute
+  '/lesson/$lessonId': typeof AppLessonLessonIdRoute
+  '/courses': typeof AppCoursesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
-  '/_authenticated/badges': typeof AuthenticatedBadgesRoute
-  '/_authenticated/home': typeof AuthenticatedHomeRoute
-  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
-  '/_authenticated/courses/$courseId': typeof AuthenticatedCoursesCourseIdRoute
-  '/_authenticated/lesson/$lessonId': typeof AuthenticatedLessonLessonIdRoute
-  '/_authenticated/courses/': typeof AuthenticatedCoursesIndexRoute
+  '/_app': typeof AppRouteRouteWithChildren
+  '/_app/admin': typeof AppAdminRoute
+  '/_app/badges': typeof AppBadgesRoute
+  '/_app/home': typeof AppHomeRoute
+  '/_app/settings': typeof AppSettingsRoute
+  '/_app/courses/$courseId': typeof AppCoursesCourseIdRoute
+  '/_app/lesson/$lessonId': typeof AppLessonLessonIdRoute
+  '/_app/courses/': typeof AppCoursesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth'
     | '/admin'
     | '/badges'
     | '/home'
@@ -123,7 +110,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth'
     | '/admin'
     | '/badges'
     | '/home'
@@ -134,21 +120,19 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/_authenticated'
-    | '/auth'
-    | '/_authenticated/admin'
-    | '/_authenticated/badges'
-    | '/_authenticated/home'
-    | '/_authenticated/settings'
-    | '/_authenticated/courses/$courseId'
-    | '/_authenticated/lesson/$lessonId'
-    | '/_authenticated/courses/'
+    | '/_app'
+    | '/_app/admin'
+    | '/_app/badges'
+    | '/_app/home'
+    | '/_app/settings'
+    | '/_app/courses/$courseId'
+    | '/_app/lesson/$lessonId'
+    | '/_app/courses/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -160,99 +144,92 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated': {
-      id: '/_authenticated'
+    '/_app': {
+      id: '/_app'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
+    '/_app/admin': {
+      id: '/_app/admin'
       path: '/admin'
       fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof AppAdminRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/_authenticated/badges': {
-      id: '/_authenticated/badges'
+    '/_app/badges': {
+      id: '/_app/badges'
       path: '/badges'
       fullPath: '/badges'
-      preLoaderRoute: typeof AuthenticatedBadgesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof AppBadgesRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/_authenticated/home': {
-      id: '/_authenticated/home'
+    '/_app/home': {
+      id: '/_app/home'
       path: '/home'
       fullPath: '/home'
-      preLoaderRoute: typeof AuthenticatedHomeRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof AppHomeRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
+    '/_app/settings': {
+      id: '/_app/settings'
       path: '/settings'
       fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/_authenticated/courses/': {
-      id: '/_authenticated/courses/'
+    '/_app/courses/': {
+      id: '/_app/courses/'
       path: '/courses'
       fullPath: '/courses/'
-      preLoaderRoute: typeof AuthenticatedCoursesIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof AppCoursesIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/_authenticated/courses/$courseId': {
-      id: '/_authenticated/courses/$courseId'
+    '/_app/courses/$courseId': {
+      id: '/_app/courses/$courseId'
       path: '/courses/$courseId'
       fullPath: '/courses/$courseId'
-      preLoaderRoute: typeof AuthenticatedCoursesCourseIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof AppCoursesCourseIdRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/_authenticated/lesson/$lessonId': {
-      id: '/_authenticated/lesson/$lessonId'
+    '/_app/lesson/$lessonId': {
+      id: '/_app/lesson/$lessonId'
       path: '/lesson/$lessonId'
       fullPath: '/lesson/$lessonId'
-      preLoaderRoute: typeof AuthenticatedLessonLessonIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof AppLessonLessonIdRouteImport
+      parentRoute: typeof AppRouteRoute
     }
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
-  AuthenticatedBadgesRoute: typeof AuthenticatedBadgesRoute
-  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
-  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedCoursesCourseIdRoute: typeof AuthenticatedCoursesCourseIdRoute
-  AuthenticatedLessonLessonIdRoute: typeof AuthenticatedLessonLessonIdRoute
-  AuthenticatedCoursesIndexRoute: typeof AuthenticatedCoursesIndexRoute
+interface AppRouteRouteChildren {
+  AppAdminRoute: typeof AppAdminRoute
+  AppBadgesRoute: typeof AppBadgesRoute
+  AppHomeRoute: typeof AppHomeRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppCoursesCourseIdRoute: typeof AppCoursesCourseIdRoute
+  AppLessonLessonIdRoute: typeof AppLessonLessonIdRoute
+  AppCoursesIndexRoute: typeof AppCoursesIndexRoute
 }
 
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
-  AuthenticatedBadgesRoute: AuthenticatedBadgesRoute,
-  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
-  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedCoursesCourseIdRoute: AuthenticatedCoursesCourseIdRoute,
-  AuthenticatedLessonLessonIdRoute: AuthenticatedLessonLessonIdRoute,
-  AuthenticatedCoursesIndexRoute: AuthenticatedCoursesIndexRoute,
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppAdminRoute: AppAdminRoute,
+  AppBadgesRoute: AppBadgesRoute,
+  AppHomeRoute: AppHomeRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppCoursesCourseIdRoute: AppCoursesCourseIdRoute,
+  AppLessonLessonIdRoute: AppLessonLessonIdRoute,
+  AppCoursesIndexRoute: AppCoursesIndexRoute,
 }
 
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

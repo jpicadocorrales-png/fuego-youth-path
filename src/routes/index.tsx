@@ -1,7 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import mascot from "@/assets/fuego-mascot.png";
 
 export const Route = createFileRoute("/")({
@@ -19,19 +17,12 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
-  const navigate = useNavigate();
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/home" });
-    });
-  }, [navigate]);
-
   return (
     <div className="min-h-screen bg-background">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
         <span className="font-display text-3xl font-black tracking-tight">fuego<span className="text-secondary">+</span></span>
         <Button asChild variant="outline" size="sm">
-          <Link to="/auth">Iniciar sesión</Link>
+          <Link to="/admin">Ver panel admin</Link>
         </Button>
       </header>
       <main className="mx-auto grid max-w-5xl items-center gap-10 px-6 py-12 md:grid-cols-2">
@@ -46,8 +37,8 @@ function Landing() {
             <span className="mt-2 block text-sm font-bold text-secondary">— Lucas 24:32</span>
           </blockquote>
           <div className="mt-8 flex flex-col gap-3 sm:max-w-xs">
-            <Button asChild size="lg"><Link to="/auth">Empezar ahora</Link></Button>
-            <Button asChild size="lg" variant="outline"><Link to="/auth">Ya tengo cuenta</Link></Button>
+            <Button asChild size="lg"><Link to="/home">Empezar ahora</Link></Button>
+            <Button asChild size="lg" variant="outline"><Link to="/courses">Ver cursos</Link></Button>
           </div>
         </div>
       </main>

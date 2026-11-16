@@ -3,7 +3,7 @@ import { AppShell } from "@/components/AppShell";
 import { CourseRow } from "@/components/CourseRow";
 import { useCourses } from "@/lib/app-data";
 
-export const Route = createFileRoute("/_authenticated/courses/")({
+export const Route = createFileRoute("/_app/courses/")({
   head: () => ({ meta: [{ title: "Cursos — Fuego+" }, { name: "description", content: "Tus cursos bíblicos y sugerencias." }] }),
   component: CoursesPage,
 });

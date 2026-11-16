@@ -13,11 +13,12 @@ function illustrationFor(title: string) {
   return ILL.find(([re]) => re.test(title))?.[1];
 }
 import { AppShell } from "@/components/AppShell";
+import { ComingSoon } from "@/components/ComingSoon";
 import { useCourses } from "@/lib/app-data";
 import { courseLook } from "@/lib/course-look";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/courses/$courseId")({
+export const Route = createFileRoute("/_app/courses/$courseId")({
   head: () => ({ meta: [{ title: "Curso — Fuego+" }, { name: "description", content: "Recorrido de lecciones del curso." }] }),
   component: CoursePath,
 });
@@ -34,6 +35,7 @@ function CoursePath() {
   const [opening, setOpening] = useState<string | null>(null);
   const course = courses.find((c) => c.id === courseId);
   if (!course) return <AppShell><p>Cargando…</p></AppShell>;
+  if (!course.available) return <ComingSoon kind="course" title={course.title} />;
   const nextIdx = course.lessons.findIndex((l) => !l.done);
   const n = course.lessons.length;
   const height = n * STEP_Y + 60;

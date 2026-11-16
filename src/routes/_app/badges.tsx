@@ -5,7 +5,7 @@ import { useBadges } from "@/lib/app-data";
 import { badgeLook, sortBadges } from "@/lib/badge-look";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/badges")({
+export const Route = createFileRoute("/_app/badges")({
   head: () => ({ meta: [{ title: "Insignias — Fuego+" }, { name: "description", content: "Premios por tus metas cumplidas." }] }),
   component: BadgesPage,
 });

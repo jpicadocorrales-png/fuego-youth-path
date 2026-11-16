@@ -11,9 +11,7 @@ Fuego+ es una app de cursos bíblicos para jóvenes: lecciones cortas con activi
 
 **[Ver la app en vivo → fuego-youth-path.lovable.app](https://fuego-youth-path.lovable.app)**
 
-<!-- ⚠️ PENDIENTE: agregar la cuenta de demostración
-Cuenta de demostración: `correo@demo` / `contraseña`
--->
+**Versión demo, sin registro:** entra directo y prueba todo, incluido el panel de administración. El curso *Fundamentos* está abierto; los jóvenes del panel son ficticios y tu progreso se guarda solo en tu navegador.
 
 <!-- ⚠️ PENDIENTE: capturas de la app en docs/ y descomentar
 | Inicio | Curso | Insignias |
@@ -29,7 +27,7 @@ Cuenta de demostración: `correo@demo` / `contraseña`
 - **Cursos:** cada curso con su propio ícono y color, y un mapa de recorrido donde cada lección se desbloquea al completar la anterior.
 - **Lecciones interactivas** (ver abajo). Las lecciones que aún se están preparando muestran un aviso de «Estamos trabajando en el contenido».
 - **Insignias:** premios por metas cumplidas (lecciones, XP, rachas, cursos completos), cada una con su ícono.
-- **Ajustes:** perfil y avatar, meta diaria, modo oscuro, sonido, recordatorios y contraseña.
+- **Ajustes:** perfil y avatar, meta diaria, modo oscuro, sonido, recordatorios y un botón para reiniciar el progreso de la demo.
 - **Panel de administración:**
   - **Estadísticas con gráficos:** lecciones completadas por día, actividad de los jóvenes, avance promedio por curso y los cinco con más XP.
   - **Seguimiento de cada joven:** su avance en cada curso.
@@ -56,7 +54,7 @@ Comparación entre el cristianismo y otras religiones mediante tarjetas que se v
 - **React 19** con **TanStack Start / Router** y **TypeScript**
 - **Tailwind CSS 4** y componentes **Radix UI**
 - **Recharts** para los gráficos del panel de administración
-- **Supabase**: autenticación, base de datos y progreso de los cursos
+- **Supabase** en la versión original (autenticación y base de datos). La versión demo publicada funciona sin servidor: los cursos están en `src/lib/demo-data.ts` y el progreso se guarda en el navegador (`src/lib/demo-store.ts`).
 - Animaciones con CSS y SVG
 - **Vitest** para pruebas
 - Construida con **[Lovable](https://lovable.dev)** y desarrollo asistido con IA (Claude)
